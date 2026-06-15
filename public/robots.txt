@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /checkout
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /login
+Disallow: /*?keyword=
+Sitemap: https://www.thecanadafoods.com/sitemap.xml
