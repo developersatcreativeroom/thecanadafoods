@@ -6,7 +6,7 @@
         <ul class="language-dropdown">
             <li><a href="{{route('profile')}}">Profile</a></li>
             <li><a href="{{route('change.password')}}">Password</a></li>
-            @if($isEnquiryWebsite)
+            @if ($isEnquiryWebsite)
                 <li><a href="{{route('enquiries')}}">Enquiries</a></li>
             @else
                 <li><a href="{{route('orders')}}">Orders</a></li>
@@ -28,11 +28,11 @@
             $categoriesList = App\Helper::getCategoriesList();
         @endphp
         <option>All Categories</option>
-        @foreach($categoriesList as $category)
+        @foreach ($categoriesList as $category)
             <option value="{{$category->slug}}">{{$category->name}}</option>
         @endforeach
     </select>
-    <input type="text" placeholder="Search for items..." name="keyword" class="searchproducts" id="keyword" inputmode="search" autocomplete="off" data-smart-search="true" value="@if(isset($_GET['keyword'])){{$_GET['keyword']}}@endif">
+    <input type="text" placeholder="Search for items..." name="keyword" class="searchproducts" id="keyword" inputmode="search" autocomplete="off" data-smart-search="true" value="@if (isset($_GET['keyword'])){{$_GET['keyword']}}@endif">
 </form> --}}
 
 
@@ -53,10 +53,13 @@
                             $currencySign = App\Helper::getWebsiteConfig('currency_sign');
                             $minCartAmount = App\Helper::getWebsiteConfig('min_cart_amount');
                         @endphp
-                        
 
-                        
-                        <p  id="top-nav-text-left" class="text-white fs-sm fw-medium mb-0 top-nav-text-left" data-text="Minimum Order {{$currencySign['currency_sign']}}{{$minCartAmount['min_cart_amount']}}"> Minimum Order {{$currencySign['currency_sign']}}{{$minCartAmount['min_cart_amount']}} </p>
+
+
+                        <p id="top-nav-text-left" class="text-white fs-sm fw-medium mb-0 top-nav-text-left"
+                            data-text="Minimum Order {{ $currencySign['currency_sign'] }}{{ $minCartAmount['min_cart_amount'] }}">
+                            Minimum Order {{ $currencySign['currency_sign'] }}{{ $minCartAmount['min_cart_amount'] }}
+                        </p>
                     </div>
                 </div>
                 <div class="col-xxl-6 col-xl-6">
@@ -67,10 +70,11 @@
                     </div> --}}
                 </div>
                 <div class="col-xxl-2 col-xl-2 d-none d-lg-block">
-                    <ul class="d-flex align-items-center justify-content-center justify-content-xl-end topbar-info-right">
+                    <ul
+                        class="d-flex align-items-center justify-content-center justify-content-xl-end topbar-info-right">
                         <li class="nav-item text-white">
                             {{-- <a href="mailto:{{$config['email']}}"> --}}
-                            <a href="{{route('contact')}}">
+                            <a href="{{ route('contact') }}">
                                 <span class="me-1">
                                     <svg width="16" height="14" viewBox="0 0 20 14" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -112,218 +116,97 @@
                           </span>
                           {!!$config['address']!!}
                         </li> --}}
-                       
-                      
+
+
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="gshop-navbar bg-white rounded ps-lg-5 position-relative">
+
+    <div class="gshop-navbar bg-white rounded ps-lg-5 position-relative">
+        <div class="container">
             <div class="row align-items-center">
-                <div class="col-xxl-2 col-xl-2 col-md-3 col-5">
-                    <a href="{{route('home')}}" class="logo"><img src="{{App\Helper::getLightLogo()}}" alt="logo" class="img-fluid header-logo"></a>
+                <div class="col-xxl-4 col-xl-4 col-md-3 col-5">
+                    <a href="{{ route('home') }}" class="logo"><img src="{{ App\Helper::getLightLogo() }}"
+                            alt="logo" class="img-fluid header-logo"></a>
                 </div>
-                <div class="col-xxl-10 col-xl-10 col-md-9 col-7">
-                    <div class="gshop-navbar-right d-flex align-items-center justify-content-end justify-content-sm-between position-relative">
-                        
-                        <nav class="gshop-navmenu ms-3 d-none d-xl-block">
-                            <ul class="d-flex align-itmes-center justify-content-between">
+                <div class="col-xxl-8 col-xl-8 col-md-9 col-7">
+                    <div
+                        class="gshop-navbar-right d-flex align-items-center justify-content-end justify-content-sm-between position-relative">
 
-                                @php
-                                    //$categoriesListMenu = App\Helper::getCategoriesList(6);
-                                    $categoriesListMenu = App\Helper::getCategoriesNav(true);
-                                @endphp
 
-                                @foreach($categoriesListMenu as $categoriesListMenuSingle)
-                                    <li>
-                                        <a href="{{route('category',[$categoriesListMenuSingle['slug']])}}">{{$categoriesListMenuSingle->name}}</a>
-                                    </li>
-                                @endforeach
 
-                                {{-- <li>
-                                    <a href="{{route('home')}}">Home</a>
-                                </li>
-                                <li>
-                                    <a href="{{route('about')}}">About</a>
-                                </li>
-                                <li>
-                                    <a href="{{route('blogs')}}">Blog</a> 
-                                </li> --}}
 
-                                
-
-                                {{-- <li class="has-submenu">
-                                    <a href="javascript:void(0)">Categories<span class="ms-1 fs-xs float-end"><i class="fa-solid fa-angle-right"></i></span></a>
-                                    <ul>
-
-                                        @php
-                                            $categories = App\Helper::getCategories();
-                                        @endphp
-
-                                        @foreach($categories as $category)
-                                            <li @if(count($category['children']) > 0) class="has-children" @endif>
-                                                <a href="{{route('category',[$category['slug']])}}">
-                                                    {{$category['name']}}</a>
-                                                @if(count($category['children']) > 0)
-                                                    <ul>
-                                                        @foreach($category['children'] as $children)
-                                                            <li><a href="{{route('category',[$children['slug']])}}">{{$children['name']}}</a></li>
-                                                            @if(count($children['children']) > 0)
-                                                                @foreach($children['children'] as $children1)
-                                                                    <li><a href="{{route('category',[$children1['slug']])}}">{{$children1['name']}}</a></li>
-                                                                @endforeach
-                                                            @endif
-                                                                    
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                        
-                                    </ul>
-                                </li> --}}
-                                {{-- <li>
-                                    <a href="{{route('products')}}">Products</a>
-                                </li>
-                                <li>
-                                    <a href="{{route('contact')}}">Contact</a>
-                                </li> --}}
-
-                            </ul>
-                        </nav>
-
-                        <div class="category-dropdown position-relative d-none d-md-inline-block me-3">
-                            <button class="category-dropdown-btn fw-bold d-none d-sm-inline-block">More
-                                <span class="ms-1"><i class="fa-solid fa-angle-down"></i></span>
-                            </button>
-                            <button class="category-dropdown-btn fw-bold d-sm-none">Categories
-                                <span class="ms-1"><i class="fa-solid fa-angle-down"></i></span>
-                            </button>
-                            <div class="category-dropdown-box scrollbar">
-                                <ul class="category-dropdown-menu">
-
-                                    {{-- <form action="{{url('/products')}}" method="get" >
-                                    <select class="select-active" name="categories">
-                                        @php
-                                            $categoriesList = App\Helper::getCategoriesList();
-                                        @endphp
-                                        <option>All Categories</option>
-                                        @foreach($categoriesList as $category)
-                                            <option value="{{$category->slug}}">{{$category->name}}</option>
-                                        @endforeach
-                                    </select>
-                                    <input type="text" placeholder="Search for items..." name="keyword" class="searchproducts" id="keyword" inputmode="search" autocomplete="off" data-smart-search="true" value="@if(isset($_GET['keyword'])){{$_GET['keyword']}}@endif">
-                                    </form> --}}
-                                    
-                                    @foreach($categoriesListMenu as $categoriesListMenuSingle)
-                                        <li class="d-block d-xl-none">
-                                            <a href="{{route('category',[$categoriesListMenuSingle['slug']])}}" class="d-flex align-items-center">
-                                                @if(!empty($categoriesListMenuSingle) && ($categoriesListMenuSingle->image != null || $categoriesListMenuSingle->image != '' ))
-                                                    <div class="me-2 avatar-icon">
-                                                        <img src="{{ asset('storage/categories/') }}/{{$categoriesListMenuSingle->id}}/{{$categoriesListMenuSingle->image}}" alt="{{$categoriesListMenuSingle->image_alt ? $categoriesListMenuSingle->image_alt : $categoriesListMenuSingle->name ;}}" class="w-100 h-100 rounded-circle">
-                                                    </div>
-                                                @endif
-                                                <span>{{$categoriesListMenuSingle->name}}</span>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                     
-
-                                    @php
-                                        //$categoriesList = App\Helper::getCategoriesList();
-                                        $categoriesList = App\Helper::getCategoriesNav();
-                                    @endphp
-
-                                    @foreach($categoriesList as $category)
-
-                                        <li>
-                                            <a href="{{route('category',[$category['slug']])}}" class="d-flex align-items-center">
-                                                @if(!empty($category) && ($category->image != null || $category->image != '' ))
-                                                    <div class="me-2 avatar-icon">
-                                                        <img src="{{ asset('storage/categories/') }}/{{$category->id}}/{{$category->image}}" alt="{{$category->image_alt ? $category->image_alt : $category->name ;}}" class="w-100 h-100 rounded-circle">
-                                                    </div>
-                                                @endif
-                                                <span>{{$category->name}}</span>
-                                            </a>
-                                        </li>
-
-                                    @endforeach
-
-                                    {{-- <li>
-                                        <a href="shop-grid.html" class="d-flex align-items-center">
-                                            <div class="me-2 avatar-icon">
-                                                <img src="assets/img/category/baby-care.png" alt="{{$category->image_alt}}" class="w-100 h-100 rounded-circle">
-                                            </div>
-                                            <span>Baby Care</span>
-                                        </a>
-                                    </li> --}}
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="d-none d-sm-block search-main">
-                            <form class="search-form d-flex align-items-center poposition-relative" action="{{route('products')}}">
-                                <input type="text" placeholder="Search products..." class="w-100" name="keyword" inputmode="search" autocomplete="off" data-smart-search="true" value="@if(isset($_GET['keyword'])){{$_GET['keyword']}}@endif" >
+                        <div class="d-none d-sm-block search-main w-100">
+                            <form class="search-form d-flex align-items-center poposition-relative"
+                                action="{{ route('products') }}">
+                                <input type="text" placeholder="Search products..." class="w-100" name="keyword"
+                                    inputmode="search" autocomplete="off" data-smart-search="true"
+                                    value="@if (isset($_GET['keyword'])) {{ $_GET['keyword'] }} @endif">
                                 <div class="search-loader">
-                                    <img src="{{ URL::asset('frontend/img/image-loading.gif')}}" height="30" alt="Loading..." />
+                                    <img src="{{ URL::asset('frontend/img/image-loading.gif') }}" height="30"
+                                        alt="Loading..." />
                                 </div>
-                                <button id="search-btn-m" class="submit-icon-btn-secondary" type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                <button id="search-btn-m" class="submit-icon-btn-secondary" type="submit"
+                                    aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </form>
                         </div>
 
-                        <div class="gshop-header-icons d-none d-md-inline-flex align-items-center justify-content-end ms-3 me-10">
-                            
+                        <div
+                            class="gshop-header-icons d-none d-md-inline-flex align-items-center justify-content-end ms-3 me-10">
+
 
                             @guest
-                                  
-                                <a href="{{route('login')}}" class="header-icon">
-                                    <img width="24" height="24" src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
+
+                                <a href="{{ route('login') }}" class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
                                 </a>
                             @endguest
 
                             @auth('web')
                                 <div class="gshop-header-user position-relative">
                                     <button type="button" class="header-icon">
-                                        <img width="24" height="24" src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
+                                        <img width="24" height="24"
+                                            src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
                                     </button>
 
-                                    
 
-                                        
+
+
 
                                     <div class="user-menu-wrapper">
                                         <ul class="user-menu">
 
                                             <li>
-                                                <a href="{{route('profile')}}"><span class="me-2"><i
-                                                class="fa-solid fa-user"></i></span>My Profile</a></a>
+                                                <a href="{{ route('profile') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-user"></i></span>My Profile</a></a>
                                             </li>
                                             <li>
-                                                <a href="{{route('change.password')}}"><span class="me-2"><i
-                                                class="fa-solid fa-lock"></i></span>Password</a>
+                                                <a href="{{ route('change.password') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-lock"></i></span>Password</a>
                                             </li>
 
-                                            @if($isEnquiryWebsite)
+                                            @if ($isEnquiryWebsite)
                                                 <li>
-                                                    <a href="{{route('enquiries')}}"><span class="me-2"><i
-                                                    class="fa-solid fa-question-circle"></i></span>Enquiries</a>
+                                                    <a href="{{ route('enquiries') }}"><span class="me-2"><i
+                                                                class="fa-solid fa-question-circle"></i></span>Enquiries</a>
                                                 </li>
                                             @else
                                                 <li>
-                                                    <a href="{{route('orders')}}"><span class="me-2"><i
-                                                    class="fa-solid fa-cart-arrow-down"></i></span>Orders</a>
+                                                    <a href="{{ route('orders') }}"><span class="me-2"><i
+                                                                class="fa-solid fa-cart-arrow-down"></i></span>Orders</a>
                                                 </li>
                                             @endif
 
                                             <li>
-                                                <a href="{{route('addresses')}}"><span class="me-2"><i
-                                                class="fa-solid fa-map-marker-alt"></i></span>Addresses</a>
+                                                <a href="{{ route('addresses') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-map-marker-alt"></i></span>Addresses</a>
                                             </li>
                                             <li>
-                                                <a href="{{route('logout')}}"><span class="me-2"><i
-                                                class="fa-solid fa-sign-out"></i></span>Logout</a>
+                                                <a href="{{ route('logout') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-sign-out"></i></span>Logout</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -332,33 +215,38 @@
 
                             <div class="gshop-header-search dropdown">
                                 <span class="pro-count wishlist-count">0</span>
-                                <a href="{{route('wishlist')}}" class="header-icon">
-                                    <img width="24" height="24" src="{{ URL::asset('frontend/img/icons/wishlist.png') }}" alt="wishlist">
-                                    
+                                <a href="{{ route('wishlist') }}" class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/wishlist.png') }}" alt="wishlist">
+
                                 </a>
                             </div>
 
-                            
+
                             <div class="gshop-header-cart position-relative">
                                 <span class="pro-count cart-count">0</span>
-                                <a @if(Route::currentRouteName() != 'cart') href="{{route('cart')}}" @else href="#" @endif class="header-icon">
-                                    <img width="24" height="24" src="{{ URL::asset('frontend/img/icons/cart.png') }}" alt="cart">
+                                <a @if (Route::currentRouteName() != 'cart') href="{{ route('cart') }}" @else href="#" @endif
+                                    class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/cart.png') }}" alt="cart">
                                 </a>
                                 <div class="cart-box-wrapper">
                                     <div class="apt_cart_box theme-scrollbar">
                                         <ul class="at_scrollbar scrollbar custom-scroll cart-products-cont">
-                                            
+
                                         </ul>
                                         <div class="d-flex align-items-center justify-content-between mt-3">
                                             <h6 class="mb-0">Subtotal:</h6>
                                             <span class="fw-semibold text-primary cart-total">0</span>
                                         </div>
                                         <div class="d-flex justify-content-between gap-2">
-                                            <a href="{{ route('cart') }}" class="btn btn-primary btn-md flex-grow-1 mt-4">View Cart</a>
-                                            @if(Route::currentRouteName() != 'checkout')
-                                                <a href="{{ route('checkout') }}" class="btn btn-secondary btn-md flex-grow-1 mt-4">Checkout</a>
+                                            <a href="{{ route('cart') }}"
+                                                class="btn btn-primary btn-md flex-grow-1 mt-4">View Cart</a>
+                                            @if (Route::currentRouteName() != 'checkout')
+                                                <a href="{{ route('checkout') }}"
+                                                    class="btn btn-secondary btn-md flex-grow-1 mt-4">Checkout</a>
                                             @endif
-                                        </div>                                        
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -381,20 +269,92 @@
                                 </div>
                             </a>
                         </div> --}}
-                        <button class="gshop-offcanvas-btn offcanvas-toggle ms-3 text-white d-block d-sm-none" aria-label="Open menu">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3.5892 0C1.66061 0 0.0917969 1.56893 0.0917969 3.4974C0.0917969 5.42588 1.65997 6.9947 3.5892 6.9947C5.51844 6.9947 7.08661 5.42588 7.08661 3.4974C7.08661 1.56893 5.51768 0 3.5892 0Z" fill="white" />
-                                <path d="M14.909 0C12.9805 0 11.4116 1.56893 11.4116 3.4974C11.4116 5.42588 12.9805 6.9947 14.909 6.9947C16.8376 6.9947 18.4068 5.42588 18.4068 3.4974C18.4068 1.56893 16.8383 0 14.909 0Z" fill="white" />
-                                <path d="M26.411 6.99481C28.3391 6.99481 29.9084 5.42599 29.9084 3.49751C29.9084 1.56903 28.3404 0 26.411 0C24.4815 0 22.9136 1.56893 22.9136 3.4974C22.9136 5.42588 24.4827 6.99481 26.411 6.99481Z" fill="white" />
-                                <path d="M3.49805 18.2016C5.42653 18.2016 6.99578 16.6331 6.99578 14.7043C6.99578 12.7754 5.42653 11.2066 3.49805 11.2066C1.56958 11.2066 0 12.7755 0 14.7043C0 16.6331 1.56958 18.2016 3.49805 18.2016Z" fill="white" />
-                                <path d="M14.8172 18.2016C16.7454 18.2016 18.3146 16.6331 18.3146 14.7043C18.3146 12.7754 16.7467 11.2066 14.8172 11.2066C12.8881 11.2066 11.3198 12.7754 11.3198 14.7043C11.3198 16.6331 12.8888 18.2016 14.8172 18.2016Z" fill="white" />
-                                <path d="M26.3205 18.2016C28.2494 18.2016 29.8179 16.6331 29.8179 14.7043C29.8179 12.7754 28.2494 11.2066 26.3205 11.2066C24.3916 11.2066 22.8218 12.7754 22.8218 14.7043C22.8218 16.6331 24.391 18.2016 26.3205 18.2016Z" fill="white" />
-                                <path d="M3.57813 22.3786C1.64965 22.3786 0.0800781 23.9471 0.0800781 25.876C0.0800781 27.8041 1.64965 29.3733 3.57813 29.3733C5.50661 29.3733 7.07543 27.8049 7.07543 25.876C7.07543 23.9471 5.50661 22.3786 3.57813 22.3786Z" fill="white" />
-                                <path d="M14.898 22.3786C12.9694 22.3786 11.3999 23.9471 11.3999 25.876C11.3999 27.8041 12.9688 29.3733 14.898 29.3733C16.8261 29.3733 18.3953 27.8049 18.3953 25.876C18.3953 23.9471 16.8261 22.3786 14.898 22.3786Z" fill="white" />
-                                <path d="M26.4002 22.3786C24.4721 22.3786 22.9028 23.9471 22.9028 25.876C22.9028 27.8041 24.4721 29.3733 26.4002 29.3733C28.3291 29.3733 29.8976 27.8049 29.8976 25.876C29.8976 23.9471 28.3284 22.3786 26.4002 22.3786Z" fill="white" />
+                        <button class="gshop-offcanvas-btn offcanvas-toggle ms-3 text-white d-block d-sm-none"
+                            aria-label="Open menu">
+                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M3.5892 0C1.66061 0 0.0917969 1.56893 0.0917969 3.4974C0.0917969 5.42588 1.65997 6.9947 3.5892 6.9947C5.51844 6.9947 7.08661 5.42588 7.08661 3.4974C7.08661 1.56893 5.51768 0 3.5892 0Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.909 0C12.9805 0 11.4116 1.56893 11.4116 3.4974C11.4116 5.42588 12.9805 6.9947 14.909 6.9947C16.8376 6.9947 18.4068 5.42588 18.4068 3.4974C18.4068 1.56893 16.8383 0 14.909 0Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.411 6.99481C28.3391 6.99481 29.9084 5.42599 29.9084 3.49751C29.9084 1.56903 28.3404 0 26.411 0C24.4815 0 22.9136 1.56893 22.9136 3.4974C22.9136 5.42588 24.4827 6.99481 26.411 6.99481Z"
+                                    fill="white" />
+                                <path
+                                    d="M3.49805 18.2016C5.42653 18.2016 6.99578 16.6331 6.99578 14.7043C6.99578 12.7754 5.42653 11.2066 3.49805 11.2066C1.56958 11.2066 0 12.7755 0 14.7043C0 16.6331 1.56958 18.2016 3.49805 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.8172 18.2016C16.7454 18.2016 18.3146 16.6331 18.3146 14.7043C18.3146 12.7754 16.7467 11.2066 14.8172 11.2066C12.8881 11.2066 11.3198 12.7754 11.3198 14.7043C11.3198 16.6331 12.8888 18.2016 14.8172 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.3205 18.2016C28.2494 18.2016 29.8179 16.6331 29.8179 14.7043C29.8179 12.7754 28.2494 11.2066 26.3205 11.2066C24.3916 11.2066 22.8218 12.7754 22.8218 14.7043C22.8218 16.6331 24.391 18.2016 26.3205 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M3.57813 22.3786C1.64965 22.3786 0.0800781 23.9471 0.0800781 25.876C0.0800781 27.8041 1.64965 29.3733 3.57813 29.3733C5.50661 29.3733 7.07543 27.8049 7.07543 25.876C7.07543 23.9471 5.50661 22.3786 3.57813 22.3786Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.898 22.3786C12.9694 22.3786 11.3999 23.9471 11.3999 25.876C11.3999 27.8041 12.9688 29.3733 14.898 29.3733C16.8261 29.3733 18.3953 27.8049 18.3953 25.876C18.3953 23.9471 16.8261 22.3786 14.898 22.3786Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.4002 22.3786C24.4721 22.3786 22.9028 23.9471 22.9028 25.876C22.9028 27.8041 24.4721 29.3733 26.4002 29.3733C28.3291 29.3733 29.8976 27.8049 29.8976 25.876C29.8976 23.9471 28.3284 22.3786 26.4002 22.3786Z"
+                                    fill="white" />
                             </svg>
                         </button>
                     </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="bg-red category-nav-bar">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    @php
+                        $categoriesListMenu = App\Helper::getCategoriesNav(true);
+                        $categoriesList = App\Helper::getCategoriesNav();
+                    @endphp
+
+                    <ul class="category-dropdown-menu category-nav-list1">
+                        @foreach ($categoriesListMenu as $categoriesListMenuSingle)
+                            <li>
+                                <a href="{{ route('category', [$categoriesListMenuSingle['slug']]) }}">
+                                    {{ $categoriesListMenuSingle->name }}
+                                </a>
+                            </li>
+                        @endforeach
+
+                        <li class="category-dropdown position-relative">
+                            <button type="button" class="category-dropdown-btn fw-bold" aria-expanded="false">
+                                More
+                                <span class="ms-1">
+                                    <i class="fa-solid fa-angle-down"></i>
+                                </span>
+                            </button>
+
+                            <div class="category-dropdown-box">
+                                <ul class="category-more-list">
+                                    @foreach ($categoriesList as $category)
+                                        <li>
+                                            <a href="{{ route('category', [$category['slug']]) }}">
+                                                <span class="avatar-icon">
+                                                    @if (!empty($category->image))
+                                                        <img src="{{ asset('storage/categories/' . $category->id . '/' . $category->image) }}"
+                                                            alt="{{ $category->image_alt ?: $category->name }}">
+                                                    @else
+                                                        <i class="fa-solid fa-layer-group"></i>
+                                                    @endif
+                                                </span>
+                                                <span>{{ $category->name }}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -405,7 +365,8 @@
 <div class="offcanvas_menu position-fixed">
     <div class="tt-short-info d-none d-md-none d-lg-none d-xl-block">
         <button class="offcanvas-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
-        <a href="#" class="logo-wrapper d-inline-block mb-5"><img class="img-fluid drawer-logo" src="{{App\Helper::getLightLogo()}}" alt="logo" /></a>
+        <a href="#" class="logo-wrapper d-inline-block mb-5"><img class="img-fluid drawer-logo"
+                src="{{ App\Helper::getLightLogo() }}" alt="logo" /></a>
         <div class="offcanvas-content">
             <h4 class="mb-4">About Us</h4>
             <p>
@@ -416,79 +377,86 @@
                 Mistaken denouncing pleasure and praising pain was born and we will give you complete account of the
                 system expound.
             </p>
-            <a href="{{route('about')}}" class="btn btn-primary mt-4">About Us</a>
+            <a href="{{ route('about') }}" class="btn btn-primary mt-4">About Us</a>
         </div>
         <div class="offcanvas-contact mt-5">
             <h5 class="mb-20">Contact Info</h5>
             <address>
                 {{-- {!!$config['address']!!} <br />
                 <a href="tel:{{$config['phone']}}">{{$config['phone']}}</a> <br /> --}}
-                <a href="mailto:{{$config['email']}}">{{$config['email']}}</a>
+                <a href="mailto:{{ $config['email'] }}">{{ $config['email'] }}</a>
             </address>
         </div>
 
-        @if(count($config['social']) > 0 && 
-                    ($config['social']['facebook'] != "" && $config['social']['facebook'] != "#" ||
-                    $config['social']['instagram'] != "" && $config['social']['instagram'] != "#" ||
-                    $config['social']['twitter'] != "" && $config['social']['twitter'] != "#" ||
-                    $config['social']['pinterest'] != "" && $config['social']['pinterest'] != "#" ||
-                    $config['social']['youtube'] != "" && $config['social']['youtube'] != "#")
-                    )
-                        <div class="social-contact offcanvas_social mt-4">
-                        @if($config['social']['facebook'] != "" && $config['social']['facebook'] != "#")
-                            <a target="_blank" aria-label="Visit us on Facebook" href="{{$config['social']['facebook']}}"><i class="fab fa-facebook-f"></i></a>
-                        @endif
-
-                        @if($config['social']['instagram'] != "" && $config['social']['instagram'] != "#")
-                            <a target="_blank" aria-label="Visit us on instagram" href="{{$config['social']['instagram']}}"><i class="fab fa-instagram"></i></a>
-                        @endif
-
-                        @if($config['social']['twitter'] != "" && $config['social']['twitter'] != "#")
-                            <a target="_blank" aria-label="Visit us on twitter" href="{{$config['social']['twitter']}}"><i class="fab fa-twitter"></i></a>
-                        @endif
-
-                        @if($config['social']['pinterest'] != "" && $config['social']['pinterest'] != "#")
-                            <a target="_blank" aria-label="Visit us on pinterest" href="{{$config['social']['pinterest']}}"><i class="fab fa-pinterest"></i></a>
-                        @endif
-
-                        @if($config['social']['youtube'] != "" && $config['social']['youtube'] != "#")
-                            <a target="_blank" aria-label="Visit us on youtube" href="{{$config['social']['youtube']}}"><i class="fab fa-youtube"></i></a>
-                        @endif
-
-                    </div>
-
+        @if (count($config['social']) > 0 &&
+                (($config['social']['facebook'] != '' && $config['social']['facebook'] != '#') ||
+                    ($config['social']['instagram'] != '' && $config['social']['instagram'] != '#') ||
+                    ($config['social']['twitter'] != '' && $config['social']['twitter'] != '#') ||
+                    ($config['social']['pinterest'] != '' && $config['social']['pinterest'] != '#') ||
+                    ($config['social']['youtube'] != '' && $config['social']['youtube'] != '#')))
+            <div class="social-contact offcanvas_social mt-4">
+                @if ($config['social']['facebook'] != '' && $config['social']['facebook'] != '#')
+                    <a target="_blank" aria-label="Visit us on Facebook"
+                        href="{{ $config['social']['facebook'] }}"><i class="fab fa-facebook-f"></i></a>
                 @endif
+
+                @if ($config['social']['instagram'] != '' && $config['social']['instagram'] != '#')
+                    <a target="_blank" aria-label="Visit us on instagram"
+                        href="{{ $config['social']['instagram'] }}"><i class="fab fa-instagram"></i></a>
+                @endif
+
+                @if ($config['social']['twitter'] != '' && $config['social']['twitter'] != '#')
+                    <a target="_blank" aria-label="Visit us on twitter" href="{{ $config['social']['twitter'] }}"><i
+                            class="fab fa-twitter"></i></a>
+                @endif
+
+                @if ($config['social']['pinterest'] != '' && $config['social']['pinterest'] != '#')
+                    <a target="_blank" aria-label="Visit us on pinterest"
+                        href="{{ $config['social']['pinterest'] }}"><i class="fab fa-pinterest"></i></a>
+                @endif
+
+                @if ($config['social']['youtube'] != '' && $config['social']['youtube'] != '#')
+                    <a target="_blank" aria-label="Visit us on youtube" href="{{ $config['social']['youtube'] }}"><i
+                            class="fab fa-youtube"></i></a>
+                @endif
+
+            </div>
+
+        @endif
 
     </div>
     <div class="mobile-menu d-md-block d-lg-block d-xl-none">
         <button class="offcanvas-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
-        <a href="#" class="d-inline-block mb-5"><img class="img-fluid drawer-logo" src="{{App\Helper::getLightLogo()}}" alt="logo" /></a>
+        <a href="#" class="d-inline-block mb-5"><img class="img-fluid drawer-logo"
+                src="{{ App\Helper::getLightLogo() }}" alt="logo" /></a>
 
-        <form class="search-form d-flex align-items-center poposition-relative" action="{{route('products')}}">
-            <input type="text" placeholder="Search products..." class="w-100" name="keyword" inputmode="search" autocomplete="off" data-smart-search="true" value="@if(isset($_GET['keyword'])){{$_GET['keyword']}}@endif"
-            >
+        <form class="search-form d-flex align-items-center poposition-relative" action="{{ route('products') }}">
+            <input type="text" placeholder="Search products..." class="w-100" name="keyword" inputmode="search"
+                autocomplete="off" data-smart-search="true"
+                value="@if (isset($_GET['keyword'])) {{ $_GET['keyword'] }} @endif">
             <div class="search-loader">
-                <img src="{{ URL::asset('frontend/img/image-loading.gif')}}" height="30" alt="Loading..." />
+                <img src="{{ URL::asset('frontend/img/image-loading.gif') }}" height="30" alt="Loading..." />
             </div>
-            <button id="search-btn-w" class="submit-icon-btn-secondary" type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="search-btn-w" class="submit-icon-btn-secondary" type="submit" aria-label="Search"><i
+                    class="fa-solid fa-magnifying-glass"></i></button>
         </form>
 
         <nav class="mobile-menu-wrapper mt-4">
             <ul>
                 <li>
-                    <a href="{{route('home')}}">Home</a>
+                    <a href="{{ route('home') }}">Home</a>
                 </li>
                 <li>
-                    <a href="{{route('about')}}">About Us</a>
+                    <a href="{{ route('about') }}">About Us</a>
                 </li>
                 <li>
-                    <a href="{{route('blogs')}}">Blog</a>
+                    <a href="{{ route('blogs') }}">Blog</a>
                 </li>
                 <li>
-                    <a href="{{route('products')}}">Products</a>
+                    <a href="{{ route('products') }}">Products</a>
                 </li>
                 <li>
-                    <a href="{{route('contact')}}">Contact Us</a>
+                    <a href="{{ route('contact') }}">Contact Us</a>
                 </li>
             </ul>
         </nav>
@@ -497,39 +465,43 @@
             <address>
                 {{-- {!!$config['address']!!}<br />
                 <a href="tel:+8801682648101">{{$config['phone']}}</a> <br /> --}}
-                <a href="mailto:info@example.com">{{$config['email']}}</a>
+                <a href="mailto:info@example.com">{{ $config['email'] }}</a>
             </address>
 
-            @if(count($config['social']) > 0 && 
-                ($config['social']['facebook'] != "" && $config['social']['facebook'] != "#" ||
-                $config['social']['instagram'] != "" && $config['social']['instagram'] != "#" ||
-                $config['social']['twitter'] != "" && $config['social']['twitter'] != "#" ||
-                $config['social']['pinterest'] != "" && $config['social']['pinterest'] != "#" ||
-                $config['social']['youtube'] != "" && $config['social']['youtube'] != "#")
-                )
-                    <div class="social-contact">
+            @if (count($config['social']) > 0 &&
+                    (($config['social']['facebook'] != '' && $config['social']['facebook'] != '#') ||
+                        ($config['social']['instagram'] != '' && $config['social']['instagram'] != '#') ||
+                        ($config['social']['twitter'] != '' && $config['social']['twitter'] != '#') ||
+                        ($config['social']['pinterest'] != '' && $config['social']['pinterest'] != '#') ||
+                        ($config['social']['youtube'] != '' && $config['social']['youtube'] != '#')))
+                <div class="social-contact">
 
-                            @if($config['social']['facebook'] != "" && $config['social']['facebook'] != "#")
-                                <a target="_blank" aria-label="Visit us on Facebook" href="{{$config['social']['facebook']}}"><i class="fab fa-facebook-f"></i></a>
-                            @endif
+                    @if ($config['social']['facebook'] != '' && $config['social']['facebook'] != '#')
+                        <a target="_blank" aria-label="Visit us on Facebook"
+                            href="{{ $config['social']['facebook'] }}"><i class="fab fa-facebook-f"></i></a>
+                    @endif
 
-                            @if($config['social']['instagram'] != "" && $config['social']['instagram'] != "#")
-                                <a target="_blank" aria-label="Visit us on instagram" href="{{$config['social']['instagram']}}"><i class="fab fa-instagram"></i></a>
-                            @endif
+                    @if ($config['social']['instagram'] != '' && $config['social']['instagram'] != '#')
+                        <a target="_blank" aria-label="Visit us on instagram"
+                            href="{{ $config['social']['instagram'] }}"><i class="fab fa-instagram"></i></a>
+                    @endif
 
-                            @if($config['social']['twitter'] != "" && $config['social']['twitter'] != "#")
-                                <a target="_blank" aria-label="Visit us on twitter" href="{{$config['social']['twitter']}}"><i class="fab fa-twitter"></i></a>
-                            @endif
+                    @if ($config['social']['twitter'] != '' && $config['social']['twitter'] != '#')
+                        <a target="_blank" aria-label="Visit us on twitter"
+                            href="{{ $config['social']['twitter'] }}"><i class="fab fa-twitter"></i></a>
+                    @endif
 
-                            @if($config['social']['pinterest'] != "" && $config['social']['pinterest'] != "#")
-                                <a target="_blank" aria-label="Visit us on pinterest" href="{{$config['social']['pinterest']}}"><i class="fab fa-pinterest"></i></a>
-                            @endif
+                    @if ($config['social']['pinterest'] != '' && $config['social']['pinterest'] != '#')
+                        <a target="_blank" aria-label="Visit us on pinterest"
+                            href="{{ $config['social']['pinterest'] }}"><i class="fab fa-pinterest"></i></a>
+                    @endif
 
-                            @if($config['social']['youtube'] != "" && $config['social']['youtube'] != "#")
-                                <a target="_blank" aria-label="Visit us on youtube" href="{{$config['social']['youtube']}}"><i class="fab fa-youtube"></i></a>
-                            @endif
+                    @if ($config['social']['youtube'] != '' && $config['social']['youtube'] != '#')
+                        <a target="_blank" aria-label="Visit us on youtube"
+                            href="{{ $config['social']['youtube'] }}"><i class="fab fa-youtube"></i></a>
+                    @endif
 
-                    </div>
+                </div>
 
             @endif
 

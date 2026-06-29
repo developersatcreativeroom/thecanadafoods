@@ -185,6 +185,7 @@ class OrderController extends Controller implements HasMiddleware
         }else{
             $user = User::find($order->user_id);
             $name = $user->first_name.' '.$user->last_name;
+            // $email='inders14022@gmail.com';
             $email = $user->email;
 
         }

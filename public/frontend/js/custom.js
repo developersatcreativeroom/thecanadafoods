@@ -5,8 +5,6 @@
 
 })(jQuery);
 
-
-
 $( document ).ready(function() {
 
 

@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-
+# need to change url 
 # Redirect all to https + www (one-step)
 RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} !^www\. [NC]

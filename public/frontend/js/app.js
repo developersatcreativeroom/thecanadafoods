@@ -501,13 +501,19 @@ jQuery(function ($) {
   });
 
   //6. category dropdown
-  $(".category-dropdown-btn").on("click", function () {
-    $(this).siblings(".category-dropdown-box").toggleClass("active");
+  $(".category-dropdown-btn").on("click", function (e) {
+    e.preventDefault();
+    var dropdownBox = $(this).siblings(".category-dropdown-box");
+    $(".category-dropdown-box").not(dropdownBox).removeClass("active");
+    $(".category-dropdown-btn").not(this).attr("aria-expanded", "false");
+    dropdownBox.toggleClass("active");
+    $(this).attr("aria-expanded", dropdownBox.hasClass("active") ? "true" : "false");
   });
   $(document).on("mouseup", function (e) {
     var categoryDropdownBox = $(".category-dropdown");
     if (!categoryDropdownBox.is(e.target) && categoryDropdownBox.has(e.target).length === 0) {
       $(".category-dropdown-box").removeClass("active");
+      $(".category-dropdown-btn").attr("aria-expanded", "false");
     }
   });
 
