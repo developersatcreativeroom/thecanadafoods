@@ -4,7 +4,7 @@ RewriteEngine On
 # Redirect all to https + www (one-step)
 RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} !^www\. [NC]
-RewriteRule ^ https://www.thecanadafoods.com%{REQUEST_URI} [R=301,L]
+RewriteRule ^ https://firebrick-fly-264669.hostingersite.com%{REQUEST_URI} [R=301,L]
 
 # Serve existing files/folders
 RewriteCond %{REQUEST_FILENAME} -d [OR]
