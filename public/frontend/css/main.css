@@ -41655,7 +41655,7 @@ body {
     width: 1px;
     height: 80px;
     /* background-color: rgba(110, 179, 86, .1) */
-    background-color: rgba(190, 21, 50, .1)
+    /* background-color: rgba(190, 21, 50, .1) */
 }
 
 .gshop-navbar {
@@ -41787,7 +41787,7 @@ body {
 
 .bg-red {
   background: #0875b2;
-  padding: 10px 50px;
+  /* padding: 10px 50px; */
 }
 
 .category-more-list .avatar-icon {

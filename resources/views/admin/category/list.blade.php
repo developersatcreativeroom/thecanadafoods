@@ -39,6 +39,7 @@
                       <th style="width: 10px">#</th>
                       <th>Name</th>
                       <th>Status</th>
+                      <th>Main Nav</th>
                       <th>Added on</th>
                       <th style="width: 130px">Actions</th>
                     </tr>
@@ -55,6 +56,16 @@
                           <span class="badge bg-danger">In-active</span>
                         @endif
                       </td>
+                      <td>
+    <label class="switch">
+        <input
+            type="checkbox"
+            class="nav-toggle"
+            data-id="{{ $row->id }}"
+            {{ $row->is_main_nav ? 'checked' : '' }}>
+        <span class="slider"></span>
+    </label>
+</td>
                       <td>{{$row->created_at?->format(App\Helper::universalDateTimeFormat()) ?? ''}}</td>
 					  <td>
 					  	<a href="{{route('admin.category.edit', $row->id)}}" class="btn btn-primary btn-sm">Edit</a>
@@ -94,7 +105,27 @@
     <script>
 
     $('ul.pagination').addClass('pagination-sm m-0 float-right')
+    $(document).on('change', '.nav-toggle', function () {
+
+    let checkbox = $(this);
+
+    $.ajax({
+        url: "{{ route('admin.category.togglenav') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            id: checkbox.data('id')
+        },
+        error: function () {
+            checkbox.prop('checked', !checkbox.prop('checked'));
+            alert('Something went wrong.');
+        }
+    });
+
+});
 
     </script>
+
+    
 
 @endpush

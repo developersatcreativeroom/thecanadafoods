@@ -501,14 +501,14 @@ jQuery(function ($) {
   });
 
   //6. category dropdown
-  $(".category-dropdown-btn").on("click", function (e) {
-    e.preventDefault();
-    var dropdownBox = $(this).siblings(".category-dropdown-box");
-    $(".category-dropdown-box").not(dropdownBox).removeClass("active");
-    $(".category-dropdown-btn").not(this).attr("aria-expanded", "false");
-    dropdownBox.toggleClass("active");
-    $(this).attr("aria-expanded", dropdownBox.hasClass("active") ? "true" : "false");
-  });
+  // $(".category-dropdown-btn").on("click", function (e) {
+  //   e.preventDefault();
+  //   var dropdownBox = $(this).siblings(".category-dropdown-box");
+  //   $(".category-dropdown-box").not(dropdownBox).removeClass("active");
+  //   $(".category-dropdown-btn").not(this).attr("aria-expanded", "false");
+  //   dropdownBox.toggleClass("active");
+  //   $(this).attr("aria-expanded", dropdownBox.hasClass("active") ? "true" : "false");
+  // });
 
    // Hover In
     $(".category-dropdown").hover(

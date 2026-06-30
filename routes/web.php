@@ -240,6 +240,7 @@ Route::group( [ 'prefix' => 'admin' ], function(){
 
             Route::get('categories', [AdminCategoryController::class, 'list'])->name('admin.categories');
             Route::get('category', [AdminCategoryController::class, 'add'])->name('admin.category');
+            Route::post('category/toggle-nav', [AdminCategoryController::class, 'togglenav'])->name('admin.category.togglenav');
             Route::get('category/{id}', [AdminCategoryController::class, 'edit'])->name('admin.category.edit');
             Route::post('category-post-data', [AdminCategoryController::class, 'postData'])->name('admin.category.post');
             Route::get('category-delete/{id}', [AdminCategoryController::class, 'delete'])->name('admin.category.delete');

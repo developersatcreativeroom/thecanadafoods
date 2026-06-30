@@ -24,7 +24,6 @@ use App\Imports\ImportProduct;
 
 use Carbon\Carbon;
 use App\Helper;
-use App\Models\Faq;
 use Auth;
 use Hash;
 use Storage;
@@ -63,130 +62,63 @@ class ProductController extends Controller implements HasMiddleware
         return view($this->prefix.'.'.$this->folder.'.list')->with($data);
     }
 
-    public function add()
-{
-    $categories = Helper::getCategories();
-    $taxes = Tax::where('status', 1)->get();
-    $brands = Brand::where('status', 1)->get();
-    $attributes = Attribute::where('status', 1)->get();
-
-    return view($this->prefix.'.'.$this->folder.'.form', [
-        'categories' => $categories,
-        'taxes' => $taxes,
-        'brands' => $brands,
-        'attributes' => $attributes,
-    ]);
-}
-
-public function edit($id)
-{
-    $categories = Helper::getCategories();
-    $taxes = Tax::where('status', 1)->get();
-    $brands = Brand::where('status', 1)->get();
-    $attributes = Attribute::where('status', 1)->get();
-
-    $row = Product::with([
-        'attributes.details' => function ($query) {
-            $query->select(
-                'product_attribute_details.*',
-                'attributes.name as attribute_name',
-                'attribute_options.name as attribute_value'
-            )
-            ->join('attributes', 'attributes.id', '=', 'product_attribute_details.attribute_id')
-            ->join('attribute_options', 'attribute_options.id', '=', 'product_attribute_details.attribute_option_id');
-        },
-        'categories',
-        'images',
-        'specifications',
-        'faqs' 
-    ])->find($id);
-
-    if (!$row) {
-        return redirect()->route('admin.products');
+    public function add(){        
+        $categories = Helper::getCategories();
+        $taxes = Tax::where('status',1)->get();
+        $brands = Brand::where('status',1)->get();
+        // $colors = Color::where('status',1)->get();
+        $attributes = Attribute::where('status',1)->get();
+        $data=array('categories'=>$categories, 'taxes'=>$taxes, 'brands'=>$brands, 'attributes' => $attributes);
+        return view($this->prefix.'.'.$this->folder.'.form')->with($data);
     }
 
-    $categoriesProduct = $row->categories
-        ->pluck('category_id')
-        ->toArray();
-
-    $variants = [];
-
-    foreach ($row->attributes as $attribute) {
-        foreach ($attribute->details as $detail) {
-            $variants[] = $detail->attribute_id;
-        }
-    }
-
-    $variants = array_unique($variants);
-
-    return view($this->prefix.'.'.$this->folder.'.form', [
-        'categories' => $categories,
-        'taxes' => $taxes,
-        'brands' => $brands,
-        'attributes' => $attributes,
-        'row' => $row,
-        'categoriesProduct' => $categoriesProduct,
-        'variants' => $variants,
-    ]);
-}
-
-    // public function add(){        
-    //     $categories = Helper::getCategories();
-    //     $taxes = Tax::where('status',1)->get();
-    //     $brands = Brand::where('status',1)->get();
-    //     // $colors = Color::where('status',1)->get();
-    //     $attributes = Attribute::where('status',1)->get();
-    //     $data=array('categories'=>$categories, 'taxes'=>$taxes, 'brands'=>$brands, 'attributes' => $attributes);
-    //     return view($this->prefix.'.'.$this->folder.'.form')->with($data);
-    // }
-
-    // public function edit($id){
-    //     $categories = Helper::getCategories();  
-    //     $taxes = Tax::where('status',1)->get();
-    //     $brands = Brand::where('status',1)->get();
-    //     // $colors = Color::where('status',1)->get();
-    //     $attributes=Attribute::where('status',1)->get();
+    public function edit($id){
+        $categories = Helper::getCategories();  
+        $taxes = Tax::where('status',1)->get();
+        $brands = Brand::where('status',1)->get();
+        // $colors = Color::where('status',1)->get();
+        $attributes=Attribute::where('status',1)->get();
         
-    //     //print '<pre>'; print_r($attributes[0]['values']); die;
-    //     //$product = Product::join('categories', 'products.category_id', '=', 'categories.id')->select('products.*', 'categories.name as category_name')->find($id);
-    //     $row = Product::with(
-    //         //['attributes', 'attributes.details','categories]
-    //         ['attributes.details' => function($query){
+        //print '<pre>'; print_r($attributes[0]['values']); die;
+        //$product = Product::join('categories', 'products.category_id', '=', 'categories.id')->select('products.*', 'categories.name as category_name')->find($id);
+        $row = Product::with(
+            //['attributes', 'attributes.details','categories]
+            ['attributes.details' => function($query){
                 
-    //             $query->select('product_attribute_details.*', 'attributes.name as attribute_name', 'attribute_options.name as attribute_value')
-    //             ->join('attributes','attributes.id','=', 'product_attribute_details.attribute_id')
-    //             ->join('attribute_options','attribute_options.id','=', 'product_attribute_details.attribute_option_id');
+                $query->select('product_attribute_details.*', 'attributes.name as attribute_name', 'attribute_options.name as attribute_value')
+                ->join('attributes','attributes.id','=', 'product_attribute_details.attribute_id')
+                ->join('attribute_options','attribute_options.id','=', 'product_attribute_details.attribute_option_id');
 
-    //         },
-    //         'categories','images','specifications']
-    //     )->find($id);
-    //     if($row == null){
-    //         return to_route('admin.products');
-    //     } 
+            },
+            'categories','images','specifications']
+        )->find($id);
+        if($row == null){
+            return to_route('admin.products');
+        } 
 
-    //     //print '<pre>'; print_r($row); die;
-    //     $selectedCategories = $row->categories;
-    //     //print '<pre>'; print_r($selectedCategories); die;
+        //print '<pre>'; print_r($row); die;
+        $selectedCategories = $row->categories;
+        //print '<pre>'; print_r($selectedCategories); die;
 
-    //     $categoriesProduct = [];
-    //     foreach($selectedCategories as $selectedCategory){
-    //         $categoriesProduct[] = $selectedCategory->category_id;
-    //     }
-    //     //print '<pre>'; print_r($categoriesProduct); die;
+        $categoriesProduct = [];
+        foreach($selectedCategories as $selectedCategory){
+            $categoriesProduct[] = $selectedCategory->category_id;
+        }
+        //print '<pre>'; print_r($categoriesProduct); die;
 
-    //     $variants = [];
-    //     foreach($row->attributes as $attribute){
-    //         foreach($attribute->details as $detail){
-    //             $variants[] = $detail->attribute_id;
-    //         }
-    //     }
+        $variants = [];
+        foreach($row->attributes as $attribute){
+            foreach($attribute->details as $detail){
+                $variants[] = $detail->attribute_id;
+            }
+        }
         
-    //     $variants = array_unique($variants);
-    //     //print_r($variants); die;
+        $variants = array_unique($variants);
+        //print_r($variants); die;
         
-    //     $data=array('categories'=>$categories, 'taxes'=>$taxes, 'brands'=>$brands, 'attributes' => $attributes, 'row' => $row, 'categoriesProduct' => $categoriesProduct, 'variants' => $variants);
-    //     return view($this->prefix.'.'.$this->folder.'.form')->with($data);
-    // }
+        $data=array('categories'=>$categories, 'taxes'=>$taxes, 'brands'=>$brands, 'attributes' => $attributes, 'row' => $row, 'categoriesProduct' => $categoriesProduct, 'variants' => $variants);
+        return view($this->prefix.'.'.$this->folder.'.form')->with($data);
+    }
 
     public function postData(Request $request){
         
@@ -237,7 +169,6 @@ public function edit($id)
         //$files = $request->file('images');
 
         $specifications = $request->input('specifications');
-        $faqs = $request->input('faqs');
 
         //print '<pre>'; print_r($specifications); die;
         // print '<pre>'; print_r($images); die;
@@ -304,12 +235,6 @@ public function edit($id)
                 'specifications.*.specification' => 'required_with:specifications.*.value',
                 'specifications.*.value' => 'required_with:specifications.*.specification',
                 'specifications.*.units' => '',
-
-                'faqs' => 'nullable|array',
-    'faqs.*.id' => 'nullable|integer',
-    'faqs.*.question' => 'required_with:faqs.*.answer',
-    'faqs.*.answer' => 'required_with:faqs.*.question',
-    'faqs.*.status' => 'nullable|boolean',
             );
             if($isVariant == 'on'){
                 $validationArray['attributes']='required|array';
@@ -498,83 +423,6 @@ public function edit($id)
                     $product->categories()->create(['category_id'=>$category]);
                 }
             }
-
-            if ($faqs !== null) {
-
-    // Existing FAQ IDs
-    $existingFaqIds = $product->faqs()->pluck('id')->toArray();
-
-    $submittedFaqIds = [];
-
-    foreach ($faqs as $faq) {
-
-        if (
-            empty($faq['question']) &&
-            empty($faq['answer'])
-        ) {
-            continue;
-        }
-
-        $status = isset($faq['status']) ? 1 : 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Existing FAQ
-        |--------------------------------------------------------------------------
-        */
-        if (!empty($faq['id'])) {
-
-            $faqRow = Faq::where('id', $faq['id'])
-                ->where('type', 'product')
-                ->where('type_id', $product->id)
-                ->first();
-
-            if ($faqRow) {
-
-                $faqRow->question = $faq['question'];
-                $faqRow->answer = $faq['answer'];
-                $faqRow->status = $status;
-                $faqRow->save();
-
-                $submittedFaqIds[] = $faqRow->id;
-            }
-
-        } else {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Create New FAQ
-            |--------------------------------------------------------------------------
-            */
-
-            $faqRow = Faq::create([
-                'question' => $faq['question'],
-                'answer'   => $faq['answer'],
-                'type'     => 'product',
-                'type_id'  => $product->id,
-                'status'   => $status,
-            ]);
-
-            $submittedFaqIds[] = $faqRow->id;
-        }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Removed FAQs
-    |--------------------------------------------------------------------------
-    */
-
-    $deleteIds = array_diff($existingFaqIds, $submittedFaqIds);
-
-    if (!empty($deleteIds)) {
-
-        Faq::whereIn('id', $deleteIds)
-            ->where('type', 'product')
-            ->where('type_id', $product->id)
-            ->delete();
-    }
-}
 
             if($isVariant == 'on' && count($attributes) > 0){
                 //print 'Mulitple'; die;

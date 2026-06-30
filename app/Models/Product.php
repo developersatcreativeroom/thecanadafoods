@@ -224,4 +224,10 @@ class Product extends Model
         });
     }
 
+public function faqs()
+{
+    return $this->hasMany(Faq::class, 'type_id', 'id')
+        ->where('type', 'product');
+}
+
 }

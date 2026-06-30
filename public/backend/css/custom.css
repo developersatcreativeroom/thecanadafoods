@@ -20,6 +20,49 @@
   
 }
 
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #dc3545; /* OFF - Red */
+    transition: .3s;
+    border-radius: 50px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,.25);
+}
+
+.switch input:checked + .slider {
+    background-color: #34d399; /* ON - Green */
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
 
 .form-control-color {
     max-width: 4rem;

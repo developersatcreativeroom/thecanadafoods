@@ -162,5 +162,26 @@ class CategoryController extends Controller implements HasMiddleware
         }
     }
 
+    public function toggleNav(Request $request)
+{
+    $request->validate([
+        'id' => 'required|exists:categories,id',
+    ]);
+
+    $category = Category::findOrFail($request->id);
+
+   
+
+    $category->update([
+        'is_main_nav' => !$category->is_main_nav,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Navigation status updated successfully.',
+        'status' => (bool) $category->is_main_nav,
+    ]);
+}
+
     
 }

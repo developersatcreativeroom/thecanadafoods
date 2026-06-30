@@ -23,6 +23,7 @@ class Category extends Model
         'is_requested',
         'is_requested',
         'is_requested',
+        'is_main_nav',
         'status'
     ];
 

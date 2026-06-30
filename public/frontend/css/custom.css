@@ -226,7 +226,7 @@ pre[aria-hidden="true"]{opacity: 0; -moz-pointer-events: none; -webkit-pointer-e
 }
 @media(max-width: 1400px) {
     .search-main{
-        width: 190px !important;
+        min-width: 190px !important;
     }
 }
 
@@ -799,9 +799,9 @@ ul.wsp-pages-list {
     display:none;
 }
 
-.category-nav-bar {
+/* .category-nav-bar {
     padding: 10px 0;
-}
+} */
 
 .category-nav-list {
     justify-content: flex-start;
