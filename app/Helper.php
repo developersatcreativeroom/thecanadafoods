@@ -211,7 +211,7 @@ class Helper
 
         Storage::disk('public')->put($finalDirectory.'/'.$saveName,file::get($image));
         
-        if($isThumb){
+        if($isThumb && $image->getMimeType() != 'image/avif'){
             $thumb = Image::open($image->getRealPath())
                     ->resize(320, 320)
                     ->get(); // Get image as binary data

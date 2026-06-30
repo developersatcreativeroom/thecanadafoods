@@ -464,88 +464,83 @@
     </div>
     <div class="bg-red category-nav-bar">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-12">
-                    @php
-                        $categoriesListMenu = App\Helper::getCategoriesNav(true);
-                        $categoriesList = App\Helper::getCategoriesNav();
-                    @endphp
+            @php
+                $categoriesListMenu = App\Helper::getCategoriesNav(true);
+                $categoriesList = App\Helper::getCategoriesNav();
+            @endphp
 
-                    <ul class="category-dropdown-menu category-nav-list1">
-                       @foreach ($categoriesListMenu as $category)
-    <li class="category-dropdown">
+            <nav class="navbar navbar-expand-md category-bootstrap-nav p-0" aria-label="Product categories">
+                <button class="navbar-toggler category-navbar-toggler ms-auto my-2" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#categoryNavbar" aria-controls="categoryNavbar"
+                    aria-expanded="false" aria-label="Toggle categories">
+                    <span class="me-2">Categories</span>
+                    <i class="fa-solid fa-bars"></i>
+                </button>
 
-        <a href="{{ route('category', $category->slug) }}" class="category-dropdown-btn fw-bold">
-            <span>{{ $category->name }}</span>
-
-            @if ($category->subcategories->isNotEmpty())
-                 <i class="fa-solid fa-angle-down"></i>
-            @endif
-        </a>
-
-        @if ($category->subcategories->isNotEmpty())
-            <div class="category-dropdown-box">
-                <ul class="category-more-list">
-                    @foreach ($category->subcategories as $subcategory)
-                        <li>
-                            <a href="{{ route('category', $subcategory->slug) }}">
-                                {{ $subcategory->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-    </li>
-@endforeach
-                        {{-- @foreach ($categoriesListMenu as $categoriesListMenuSingle)
-                            <li>
-                                <a href="{{ route('category', [$categoriesListMenuSingle['slug']]) }}">
-                                    {{ $categoriesListMenuSingle->name }}
+                <div class="collapse navbar-collapse" id="categoryNavbar">
+                    <ul class="navbar-nav category-dropdown-menu category-nav-list1 w-100">
+                        @foreach ($categoriesListMenu as $category)
+                            <li class="nav-item dropdown category-dropdown">
+                                <a class="nav-link dropdown-toggle category-dropdown-btn fw-bold"
+                                    href="{{ route('category', $category->slug) }}"
+                                    id="categoryDropdown{{ $category->id }}" role="button"
+                                    @if ($category->subcategories->isNotEmpty()) data-bs-toggle="dropdown" aria-expanded="false" @endif>
+                                    <span>{{ $category->name }}</span>
                                 </a>
-                            </li>
-                        @endforeach --}}
 
-                        <li class="category-dropdown position-relative">
-                            <button type="button" class="category-dropdown-btn fw-bold" aria-expanded="false">
+                                @if ($category->subcategories->isNotEmpty())
+                                    <ul class="dropdown-menu category-dropdown-box"
+                                        aria-labelledby="categoryDropdown{{ $category->id }}">
+                                        @foreach ($category->subcategories as $subcategory)
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('category', $subcategory->slug) }}">
+                                                    {{ $subcategory->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </li>
+                        @endforeach
+
+                        <li class="nav-item dropdown category-dropdown ms-md-auto">
+                            <button type="button" class="nav-link dropdown-toggle category-dropdown-btn fw-bold"
+                                id="categoryMoreDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 More
-                                <span class="ms-1">
-                                    <i class="fa-solid fa-angle-down"></i>
-                                </span>
                             </button>
 
-                            <div class="category-dropdown-box">
-                                <ul class="category-more-list">
-                                    @foreach ($categoriesList as $category)
-                                        <li class="{{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
-                                            <a href="{{ route('category', $category->slug) }}">
-                                                <span>{{ $category->name }}</span>
-
-                                                @if ($category->subcategories->isNotEmpty())
-                                                    <i class="fa-solid fa-angle-right ms-auto"></i>
-                                                @endif
-                                            </a>
+                            <ul class="dropdown-menu dropdown-menu-md-end category-dropdown-box category-more-menu"
+                                aria-labelledby="categoryMoreDropdown">
+                                @foreach ($categoriesList as $category)
+                                    <li class="dropdown-submenu {{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
+                                        <a class="dropdown-item d-flex align-items-center"
+                                            href="{{ route('category', $category->slug) }}">
+                                            <span>{{ $category->name }}</span>
 
                                             @if ($category->subcategories->isNotEmpty())
-                                                <ul class="subcategory-dropdown">
-                                                    @foreach ($category->subcategories as $subcategory)
-                                                        <li>
-                                                            <a href="{{ route('category', $subcategory->slug) }}">
-                                                                {{ $subcategory->name }}
-                                                            </a>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
+                                                <i class="fa-solid fa-angle-right ms-auto"></i>
                                             @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                                        </a>
+
+                                        @if ($category->subcategories->isNotEmpty())
+                                            <ul class="dropdown-menu subcategory-dropdown">
+                                                @foreach ($category->subcategories as $subcategory)
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('category', $subcategory->slug) }}">
+                                                            {{ $subcategory->name }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
                         </li>
                     </ul>
                 </div>
-            </div>
+            </nav>
         </div>
     </div>
 </header> <!--header section end-->

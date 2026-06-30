@@ -2048,6 +2048,7 @@ $( document ).ready(function() {
     function initDropifyPreview(){
       $('.dropify').dropify();
       showWebpAvifDropifyPreview($('.dropify'));
+      showDefaultWebpAvifDropifyPreview($('.dropify'));
     }
 
     function showWebpAvifDropifyPreview(inputs){
@@ -2074,6 +2075,34 @@ $( document ).ready(function() {
           var preview = wrapper.find('.dropify-preview');
 
           render.html('<img src="'+imageUrl+'" style="max-width: 100%; max-height: 100%;" />');
+          preview.show();
+          wrapper.addClass('has-preview');
+        }, 100);
+      });
+    }
+
+    function showDefaultWebpAvifDropifyPreview(inputs){
+      inputs.each(function(){
+        var input = this;
+        var defaultFile = $(input).attr('data-default-file');
+
+        if(!defaultFile){
+          return;
+        }
+
+        var defaultFileLower = defaultFile.toLowerCase().split('?')[0];
+        var isPreviewFormat = defaultFileLower.endsWith('.webp') || defaultFileLower.endsWith('.avif');
+
+        if(!isPreviewFormat){
+          return;
+        }
+
+        setTimeout(function(){
+          var wrapper = $(input).closest('.dropify-wrapper');
+          var render = wrapper.find('.dropify-render');
+          var preview = wrapper.find('.dropify-preview');
+
+          render.html('<img src="'+defaultFile+'" style="max-width: 100%; max-height: 100%;" />');
           preview.show();
           wrapper.addClass('has-preview');
         }, 100);

@@ -77,10 +77,10 @@ class BrandController extends Controller implements HasMiddleware
             );
 
             if(empty($id)){
-                $validationArray['image']='required|mimes:jpeg,jpg,png,webp';
+                $validationArray['image']='required|mimes:jpeg,jpg,png,webp,avif';
                 $validationArray['name'] = 'required|unique:brands,name,';
             }else{
-                $validationArray['image']='mimes:jpeg,jpg,png,webp';
+                $validationArray['image']='mimes:jpeg,jpg,png,webp,avif';
                 $validationArray['name'] = 'required|unique:brands,name,'.$id;
                 $validationArray['slug'] = 'required|alpha_dash|unique:brands,slug,'.$id;
             }
