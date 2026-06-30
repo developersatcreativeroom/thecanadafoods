@@ -863,8 +863,8 @@ ul.wsp-pages-list {
   background: #0774b1;
   box-shadow: 0 16px 35px rgba(30, 30, 30, .15);
   z-index: 9999;
-  opacity: 1;
-  visibility: visible;
+  /* opacity: 1;
+  visibility: visible; */
 }
 
 .category-dropdown-box.active {
