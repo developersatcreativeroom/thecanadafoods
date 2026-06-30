@@ -107,16 +107,34 @@ class Helper
         return $categories;
     }
 
-    public static function getCategoriesNav($nav=false) {
-        $rows = Category::where('status', 1)->orderBy('priority', 'asc');
-        if($nav){
-            $rows = $rows->where('is_main_nav', 1);
-        } else{
-            $rows = $rows->where('is_main_nav', '!=',  1);
-        }        
-        $rows = $rows->get(); 
-        return $rows;
-    } 
+    // public static function getCategoriesNav($nav=false) {
+    //     $rows = Category::where('status', 1)->orderBy('priority', 'asc');
+    //     if($nav){
+    //         $rows = $rows->where('is_main_nav', 1);
+    //     } else{
+    //         $rows = $rows->where('is_main_nav', '!=',  1);
+    //     }        
+    //     $rows = $rows->get(); 
+    //     return $rows;
+    // } 
+    public static function getCategoriesNav($nav = false)
+{
+    $rows = Category::with(['subcategories' => function ($query) {
+            $query->where('status', 1)
+                  ->orderBy('priority', 'asc');
+        }])
+        ->where('status', 1)
+        ->whereNull('parent_category_id') 
+        ->orderBy('priority', 'asc');
+
+    if ($nav) {
+        $rows->where('is_main_nav', 1);
+    } else {
+        $rows->where('is_main_nav', '!=', 1);
+    }
+
+    return $rows->get();
+}
 
 
     public static function getCountries($limit = null){

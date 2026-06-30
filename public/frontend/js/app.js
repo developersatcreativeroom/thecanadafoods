@@ -509,6 +509,19 @@ jQuery(function ($) {
     dropdownBox.toggleClass("active");
     $(this).attr("aria-expanded", dropdownBox.hasClass("active") ? "true" : "false");
   });
+
+   // Hover In
+    $(".category-dropdown").hover(
+        function () {
+            $(this).find(".category-dropdown-box").addClass("active");
+            $(this).find(".category-dropdown-btn").attr("aria-expanded", "true");
+        },
+        function () {
+            $(this).find(".category-dropdown-box").removeClass("active");
+            $(this).find(".category-dropdown-btn").attr("aria-expanded", "false");
+        }
+    );
+
   $(document).on("mouseup", function (e) {
     var categoryDropdownBox = $(".category-dropdown");
     if (!categoryDropdownBox.is(e.target) && categoryDropdownBox.has(e.target).length === 0) {

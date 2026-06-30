@@ -472,13 +472,40 @@
                     @endphp
 
                     <ul class="category-dropdown-menu category-nav-list1">
-                        @foreach ($categoriesListMenu as $categoriesListMenuSingle)
+                       @foreach ($categoriesListMenu as $category)
+    <li class="category-dropdown">
+
+        <a href="{{ route('category', $category->slug) }}" class="category-dropdown-btn fw-bold">
+            <span>{{ $category->name }}</span>
+
+            @if ($category->subcategories->isNotEmpty())
+                 <i class="fa-solid fa-angle-down"></i>
+            @endif
+        </a>
+
+        @if ($category->subcategories->isNotEmpty())
+            <div class="category-dropdown-box">
+                <ul class="category-more-list">
+                    @foreach ($category->subcategories as $subcategory)
+                        <li>
+                            <a href="{{ route('category', $subcategory->slug) }}">
+                                {{ $subcategory->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+    </li>
+@endforeach
+                        {{-- @foreach ($categoriesListMenu as $categoriesListMenuSingle)
                             <li>
                                 <a href="{{ route('category', [$categoriesListMenuSingle['slug']]) }}">
                                     {{ $categoriesListMenuSingle->name }}
                                 </a>
                             </li>
-                        @endforeach
+                        @endforeach --}}
 
                         <li class="category-dropdown position-relative">
                             <button type="button" class="category-dropdown-btn fw-bold" aria-expanded="false">
@@ -491,18 +518,26 @@
                             <div class="category-dropdown-box">
                                 <ul class="category-more-list">
                                     @foreach ($categoriesList as $category)
-                                        <li>
-                                            <a href="{{ route('category', [$category['slug']]) }}">
-                                                {{-- <span class="avatar-icon">
-                                                    @if (!empty($category->image))
-                                                        <img src="{{ asset('storage/categories/' . $category->id . '/' . $category->image) }}"
-                                                            alt="{{ $category->image_alt ?: $category->name }}">
-                                                    @else
-                                                        <i class="fa-solid fa-layer-group"></i>
-                                                    @endif
-                                                </span> --}}
+                                        <li class="{{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
+                                            <a href="{{ route('category', $category->slug) }}">
                                                 <span>{{ $category->name }}</span>
+
+                                                @if ($category->subcategories->isNotEmpty())
+                                                    <i class="fa-solid fa-angle-right ms-auto"></i>
+                                                @endif
                                             </a>
+
+                                            @if ($category->subcategories->isNotEmpty())
+                                                <ul class="subcategory-dropdown">
+                                                    @foreach ($category->subcategories as $subcategory)
+                                                        <li>
+                                                            <a href="{{ route('category', $subcategory->slug) }}">
+                                                                {{ $subcategory->name }}
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
                                         </li>
                                     @endforeach
                                 </ul>
