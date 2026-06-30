@@ -127,11 +127,11 @@
     <div class="gshop-navbar bg-white rounded ps-lg-5 position-relative">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-xxl-4 col-xl-4 col-md-3 col-5">
+                <div class="col-xxl-3 col-xl-3 col-md-3 col-5">
                     <a href="{{ route('home') }}" class="logo"><img src="{{ App\Helper::getLightLogo() }}"
                             alt="logo" class="img-fluid header-logo"></a>
                 </div>
-                <div class="col-xxl-8 col-xl-8 col-md-9 col-7">
+                <div class="col-xxl-6 col-xl-6 col-md-9 col-7">
                     <div
                         class="gshop-navbar-right d-flex align-items-center justify-content-end justify-content-sm-between position-relative">
 
@@ -153,8 +153,162 @@
                             </form>
                         </div>
 
-                        <div
+                        {{-- <div
                             class="gshop-header-icons d-none d-md-inline-flex align-items-center justify-content-end ms-3 me-10">
+
+
+                            @guest
+
+                                <a href="{{ route('login') }}" class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
+                                </a>
+                            @endguest
+
+                            @auth('web')
+                                <div class="gshop-header-user position-relative">
+                                    <button type="button" class="header-icon">
+                                        <img width="24" height="24"
+                                            src="{{ URL::asset('frontend/img/icons/user.png') }}" alt="profile">
+                                    </button>
+
+
+
+
+
+                                    <div class="user-menu-wrapper">
+                                        <ul class="user-menu">
+
+                                            <li>
+                                                <a href="{{ route('profile') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-user"></i></span>My Profile</a></a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('change.password') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-lock"></i></span>Password</a>
+                                            </li>
+
+                                            @if ($isEnquiryWebsite)
+                                                <li>
+                                                    <a href="{{ route('enquiries') }}"><span class="me-2"><i
+                                                                class="fa-solid fa-question-circle"></i></span>Enquiries</a>
+                                                </li>
+                                            @else
+                                                <li>
+                                                    <a href="{{ route('orders') }}"><span class="me-2"><i
+                                                                class="fa-solid fa-cart-arrow-down"></i></span>Orders</a>
+                                                </li>
+                                            @endif
+
+                                            <li>
+                                                <a href="{{ route('addresses') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-map-marker-alt"></i></span>Addresses</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('logout') }}"><span class="me-2"><i
+                                                            class="fa-solid fa-sign-out"></i></span>Logout</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endauth
+
+                            <div class="gshop-header-search dropdown">
+                                <span class="pro-count wishlist-count">0</span>
+                                <a href="{{ route('wishlist') }}" class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/wishlist.png') }}" alt="wishlist">
+
+                                </a>
+                            </div>
+
+
+                            <div class="gshop-header-cart position-relative">
+                                <span class="pro-count cart-count">0</span>
+                                <a @if (Route::currentRouteName() != 'cart') href="{{ route('cart') }}" @else href="#" @endif
+                                    class="header-icon">
+                                    <img width="24" height="24"
+                                        src="{{ URL::asset('frontend/img/icons/cart.png') }}" alt="cart">
+                                </a>
+                                <div class="cart-box-wrapper">
+                                    <div class="apt_cart_box theme-scrollbar">
+                                        <ul class="at_scrollbar scrollbar custom-scroll cart-products-cont">
+
+                                        </ul>
+                                        <div class="d-flex align-items-center justify-content-between mt-3">
+                                            <h6 class="mb-0">Subtotal:</h6>
+                                            <span class="fw-semibold text-primary cart-total">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between gap-2">
+                                            <a href="{{ route('cart') }}"
+                                                class="btn btn-primary btn-md flex-grow-1 mt-4">View Cart</a>
+                                            @if (Route::currentRouteName() != 'checkout')
+                                                <a href="{{ route('checkout') }}"
+                                                    class="btn btn-secondary btn-md flex-grow-1 mt-4">Checkout</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> --}}
+                        {{-- <div class="gshop-header-contact ms-7 position-relative d-none d-lg-flex d-xl-none d-xxl-flex">
+                            <a href="tel:{{$config['phone']}}" class="d-flex align-items-center">
+                                <span
+                                  class="icon d-inline-flex rounded-circle justify-content-center align-items-center bg-secondary-light">
+                                  <svg width="20" height="24" viewBox="0 0 23 24" fill="none"
+                                      xmlns="http://www.w3.org/2000/svg">
+                                      <path
+                                          d="M1.98193 3.44444C1.98193 2.09441 2.97352 1 4.19672 1H7.82812C8.30477 1 8.72795 1.33664 8.87867 1.83572L10.5373 7.3277C10.7116 7.90472 10.475 8.53538 9.98206 8.8074L7.48236 10.1868C8.70297 13.1748 10.884 15.5821 13.5913 16.9292L14.8411 14.1703C15.0876 13.6263 15.659 13.3651 16.1818 13.5575L21.1577 15.3881C21.61 15.5545 21.915 16.0215 21.915 16.5476V20.5556C21.915 21.9056 20.9234 23 19.7002 23H18.5928C9.41887 23 1.98193 14.7919 1.98193 4.66667V3.44444Z"
+                                          stroke="#FF7C08" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round" />
+                                  </svg>
+                              </span>
+                                <div class="ms-3">
+                                    <span class="text-muted fs-xs">Phone</span>
+                                    <h6 class="mb-0 mt-1 fs-sm">{{$config['phone']}}</h6>
+                                </div>
+                            </a>
+                        </div> --}}
+                        <button class="gshop-offcanvas-btn offcanvas-toggle ms-3 text-white d-block d-sm-none"
+                            aria-label="Open menu">
+                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M3.5892 0C1.66061 0 0.0917969 1.56893 0.0917969 3.4974C0.0917969 5.42588 1.65997 6.9947 3.5892 6.9947C5.51844 6.9947 7.08661 5.42588 7.08661 3.4974C7.08661 1.56893 5.51768 0 3.5892 0Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.909 0C12.9805 0 11.4116 1.56893 11.4116 3.4974C11.4116 5.42588 12.9805 6.9947 14.909 6.9947C16.8376 6.9947 18.4068 5.42588 18.4068 3.4974C18.4068 1.56893 16.8383 0 14.909 0Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.411 6.99481C28.3391 6.99481 29.9084 5.42599 29.9084 3.49751C29.9084 1.56903 28.3404 0 26.411 0C24.4815 0 22.9136 1.56893 22.9136 3.4974C22.9136 5.42588 24.4827 6.99481 26.411 6.99481Z"
+                                    fill="white" />
+                                <path
+                                    d="M3.49805 18.2016C5.42653 18.2016 6.99578 16.6331 6.99578 14.7043C6.99578 12.7754 5.42653 11.2066 3.49805 11.2066C1.56958 11.2066 0 12.7755 0 14.7043C0 16.6331 1.56958 18.2016 3.49805 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.8172 18.2016C16.7454 18.2016 18.3146 16.6331 18.3146 14.7043C18.3146 12.7754 16.7467 11.2066 14.8172 11.2066C12.8881 11.2066 11.3198 12.7754 11.3198 14.7043C11.3198 16.6331 12.8888 18.2016 14.8172 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.3205 18.2016C28.2494 18.2016 29.8179 16.6331 29.8179 14.7043C29.8179 12.7754 28.2494 11.2066 26.3205 11.2066C24.3916 11.2066 22.8218 12.7754 22.8218 14.7043C22.8218 16.6331 24.391 18.2016 26.3205 18.2016Z"
+                                    fill="white" />
+                                <path
+                                    d="M3.57813 22.3786C1.64965 22.3786 0.0800781 23.9471 0.0800781 25.876C0.0800781 27.8041 1.64965 29.3733 3.57813 29.3733C5.50661 29.3733 7.07543 27.8049 7.07543 25.876C7.07543 23.9471 5.50661 22.3786 3.57813 22.3786Z"
+                                    fill="white" />
+                                <path
+                                    d="M14.898 22.3786C12.9694 22.3786 11.3999 23.9471 11.3999 25.876C11.3999 27.8041 12.9688 29.3733 14.898 29.3733C16.8261 29.3733 18.3953 27.8049 18.3953 25.876C18.3953 23.9471 16.8261 22.3786 14.898 22.3786Z"
+                                    fill="white" />
+                                <path
+                                    d="M26.4002 22.3786C24.4721 22.3786 22.9028 23.9471 22.9028 25.876C22.9028 27.8041 24.4721 29.3733 26.4002 29.3733C28.3291 29.3733 29.8976 27.8049 29.8976 25.876C29.8976 23.9471 28.3284 22.3786 26.4002 22.3786Z"
+                                    fill="white" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-3 col-md-9 col-7">
+                    <div
+                        class="gshop-navbar-right d-flex align-items-center justify-content-end justify-content-sm-between position-relative">
+                        <div
+                            class="gshop-header-icons d-none d-md-inline-flex align-items-center justify-content-end ms-30 me-10">
 
 
                             @guest
@@ -269,7 +423,7 @@
                                 </div>
                             </a>
                         </div> --}}
-                        <button class="gshop-offcanvas-btn offcanvas-toggle ms-3 text-white d-block d-sm-none"
+                        {{-- <button class="gshop-offcanvas-btn offcanvas-toggle ms-3 text-white d-block d-sm-none"
                             aria-label="Open menu">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -301,7 +455,7 @@
                                     d="M26.4002 22.3786C24.4721 22.3786 22.9028 23.9471 22.9028 25.876C22.9028 27.8041 24.4721 29.3733 26.4002 29.3733C28.3291 29.3733 29.8976 27.8049 29.8976 25.876C29.8976 23.9471 28.3284 22.3786 26.4002 22.3786Z"
                                     fill="white" />
                             </svg>
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
             </div>
@@ -339,14 +493,14 @@
                                     @foreach ($categoriesList as $category)
                                         <li>
                                             <a href="{{ route('category', [$category['slug']]) }}">
-                                                <span class="avatar-icon">
+                                                {{-- <span class="avatar-icon">
                                                     @if (!empty($category->image))
                                                         <img src="{{ asset('storage/categories/' . $category->id . '/' . $category->image) }}"
                                                             alt="{{ $category->image_alt ?: $category->name }}">
                                                     @else
                                                         <i class="fa-solid fa-layer-group"></i>
                                                     @endif
-                                                </span>
+                                                </span> --}}
                                                 <span>{{ $category->name }}</span>
                                             </a>
                                         </li>
