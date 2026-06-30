@@ -114,7 +114,7 @@ $( document ).ready(function() {
                   <div class="col">\
                   <div class="form-group">\
                       <label for="input-'+key+'">Product Image <span class="text-danger">*</span></label>\
-                      <input type="file" accept="image/png, image/gif, image/jpeg, image/webp" class="form-control dropify" id="input-'+key+'" name="attributes['+key+'][image]">\
+                      <input type="file" accept="image/png, image/gif, image/jpeg, image/webp, image/avif" class="form-control dropify" id="input-'+key+'" name="attributes['+key+'][image]">\
                     </div>\
                     <div class="form-group">\
                       <label for="input-'+key+'">Price <span class="text-danger">*</span></label>\
@@ -2046,7 +2046,8 @@ $( document ).ready(function() {
     $('.dropify').dropify();
 
     $("#multiple_images").spartanMultiImagePicker({
-      fieldName:  'images[]'
+      fieldName:  'images[]',
+       allowedExt: "png|jpg|jpeg|webp|avif",
     });
 
     $('body').on('keydown', '.only-numbers', function (e) {
