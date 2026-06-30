@@ -63,7 +63,7 @@
 
               <div class="form-group">
                 <label for="image">Brand Image <span class="text-danger">*</span></label>
-                  <input type="file" accept="image/png, image/gif, image/jpeg, image/webp" class="form-control dropify {{ $errors->has('image') ? ' is-invalid' : '' }}" data-default-file="{{ (!empty($row) && ($row->image != null || $row->image != '' )) ? asset('storage/brands/').'/'.$row->id.'/'.$row->image : '' }}" id="image" name="image">
+                  <input type="file" accept="image/png, image/gif, image/jpeg, image/webp, image/avif" class="form-control dropify {{ $errors->has('image') ? ' is-invalid' : '' }}" data-default-file="{{ (!empty($row) && ($row->image != null || $row->image != '' )) ? asset('storage/brands/').'/'.$row->id.'/'.$row->image : '' }}" id="image" name="image">
                   @if($errors->has('image'))
                     <span class="invalid-feedback d-block">
                       {{ $errors->first('image') }}

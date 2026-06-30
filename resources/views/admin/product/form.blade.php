@@ -313,7 +313,7 @@
                                                                                 </div>
                                                                                 {{-- <div class="form-group">
 													<label for="input-{{$key}}">Product Hover Image </label>
-													<input type="file" accept="image/png, image/gif, image/jpeg, image/webp" class="form-control dropify" id="input-{{$key}}" name="attributes[{{$key}}][hover_image]">
+													<input type="file" accept="image/png, image/gif, image/jpeg, image/webp, image/avif" class="form-control dropify" id="input-{{$key}}" name="attributes[{{$key}}][hover_image]">
 													@if ($errors->has('attributes.' . $key . '.hover_image'))
 														<span class="invalid-feedback d-block">
 															{{ $errors->first('attributes.'.$key.'.hover_image') }}
@@ -576,7 +576,7 @@
 
                                                                                 {{-- <div class="form-group">
 													<label for="input-{{$key}}">Product Hover Image </label>
-													<input type="file" accept="image/png, image/gif, image/jpeg, image/webp" class="form-control dropify" id="input-{{$key}}" name="attributes[{{$key}}][hover_image]">
+													<input type="file" accept="image/png, image/gif, image/jpeg, image/webp, image/avif" class="form-control dropify" id="input-{{$key}}" name="attributes[{{$key}}][hover_image]">
 													@if ($errors->has('attributes.' . $key . '.hover_image'))
 														<span class="invalid-feedback d-block">
 															{{ $errors->first('attributes.'.$key.'.hover_image') }}

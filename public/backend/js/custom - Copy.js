@@ -71,7 +71,7 @@ $( document ).ready(function() {
           console.log(response)
           var html = makeAttributeHtml(response.combinations)
           $('#accordion').html(html);
-          initDropifyPreview();
+          $('.dropify').dropify();
           return false;
         }
       });
@@ -327,7 +327,7 @@ $( document ).ready(function() {
       var dataKeyIncrease = parseInt(dataKey) + 1;
       var html = makeAttributeHtml([inputAttrs], dataKeyIncrease);
       $('#accordion').append(html);
-      initDropifyPreview();
+      $('.dropify').dropify();
       $('#attribute-custom-modal').modal('hide');      
       return false;
     });
@@ -2043,42 +2043,7 @@ $( document ).ready(function() {
       // "endDate": null
     })
 
-    initDropifyPreview();
-
-    function initDropifyPreview(){
-      $('.dropify').dropify();
-      showWebpAvifDropifyPreview($('.dropify'));
-    }
-
-    function showWebpAvifDropifyPreview(inputs){
-      inputs.off('change.webpAvifPreview').on('change.webpAvifPreview', function(){
-        var input = this;
-        var file = input.files && input.files[0] ? input.files[0] : null;
-
-        if(!file){
-          return;
-        }
-
-        var fileName = file.name.toLowerCase();
-        var isPreviewFormat = fileName.endsWith('.webp') || fileName.endsWith('.avif');
-
-        if(!isPreviewFormat){
-          return;
-        }
-
-        var imageUrl = URL.createObjectURL(file);
-
-        setTimeout(function(){
-          var wrapper = $(input).closest('.dropify-wrapper');
-          var render = wrapper.find('.dropify-render');
-          var preview = wrapper.find('.dropify-preview');
-
-          render.html('<img src="'+imageUrl+'" style="max-width: 100%; max-height: 100%;" />');
-          preview.show();
-          wrapper.addClass('has-preview');
-        }, 100);
-      });
-    }
+    $('.dropify').dropify();
 
     $("#multiple_images").spartanMultiImagePicker({
       fieldName:  'images[]',
