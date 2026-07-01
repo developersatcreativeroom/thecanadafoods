@@ -41835,6 +41835,17 @@ body {
   color: #FFF;
 }
 
+.temp-sensitive-badge{
+    display:flex;
+    justify-content:flex-end;
+}
+
+.temp-sensitive-badge img{
+    width:70px;
+    height:auto;
+    display:block;
+}
+
 .category-dropdown-menu li a {
     display: flex;
     color: #FFFFFF;

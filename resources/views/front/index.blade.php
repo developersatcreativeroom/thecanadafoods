@@ -126,8 +126,7 @@
             <div class="row justify-content-center g-4">
 
                 @foreach($categories as $category)
-
-
+                @if ($category->is_top)
                     <div class="col-xxl-2 col-lg-3 col-md-4 col-sm-6">
                         <div class="gshop-animated-iconbox py-5 px-4 text-center border rounded-3 position-relative overflow-hidden bg-white">
                             <a href="{{route('category',[$category['slug']])}}"><div class="animated-icon d-inline-flex align-items-center justify-content-center rounded-circle position-relative">
@@ -138,6 +137,7 @@
                             <a href="{{route('category',[$category['slug']])}}" class="explore-btn position-absolute" aria-label="{{$category->name}}"><i class="fa-solid fa-arrow-up"></i></a>
                         </div>
                     </div>
+                     @endif
 
                 @endforeach
 
@@ -180,9 +180,9 @@
                     {{-- <button class="tab-select">Sea Food</button> --}}
 
                     @foreach($categories as $key => $category)
-
+                    @if ($category->is_trending)
                         <button class="tab-select" data-category="{{$category->slug}}">{{$category->name}}</button>
-
+ @endif
                     @endforeach
 
                 </div>

@@ -65,6 +65,8 @@ class HomeController extends Controller
         // $categories = Category::where('status',1)->limit(6)->get();
         $categories = Helper::getCategoriesNav(true);
 
+        
+
         $banners = Banner::where('status',1)->orderBy('serial', 'asc')->get();
         $brands = Brand::where('status',1)->get();
         $gallery = Gallery::where('status',1)->get();
