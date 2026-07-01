@@ -231,6 +231,11 @@ pre[aria-hidden="true"]{opacity: 0; -moz-pointer-events: none; -webkit-pointer-e
 }
 
 
+.tt-menu{
+    z-index: 9999 !important;
+}
+
+
 
 .gstore-breadcrumb .leaf{
     width: 60px;
@@ -970,13 +975,14 @@ ul.wsp-pages-list {
 
 .category-bootstrap-nav .navbar-nav {
   display: flex;
-  /* flex-wrap: nowrap; */
+  flex-wrap: nowrap;
   align-items: center;
   gap: 4px;
   min-height: 24px;
   margin: 0;
   padding: 0;
   list-style: none;
+  justify-content: center;
 }
 
 /* .category-bootstrap-nav .navbar-nav {
