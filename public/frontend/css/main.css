@@ -41772,7 +41772,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     gap: 16px 24px;
     margin: 0;
     padding: 0;
@@ -42052,12 +42052,24 @@ body {
     top: calc(100% + 10px);
     padding-top: 20px;
     right: -50px;
-    z-index: 2;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     -webkit-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out
 }
+/* .cart-box-wrapper {
+    position: absolute;
+    min-width: 400px;
+    top: calc(100% + 10px);
+    padding-top: 20px;
+    right: -50px;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out
+} */
 
 .apt_cart_box {
     background: #fff;

@@ -945,6 +945,16 @@ ul.wsp-pages-list {
     .category-more-list {
         grid-template-columns: 1fr;
     }
+
+   
+.search-form .submit-icon-btn-secondary {
+  width: 50px;
+}
+}
+
+.search-form input::placeholder {
+    color: #7c7e85 !important;
+    opacity: 1; /* Ensures full visibility */
 }
 
 /* Bootstrap category navigation */
@@ -957,7 +967,19 @@ ul.wsp-pages-list {
     width: 100%;
 }
 
+
 .category-bootstrap-nav .navbar-nav {
+  display: flex;
+  /* flex-wrap: nowrap; */
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* .category-bootstrap-nav .navbar-nav {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -966,7 +988,7 @@ ul.wsp-pages-list {
     margin: 0;
     padding: 0;
     list-style: none;
-}
+} */
 
 .category-bootstrap-nav .nav-item {
     position: relative;
@@ -976,8 +998,8 @@ ul.wsp-pages-list {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 44px;
-    padding: 10px 12px;
+    min-height: 0;
+    /* padding: 10px 12px; */
     border: 0;
     border-radius: 4px;
     background: transparent;
