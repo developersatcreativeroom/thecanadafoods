@@ -9,6 +9,25 @@
 // 2. swiper slider for all carousel
 // 3.sticky header
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (window.innerWidth >= 992) {
+
+        document.querySelectorAll(".category-dropdown > a.dropdown-toggle").forEach(function (link) {
+
+            // Disable Bootstrap dropdown on desktop
+            link.removeAttribute("data-bs-toggle");
+
+            link.addEventListener("click", function () {
+                window.location.href = this.href;
+            });
+
+        });
+
+    }
+
+});
+
 jQuery(function ($) {
   "use strict";
 
@@ -529,6 +548,8 @@ jQuery(function ($) {
       $(".category-dropdown-btn").attr("aria-expanded", "false");
     }
   });
+
+  
 
   //7.offcanvas menu
   function offCanvas() {

@@ -1139,6 +1139,13 @@ ul.wsp-pages-list {
     }
 }
 
+@media (min-width: 992px) {
+    .category-dropdown:hover > .dropdown-menu {
+        display: block;
+        margin-top: 0;
+    }
+}
+
 @media (max-width: 767.98px) {
     .bg-red.category-nav-bar {
         display: none;
