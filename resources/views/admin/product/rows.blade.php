@@ -6,7 +6,7 @@
                       <th>Name</th>
                       <th>Image</th>
                       <th>Price</th>
-                      <th>Status</th>
+                      <th>Temp Sensitive</th>
                       <th>Status</th>
                       <th>Meta Status</th>
                       <th>Added on</th>
