@@ -228,6 +228,7 @@ public function edit($id)
         $seoKeywords = $request->filled('seo_keywords') ? trim($request->input('seo_keywords')) : null;
         $purchaseNote = trim($request->input('purchase_note'));
         $status = trim($request->input('status'));
+        $temp_sensitive = trim($request->input('temp_sensitive'));
         $tagsArray = $request->input('tags');
         // $demo = trim($request->input('demo'));
         $image = $request->file('image');
@@ -298,6 +299,7 @@ public function edit($id)
                 'seo_keywords'=>'',
                 'tags'=>'array',
                 'status'=>'required',
+                'temp_sensitive'=>'required',
                 //'images.image' => 'image|mimes:jpeg,jpg,png,webp',
                 //'images.front' => 'required',
                 'specifications' => 'array',
@@ -393,7 +395,7 @@ public function edit($id)
                     $oldProduct = null;
                 }
 
-                $insertRow = ['name'=>$name, 'title_h1'=>$title_h1,  'short_description'=>$shortDescription, 'image_alt'=>$imageAlt, 'description'=>$description, 'sku'=>$sku, 'product_type'=>$productType, 'affiliate_link'=>$affiliateLink, 'licence_name'=>$licenceName, 'licence_key'=>$licenceKey, 'file_type'=>$fileType, 'link'=>$link, 'file'=>$file, 'price'=>$price, 'old_price'=>$oldPrice, 'tax_id'=>$taxId, 'is_tax_included'=>$isTaxIncludedDB, 'brand_id'=>$brandId, 'color_id'=>$colorId, 'is_featured'=>$isFeaturedDB, 'is_sample'=>$isSampleDB, 'is_sale'=>$isSaleDB, 'is_new'=>$isNewDB, 'is_hot'=>$isHotDB, 'is_best_sell'=>$isBestSellDB, 'is_variant'=>$isVariantDB, 'stock'=>$stock, 'min_quantity'=>$minQuantity, 'threshold'=>$threshold, 'length'=>$length, 'width'=>$width, 'height'=>$height, 'weight'=>$weight, 'shipping_weight' => $shippingWeight,'tags'=>$tags, 'seo_title'=>$seoTitle, 'seo_description'=>$seoDescription, 'seo_keywords' => $seoKeywords, 'purchase_note'=>$purchaseNote, 'status'=>$status];
+                $insertRow = ['name'=>$name, 'title_h1'=>$title_h1,  'short_description'=>$shortDescription, 'image_alt'=>$imageAlt, 'description'=>$description, 'sku'=>$sku, 'product_type'=>$productType, 'affiliate_link'=>$affiliateLink, 'licence_name'=>$licenceName, 'licence_key'=>$licenceKey, 'file_type'=>$fileType, 'link'=>$link, 'file'=>$file, 'price'=>$price, 'old_price'=>$oldPrice, 'tax_id'=>$taxId, 'is_tax_included'=>$isTaxIncludedDB, 'brand_id'=>$brandId, 'color_id'=>$colorId, 'is_featured'=>$isFeaturedDB, 'is_sample'=>$isSampleDB, 'is_sale'=>$isSaleDB, 'is_new'=>$isNewDB, 'is_hot'=>$isHotDB, 'is_best_sell'=>$isBestSellDB, 'is_variant'=>$isVariantDB, 'stock'=>$stock, 'min_quantity'=>$minQuantity, 'threshold'=>$threshold, 'length'=>$length, 'width'=>$width, 'height'=>$height, 'weight'=>$weight, 'shipping_weight' => $shippingWeight,'tags'=>$tags, 'seo_title'=>$seoTitle, 'seo_description'=>$seoDescription, 'seo_keywords' => $seoKeywords, 'purchase_note'=>$purchaseNote, 'status'=>$status,'temp_sensitive' => $temp_sensitive];
                         
                 $product = Product::create($insertRow);
 
@@ -464,6 +466,7 @@ public function edit($id)
                 $product->seo_keywords = $seoKeywords;
                 $product->purchase_note = $purchaseNote;
                 $product->status = $status;
+                $product->temp_sensitive = $temp_sensitive;
                 $product->save();
 
                 if($oldStock != $product->stock && $product->is_variant == false){
@@ -1128,6 +1131,25 @@ public function edit($id)
         return array('result' => true, 'attributes' => $final_arr);
         //return array('result' => true, 'attributes' => []);
         
+    }
+
+    public function toggle(Request $request)
+    {
+        $request->validate([
+            'id'  => 'required|exists:products,id',
+            'col' => 'required|in:temp_sensitive',
+        ]);
+        $category = Product::findOrFail($request->id);
+        $column = $request->col;
+        $category->$column = !$category->$column;
+        $category->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => ucfirst(str_replace('_', ' ', $column)) . ' status updated successfully.',
+            'status'  => (bool) $category->$column,
+            'column'  => $column,
+        ]);
     }
 
 }

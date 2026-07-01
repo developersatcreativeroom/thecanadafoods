@@ -11,7 +11,7 @@ class Product extends Model
     use SoftDeletes;
     
     protected $fillable = [
-        'name', 'slug', 'title_h1', 'short_description', 'description', 'image_alt', 'sku', 'image', 'hover_image', 'image_alt', 'product_type', 'affiliate_link', 'licence_name', 'licence_key', 'file_type', 'link', 'file', 'price', 'old_price', 'tax_id', 'is_tax_included', 'brand_id', 'color_id', 'vendor_id', 'group_id', 'is_featured', 'is_sample', 'is_sale', 'is_new', 'is_hot', 'is_best_sell', 'is_variant', 'stock', 'min_quantity', 'threshold', 'total_sales', 'length', 'width', 'height', 'weight', 'shipping_weight', 'tags', 'seo_title', 'seo_description', 'seo_keywords', 'is_imported', 'purchase_note', 'average_rating', 'review_count', 'status'
+        'name', 'slug', 'title_h1', 'short_description', 'description', 'image_alt', 'sku', 'image', 'hover_image', 'image_alt', 'product_type', 'affiliate_link', 'licence_name', 'licence_key', 'file_type', 'link', 'file', 'price', 'old_price', 'tax_id', 'is_tax_included', 'brand_id', 'color_id', 'vendor_id','temp_sensitive', 'group_id', 'is_featured', 'is_sample', 'is_sale', 'is_new', 'is_hot', 'is_best_sell', 'is_variant', 'stock', 'min_quantity', 'threshold', 'total_sales', 'length', 'width', 'height', 'weight', 'shipping_weight', 'tags', 'seo_title', 'seo_description', 'seo_keywords', 'is_imported', 'purchase_note', 'average_rating', 'review_count', 'status'
     ];
 
     protected $appends = ['average_rating', 'total_rating', 'average_rating_floor', 'average_rating_percentage'];

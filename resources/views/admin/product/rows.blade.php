@@ -7,6 +7,7 @@
                       <th>Image</th>
                       <th>Price</th>
                       <th>Status</th>
+                      <th>Status</th>
                       <th>Meta Status</th>
                       <th>Added on</th>
                       <th style="width: 130px">Actions</th>
@@ -29,6 +30,15 @@
                       @endif
                       </td>
                       <td>{{$row->getPrice()}}</td>
+                       <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" class="nav-toggle"
+                                                            data-id="{{ $row->id }}"
+                                                             data-col="temp_sensitive"
+                                                            {{ $row->temp_sensitive ? 'checked' : '' }}>
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </td>
                       <td>
                         @if($row->status)
                           <span class="badge bg-success">Active</span>

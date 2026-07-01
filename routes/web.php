@@ -247,6 +247,7 @@ Route::group( [ 'prefix' => 'admin' ], function(){
 
             Route::get('products', [AdminProductController::class, 'list'])->name('admin.products');
             Route::get('product', [AdminProductController::class, 'add'])->name('admin.product');
+            Route::post('product/toggle', [AdminProductController::class, 'toggle'])->name('admin.products.toggle');
             Route::get('product/{id}', [AdminProductController::class, 'edit'])->name('admin.product.edit');
             Route::post('product-post-data', [AdminProductController::class, 'postData'])->name('admin.product.post');
             Route::get('product-delete-data/{id}', [AdminProductController::class, 'delete'])->name('admin.product.delete');

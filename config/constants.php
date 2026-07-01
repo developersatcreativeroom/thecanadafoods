@@ -13,6 +13,10 @@ return [
         1 =>  'Active',
         0 =>  'In-active'
     ],
+    'TEMPERATURES' => [
+        1 =>  'Sensitive',
+        0 =>  'In-sensitive'
+    ],
     'FAQ_TYPES' => [
         'category' => 'Category',
         'blog' => 'Blog'

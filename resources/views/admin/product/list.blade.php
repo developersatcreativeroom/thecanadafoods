@@ -150,6 +150,25 @@
     <script>
 
     $('ul.pagination').addClass('pagination-sm m-0 float-right')
+     $(document).on('change', '.nav-toggle', function() {
+
+            let checkbox = $(this);
+
+            $.ajax({
+                url: "{{ route('admin.products.toggle') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: checkbox.data('id'),
+                    col: checkbox.data('col')
+                },
+                error: function() {
+                    checkbox.prop('checked', !checkbox.prop('checked'));
+                    alert('Something went wrong.');
+                }
+            });
+
+        });
 
     </script>
 @endpush

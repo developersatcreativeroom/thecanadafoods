@@ -1019,6 +1019,33 @@
                                                     </span>
                                                 @endif
                                             </div>
+                                           <div class="form-group">
+    <label for="temp_sensitive">
+        Temperature Sensitive <span class="text-danger">*</span>
+    </label>
+
+    <select
+        class="form-control {{ $errors->has('temp_sensitive') ? 'is-invalid' : '' }}"
+        id="temp_sensitive"
+        name="temp_sensitive">
+
+        <option value="">--Select--</option>
+
+        @foreach (config('constants.TEMPERATURES') as $key => $temp_sensitive)
+            <option value="{{ $key }}"
+                {{ old('temp_sensitive', !empty($row) ? $row->temp_sensitive : '') == $key ? 'selected' : '' }}>
+                {{ $temp_sensitive }}
+            </option>
+        @endforeach
+
+    </select>
+
+    @if ($errors->has('temp_sensitive'))
+        <span class="invalid-feedback">
+            {{ $errors->first('temp_sensitive') }}
+        </span>
+    @endif
+</div>
 
 
                                         </div>
