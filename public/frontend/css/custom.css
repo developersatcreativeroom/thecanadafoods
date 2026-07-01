@@ -1141,7 +1141,7 @@ ul.wsp-pages-list {
 
 @media (max-width: 767.98px) {
     .bg-red.category-nav-bar {
-        display: block;
+        display: none;
     }
 
     .category-bootstrap-nav {
