@@ -530,9 +530,9 @@
 
                         <span>{{ $category->name }}</span>
 
-                        @if ($category->subcategories->isNotEmpty())
+                        {{-- @if ($category->subcategories->isNotEmpty())
                             <i class="fa-solid fa-angle-right ms-auto"></i>
-                        @endif
+                        @endif --}}
 
                     </a>
 
