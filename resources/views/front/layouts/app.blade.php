@@ -223,26 +223,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </a>
                 <nav class="mobile-menu-wrapper scrollbar">
                     <ul>
-                        @php
-                            $categoriesList = App\Helper::getCategoriesList();
-                        @endphp
+    @php
+        $categoriesList = App\Helper::getCategoriesList();
+    @endphp
 
-                        @foreach($categoriesList as $category)
+    @foreach ($categoriesList as $category)
 
-                            <li class="ps-3">
-                                <a href="{{route('category',[$category['slug']])}}" class="d-flex align-items-center">
-                                    @if(!empty($category) && ($category->image != null || $category->image != '' ))
-                                        <div class="me-2 avatar-icon">
-                                            <img src="{{ asset('storage/categories/') }}/{{$category->id}}/{{$category->image}}" alt="{{$category->image_alt ? $category->image_alt : $category->name }}"  class="w-100 h-100 rounded-circle">
-                                        </div>
-                                    @endif
-                                    <span>{{$category->name}}</span>
-                                </a>
-                            </li>
+        <li class="ps-3 dropdown-submenu {{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
 
-                        @endforeach
-                        
-                    </ul>
+            <a href="{{ route('category', [$category->slug]) }}"
+               class="d-flex align-items-center {{ $category->subcategories->isNotEmpty() ? 'dropdown-toggle' : '' }}"
+               @if($category->subcategories->isNotEmpty())
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false"
+               @endif>
+
+                @if(!empty($category) && ($category->image != null || $category->image != ''))
+                    <div class="me-2 avatar-icon">
+                        <img src="{{ asset('storage/categories/' . $category->id . '/' . $category->image) }}"
+                             alt="{{ $category->image_alt ?: $category->name }}"
+                             class="w-100 h-100 rounded-circle">
+                    </div>
+                @endif
+
+                <span>{{ $category->name }}</span>
+
+                {{-- @if($category->subcategories->isNotEmpty())
+                    <i class="fa-solid fa-angle-right ms-auto"></i>
+                @endif --}}
+
+            </a>
+
+            @if($category->subcategories->isNotEmpty())
+                <ul class="dropdown-menu subcategory-dropdown">
+                    @foreach($category->subcategories as $subcategory)
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ route('category', [$subcategory->slug]) }}">
+                                {{ $subcategory->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
+        </li>
+
+    @endforeach
+
+</ul>
                 </nav>
             </div>
         </div> <!--footer section end-->

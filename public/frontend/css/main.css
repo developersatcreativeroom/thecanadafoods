@@ -44105,23 +44105,33 @@ body {
 }
 
 .mobile-menu ul li ul {
-    padding-left: 10px;
-    display: none
+  padding-left: 10px;
+  display: none;
+  width: 72%;
+  margin-left: 60px;
 }
 
 .mobile-menu ul li ul li a {
     font-size: 14px
 }
 
+
+
 .mobile-menu ul li.has-submenu>a span {
     -webkit-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out
 }
 
-.mobile-menu ul li.has-submenu>a.icon-rotate span {
+.mobile-menu ul li.has-submenu > a.icon-rotate i {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+}
+
+/* .mobile-menu ul li.has-submenu>a.icon-rotate span {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg)
-}
+} */
 
 .mobile-menu ul li:last-child a {
     border-bottom: none
