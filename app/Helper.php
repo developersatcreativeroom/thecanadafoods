@@ -27,7 +27,9 @@ use App\Models\ShippingPrice;
 use App\Models\Coupon;
 use App\Models\Order;
 
-use Gregwar\Image\Image;
+// use Gregwar\Image\Image;
+use Intervention\Image\Drivers\Gd\Driver;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -162,92 +164,265 @@ class Helper
     }
 
     public static function uploadImage($image, $model, $directory, $isDirectoryID, $operation, $columnName, $isColumn = false, $isThumb = false, $deletePrevImage = true, $subFolderID = false)
-    {
+{
 
-        if ($image->getMimeType() == 'image/jpeg') {
-            $fName = $image->getClientOriginalName();
-            $arr = explode('.', $fName);
-            $extVal = end($arr);
-            $extension = '.' . $extVal;
-        } else if ($image->getMimeType() == 'image/png') {
-            $extension = '.png';
-        } else {
-            $extension = '.' . $image->getClientOriginalExtension();
-        }
+    if ($image->getMimeType() == 'image/jpeg') {
+        $fName = $image->getClientOriginalName();
+        $arr = explode('.', $fName);
+        $extVal = end($arr);
+        $extension = '.' . $extVal;
+    } else if ($image->getMimeType() == 'image/png') {
+        $extension = '.png';
+    } else {
+        $extension = '.' . $image->getClientOriginalExtension();
+    }
 
-        $name = md5(time() + rand(10, 1000));
-        $saveName = $name . $extension;
+    $name = md5(time() + rand(10, 1000));
+    $saveName = $name . $extension;
 
-        // if(extension_loaded("exif")){
-        //     $exif = exif_read_data($files[$key]['image']);
-        //     //print '<pre>'; print_r($exif); die;
-        //     if(!empty($exif['Orientation'])) {
-        //         switch($exif['Orientation']) {
-        //             case 8:
-        //                 $files[$key]['image'] = imagerotate($files[$key]['image'],90,0);
-        //                 break;
-        //             case 3:
-        //                 $files[$key]['image'] = imagerotate($files[$key]['image'],180,0);
-        //                 break;
-        //             case 6:
-        //                 $files[$key]['image'] = imagerotate($files[$key]['image'],-90,0);
-        //                 break;
-        //         }
-        //     }
-        // }
+    // if(extension_loaded("exif")){
+    //     $exif = exif_read_data($files[$key]['image']);
+    //     //print '<pre>'; print_r($exif); die;
+    //     if(!empty($exif['Orientation'])) {
+    //         switch($exif['Orientation']) {
+    //             case 8:
+    //                 $files[$key]['image'] = imagerotate($files[$key]['image'],90,0);
+    //                 break;
+    //             case 3:
+    //                 $files[$key]['image'] = imagerotate($files[$key]['image'],180,0);
+    //                 break;
+    //             case 6:
+    //                 $files[$key]['image'] = imagerotate($files[$key]['image'],-90,0);
+    //                 break;
+    //         }
+    //     }
+    // }
 
-        $finalDirectory = $directory;
+    $finalDirectory = $directory;
 
-        if ($isDirectoryID) {
-            $rowIDFolder = $subFolderID ? $subFolderID : $model->id;
-            $finalDirectory = $directory . '/' . $rowIDFolder;
-        }
-        //print $finalDirectory; die;
+    if ($isDirectoryID) {
+        $rowIDFolder = $subFolderID ? $subFolderID : $model->id;
+        $finalDirectory = $directory . '/' . $rowIDFolder;
+    }
 
-        // $imageOld = $model->image;
-        // Storage::disk('public')->delete('products/'.$rowIDFolder.'/'.$imageOld);
-        // Storage::disk('public')->delete('products/'.$rowIDFolder.'/thumb/'.$imageOld);
+    // $imageOld = $model->image;
+    // Storage::disk('public')->delete('products/'.$rowIDFolder.'/'.$imageOld);
+    // Storage::disk('public')->delete('products/'.$rowIDFolder.'/thumb/'.$imageOld);
 
-        if ($operation == 'update' && $deletePrevImage) {
+    if ($operation == 'update' && $deletePrevImage) {
 
-            if (isset($model->{$columnName})) {
-                $imageOld = $model->{$columnName};
-                //print $finalDirectory.'/'.$imageOld; die;
-                Storage::disk('public')->delete($finalDirectory . '/' . $imageOld);
-                if ($isThumb) {
-                    Storage::disk('public')->delete($finalDirectory . '/thumb/' . $imageOld);
-                }
+        if (isset($model->{$columnName})) {
+            $imageOld = $model->{$columnName};
+
+            Storage::disk('public')->delete($finalDirectory . '/' . $imageOld);
+
+            if ($isThumb) {
+                Storage::disk('public')->delete($finalDirectory . '/thumb/' . $imageOld);
             }
         }
-
-        Storage::disk('public')->put($finalDirectory . '/' . $saveName, file::get($image));
-
-        if ($isThumb) {
-            $thumb = Image::open($image->getRealPath())
-                ->resize(320, 320)
-                ->get(); // Get image as binary data
-
-            Storage::disk('public')->put($finalDirectory . '/thumb/' . $saveName,  (string) $thumb);
-        }
-
-        if ($isColumn) {
-            $model->{$columnName} = $saveName;
-            $model->save();
-        } else {
-            $model->create([$columnName => $saveName]);
-        }
-
-        return $saveName;
     }
 
-    public static function uploadImages($images, $model, $directory,  $isDirectoryID, $operation, $columnName, $isColumn, $isThumb, $deletePrevImage, $subFolderID)
-    {
+    Storage::disk('public')->put($finalDirectory . '/' . $saveName, file_get_contents($image));
 
-        foreach ($images as $image) {
-            // image, model, directory, is_directory_id, add_or_update, is_column_update, is_thumb, delete_prev_image, sub_folder_id
-            Self::uploadImage($image, $model, $directory,  $isDirectoryID, $operation, $columnName, $isColumn, $isThumb, $deletePrevImage, $subFolderID);
+    if ($isThumb) {
+
+        if (!Storage::disk('public')->exists($finalDirectory . '/thumb')) {
+            Storage::disk('public')->makeDirectory($finalDirectory . '/thumb');
+        }
+
+        try {
+
+            $extensionLower = strtolower($image->getClientOriginalExtension());
+
+            if ($extensionLower == 'avif') {
+
+                // Create thumbnail using native GD
+                $source = imagecreatefromavif($image->getRealPath());
+
+                if ($source === false) {
+                    throw new \Exception('Unable to open AVIF image.');
+                }
+
+                $srcWidth  = imagesx($source);
+                $srcHeight = imagesy($source);
+
+                $thumb = imagecreatetruecolor(320, 320);
+
+                imagecopyresampled(
+                    $thumb,
+                    $source,
+                    0,
+                    0,
+                    0,
+                    0,
+                    320,
+                    320,
+                    $srcWidth,
+                    $srcHeight
+                );
+
+                ob_start();
+                imageavif($thumb, null, 80);
+                $thumbData = ob_get_clean();
+
+                imagedestroy($source);
+                imagedestroy($thumb);
+
+                Storage::disk('public')->put(
+                    $finalDirectory . '/thumb/' . $saveName,
+                    $thumbData
+                );
+
+            } else {
+
+                // Existing Gregwar code for all other image types
+                $thumb = Image::open($image->getRealPath())
+                    ->resize(320, 320)
+                    ->get();
+
+                Storage::disk('public')->put(
+                    $finalDirectory . '/thumb/' . $saveName,
+                    (string) $thumb
+                );
+
+            }
+
+        } catch (\Throwable $e) {
+
+            // If thumbnail creation fails, save original image as thumb
+            Storage::disk('public')->put(
+                $finalDirectory . '/thumb/' . $saveName,
+                file_get_contents($image)
+            );
+
         }
     }
+
+    if ($isColumn) {
+        $model->{$columnName} = $saveName;
+        $model->save();
+    } else {
+        $model->create([$columnName => $saveName]);
+    }
+
+    return $saveName;
+}
+
+    // public static function uploadImage($image, $model, $directory, $isDirectoryID, $operation, $columnName, $isColumn = false, $isThumb = false, $deletePrevImage = true, $subFolderID = false)
+    // {
+
+    //     if ($image->getMimeType() == 'image/jpeg') {
+    //         $fName = $image->getClientOriginalName();
+    //         $arr = explode('.', $fName);
+    //         $extVal = end($arr);
+    //         $extension = '.' . $extVal;
+    //     } else if ($image->getMimeType() == 'image/png') {
+    //         $extension = '.png';
+    //     } else {
+    //         $extension = '.' . $image->getClientOriginalExtension();
+    //     }
+
+    //     $name = md5(time() + rand(10, 1000));
+    //     $saveName = $name . $extension;
+
+    //     // if(extension_loaded("exif")){
+    //     //     $exif = exif_read_data($files[$key]['image']);
+    //     //     //print '<pre>'; print_r($exif); die;
+    //     //     if(!empty($exif['Orientation'])) {
+    //     //         switch($exif['Orientation']) {
+    //     //             case 8:
+    //     //                 $files[$key]['image'] = imagerotate($files[$key]['image'],90,0);
+    //     //                 break;
+    //     //             case 3:
+    //     //                 $files[$key]['image'] = imagerotate($files[$key]['image'],180,0);
+    //     //                 break;
+    //     //             case 6:
+    //     //                 $files[$key]['image'] = imagerotate($files[$key]['image'],-90,0);
+    //     //                 break;
+    //     //         }
+    //     //     }
+    //     // }
+
+    //     $finalDirectory = $directory;
+
+    //     if ($isDirectoryID) {
+    //         $rowIDFolder = $subFolderID ? $subFolderID : $model->id;
+    //         $finalDirectory = $directory . '/' . $rowIDFolder;
+    //     }
+    //     //print $finalDirectory; die;
+
+    //     // $imageOld = $model->image;
+    //     // Storage::disk('public')->delete('products/'.$rowIDFolder.'/'.$imageOld);
+    //     // Storage::disk('public')->delete('products/'.$rowIDFolder.'/thumb/'.$imageOld);
+
+    //     if ($operation == 'update' && $deletePrevImage) {
+
+    //         if (isset($model->{$columnName})) {
+    //             $imageOld = $model->{$columnName};
+    //             //print $finalDirectory.'/'.$imageOld; die;
+    //             Storage::disk('public')->delete($finalDirectory . '/' . $imageOld);
+    //             dd(gd_info());
+    //             if ($isThumb) {
+    //                 Storage::disk('public')->delete($finalDirectory . '/thumb/' . $imageOld);
+    //             }
+    //         }
+    //     }
+
+    //     Storage::disk('public')->put($finalDirectory . '/' . $saveName, file::get($image));
+    //     dd(gd_info());
+
+    //     if ($isThumb) {
+    //         $thumb = Image::open($image->getRealPath())
+    //             ->resize(320, 320)
+    //             ->get(); // Get image as binary data
+
+    //         Storage::disk('public')->put($finalDirectory . '/thumb/' . $saveName,  (string) $thumb);
+    //     }
+
+    //     if ($isColumn) {
+    //         $model->{$columnName} = $saveName;
+    //         $model->save();
+    //     } else {
+    //         $model->create([$columnName => $saveName]);
+    //     }
+
+    //     return $saveName;
+    // }
+
+    // public static function uploadImages($images, $model, $directory,  $isDirectoryID, $operation, $columnName, $isColumn, $isThumb, $deletePrevImage, $subFolderID)
+    // {
+
+    //     foreach ($images as $image) {
+    //         // image, model, directory, is_directory_id, add_or_update, is_column_update, is_thumb, delete_prev_image, sub_folder_id
+    //         Self::uploadImage($image, $model, $directory,  $isDirectoryID, $operation, $columnName, $isColumn, $isThumb, $deletePrevImage, $subFolderID);
+    //     }
+    // }
+
+    public static function uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isThumb,$deletePrevImage,$subFolderID) {
+
+    if (empty($images)) {
+        return;
+    }
+
+    foreach ($images as $image) {
+
+        try {
+            self::uploadImage($image,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isThumb,$deletePrevImage,$subFolderID);
+
+        } catch (\Throwable $e) {
+
+            \Log::error('Image upload failed.', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+        }
+
+    }
+
+    return true;
+}
 
     public static function deleteImage($model, $directory, $isThumb = false)
     {
