@@ -544,5 +544,9 @@ Route::get('/run-sitemap', function (Request $request) {
     return response()->json(['message' => 'Sitemap generated successfully!']);
 })->name('sitemap.run');
 
-Route::get('{category}', [HomeController::class, 'category'])->name('category');
+Route::get('{category}/{type?}', [HomeController::class, 'category'])->name('category');
+
+
+
+
 

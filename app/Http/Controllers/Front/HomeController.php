@@ -80,7 +80,7 @@ class HomeController extends Controller
     }
 
 
-    public function category(Request $request, $category){
+    public function category(Request $request, $category, $type=null){
         // print $category; die;
         $page = $request->page;
         $query = Product::with(['categories' => function($subQuery){
@@ -88,8 +88,12 @@ class HomeController extends Controller
         }]);
 
         $categoryID = [];
+
+       
         
         $categoryDB = Category::where('slug', $category)->first();
+
+        
         if(!$categoryDB){
             return to_route('products');
         }
@@ -231,10 +235,17 @@ class HomeController extends Controller
             }
         }
 
-
-        $products = $query->where('status',1)->paginate($this->pagerecords, ['*'], 'page', $page);
+         if($type=='abhi'){
+             $products = $query->where('status',0)->paginate($this->pagerecords, ['*'], 'page', $page);
+             $brandsFilters = Brand::where('status',1)->get();
+        }else{
+$products = $query->where('status',1)->paginate($this->pagerecords, ['*'], 'page', $page);
 
         $brandsFilters = Brand::where('status',1)->get();
+        }
+
+
+        
 
         $priceRangeFilters = Helper::getPriceRange();
 
