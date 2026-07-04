@@ -387,6 +387,10 @@ $('body').on('click', '.delete-cart', function () {
                     $('#products-section').html(response.productsHtml)
 
                 }   
+
+               if (window.location.pathname.includes('/checkout')) {
+    location.reload();
+}
                 
               toastr.success(response.message,'Success');
               return false;
