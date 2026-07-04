@@ -649,6 +649,7 @@
                                     @endphp
 
                                     @foreach ($cart as $cartSingle)
+                                      @if ($cartSingle->product_id != 2907)
                                         @php
                                             if ($cartSingle->temp_sensitive) {
                                                 $is_temp_sensitive = true;
@@ -742,6 +743,8 @@
                                                     @endif
                                                 @endforeach
                                             @endif
+                                        @endif
+
                                         @endif
                                     @endforeach
                                     @if ($is_temp_sensitive)
