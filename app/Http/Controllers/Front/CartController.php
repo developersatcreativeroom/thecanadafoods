@@ -281,7 +281,7 @@ class CartController extends Controller
                     ->delete();
             }
         }
-    }
+    
 
     $checkout = Helper::checkout($user);
     $cart = Helper::getCartShowList($user);
