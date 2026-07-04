@@ -1155,73 +1155,73 @@
             });
         });
 
-        $(document).on('change', '.ice-bag-checkbox', function() {
+        // $(document).on('change', '.ice-bag-checkbox', function() {
 
-            let checkbox = $(this);
-            let checked = checkbox.is(':checked');
+        //     let checkbox = $(this);
+        //     let checked = checkbox.is(':checked');
 
-            $.ajax({
-                type: "POST",
-                url: site_url + (checked ? "/add-cart" : "/delete-cart"),
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: checked ? {
-                    key: checkbox.data('key'),
-                    quantity: 1,
-                    attribute: checkbox.data('attribute') || '',
-                    page: 'checkout'
-                } : {
-                    key: checkbox.data('key'),
-                    attribute: checkbox.data('attribute') || ''
-                },
+        //     $.ajax({
+        //         type: "POST",
+        //         url: site_url + (checked ? "/add-cart" : "/delete-cart"),
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         data: checked ? {
+        //             key: checkbox.data('key'),
+        //             quantity: 1,
+        //             attribute: checkbox.data('attribute') || '',
+        //             page: 'checkout'
+        //         } : {
+        //             key: checkbox.data('key'),
+        //             attribute: checkbox.data('attribute') || ''
+        //         },
 
-                beforeSend: function() {
-                    $('.loader').removeClass('d-none');
-                },
+        //         beforeSend: function() {
+        //             $('.loader').removeClass('d-none');
+        //         },
 
-                success: function(response) {
+        //         success: function(response) {
 
-                    if (!response.result) {
-                        checkbox.prop('checked', !checked);
-                        toastr.error(response.message, 'Error');
-                        return;
-                    }
+        //             if (!response.result) {
+        //                 checkbox.prop('checked', !checked);
+        //                 toastr.error(response.message, 'Error');
+        //                 return;
+        //             }
 
-                    let subtotal = parseFloat($('.subtotal-price').text().replace(/[^0-9.-]+/g, ''));
-                    let price = parseFloat(checkbox.data('price'));
+        //             let subtotal = parseFloat($('.subtotal-price').text().replace(/[^0-9.-]+/g, ''));
+        //             let price = parseFloat(checkbox.data('price'));
 
-                    if (checked) {
-                        subtotal += price;
-                    } else {
-                        subtotal -= price;
-        //                  location.reload();
-        // return;
-                    }
+        //             if (checked) {
+        //                 subtotal += price;
+        //             } else {
+        //                 subtotal -= price;
+        // //                  location.reload();
+        // // return;
+        //             }
 
-                    $('.subtotal-price').text('$' + subtotal.toFixed(2));
+        //             $('.subtotal-price').text('$' + subtotal.toFixed(2));
 
-                    toastr.success(response.message, 'Success');
-                },
+        //             toastr.success(response.message, 'Success');
+        //         },
 
-                error: function(xhr) {
+        //         error: function(xhr) {
 
-                    checkbox.prop('checked', !checked);
+        //             checkbox.prop('checked', !checked);
 
-                    if (xhr.status === 401) {
-                        window.location.href = site_url + "/login";
-                    } else {
-                        toastr.error('Something went wrong. Please try again.', 'Error');
-                    }
-                },
+        //             if (xhr.status === 401) {
+        //                 window.location.href = site_url + "/login";
+        //             } else {
+        //                 toastr.error('Something went wrong. Please try again.', 'Error');
+        //             }
+        //         },
 
-                complete: function() {
-                    $('.loader').addClass('d-none');
-                }
+        //         complete: function() {
+        //             $('.loader').addClass('d-none');
+        //         }
 
-            });
+        //     });
 
-        });
+        // });
     </script>
 
 
