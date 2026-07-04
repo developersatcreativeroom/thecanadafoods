@@ -1195,8 +1195,8 @@
                         subtotal += price;
                     } else {
                         subtotal -= price;
-                         location.reload();
-        return;
+        //                  location.reload();
+        // return;
                     }
 
                     $('.subtotal-price').text('$' + subtotal.toFixed(2));
