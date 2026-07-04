@@ -42,7 +42,7 @@
     <tr>
         <td colspan="2">Temp Sensitive Products</td>
         <td colspan="2" class="text-end">
-            {{$total_temp_sensitive}}
+            {{$total_temp_sensitive ?? 0}}
         </td>
     </tr>
 
