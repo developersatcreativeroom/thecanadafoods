@@ -223,23 +223,80 @@ class CartController extends Controller
             $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');
             $isEnquiryWebsite = $isEnquiryWebsite['is_enquiry_website'];
 
-            if($deleted){
+            // if($deleted){
 
-                $validateCoupon = Helper::validateCoupon($user);
-                $couponError = '';
-                $couponCode = '';
-                if(!$validateCoupon['result']){
-                    $couponError = $validateCoupon['message'];
-                    $couponCode = $validateCoupon['code'];
-                    $coupon = Coupon::where('code', $couponCode)->first();
-                    // print '<pre>'; print_r($coupon); die;
-                    if($user){
-                        $user->coupon()->where('coupon_id', $coupon->id)->delete();
-                    }else{
-                        $uuid = Helper::getUserUUID();
-                        UserCoupon::where('coupon_id', $coupon->id)->where('uuid', $uuid)->delete();
-                    }
-                }
+            //     $validateCoupon = Helper::validateCoupon($user);
+            //     $couponError = '';
+            //     $couponCode = '';
+            //     if(!$validateCoupon['result']){
+            //         $couponError = $validateCoupon['message'];
+            //         $couponCode = $validateCoupon['code'];
+            //         $coupon = Coupon::where('code', $couponCode)->first();
+            //         // print '<pre>'; print_r($coupon); die;
+            //         if($user){
+            //             $user->coupon()->where('coupon_id', $coupon->id)->delete();
+            //         }else{
+            //             $uuid = Helper::getUserUUID();
+            //             UserCoupon::where('coupon_id', $coupon->id)->where('uuid', $uuid)->delete();
+            //         }
+            //     }
+
+            // updated code by abhi
+            if ($deleted) {
+
+ 
+
+    // Check if any temperature-sensitive product still exists
+    $hasTempSensitive = $cartObj->where('temp_sensitive', 1)->exists();
+
+    // If no temperature-sensitive products remain,
+    // remove the Ice Bag (Product ID: 2907)
+    if (!$hasTempSensitive) {
+        $cartObj->where('product_id', 2907)->delete();
+    }
+
+    // Refresh cart again after removing Ice Bag (if removed)
+    $cartObj = Helper::getCartObj($user);
+    $count = $cartObj->count();
+
+    // Validate Coupon
+    $validateCoupon = Helper::validateCoupon($user);
+    $couponError = '';
+    $couponCode = '';
+
+    if (!$validateCoupon['result']) {
+
+        $couponError = $validateCoupon['message'];
+        $couponCode = $validateCoupon['code'];
+
+        $coupon = Coupon::where('code', $couponCode)->first();
+
+        if ($coupon) {
+            if ($user) {
+                $user->coupon()->where('coupon_id', $coupon->id)->delete();
+            } else {
+                $uuid = Helper::getUserUUID();
+                UserCoupon::where('coupon_id', $coupon->id)
+                    ->where('uuid', $uuid)
+                    ->delete();
+            }
+        }
+    }
+
+    $checkout = Helper::checkout($user);
+    $cart = Helper::getCartShowList($user);
+
+    return [
+        'count' => $count,
+        'result' => true,
+        'productsHtml' => (string) View::make('front.cart.products-section')->with(compact('cart')),
+        'checkoutHtml' => (string) View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')),
+        'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart',
+        'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart',
+        'coupon_error' => $couponError,
+        'coupon_code' => $couponCode,
+    ];
+}
 
                 $checkout = Helper::checkout($user);
                 $cart = Helper::getCartShowList($user);
