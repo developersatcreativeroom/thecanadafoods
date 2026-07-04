@@ -25959,10 +25959,13 @@ fieldset:disabled .btn {
 }
 
 .text-warning {
-    --bs-text-opacity: 1;
-    color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important
+  --bs-text-opacity: 1;
+  color: rgb(255, 7, 7) !important;
 }
 
+.mh-31 {
+  height: 31px !important;
+}
 .text-danger {
     --bs-text-opacity: 1;
     color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important

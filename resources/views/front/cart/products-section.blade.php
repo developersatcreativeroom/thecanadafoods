@@ -6,7 +6,7 @@
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Price</th>
-            <th></th>
+            <th>Action</th>
         </thead>
         <tbody>
             @foreach($cart as $cartSingle)

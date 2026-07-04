@@ -1113,6 +1113,30 @@ ul.wsp-pages-list {
     box-shadow: 0 0 0 .15rem rgba(255, 255, 255, .35);
 }
 
+
+
+
+
+.ice-packs {
+  background: #c2c4c75c;
+  border: 1px solid #dbeafe;
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: rgb(219, 234, 254);
+  border-left: 5px solid #0d6efd;
+  border-right: 5px solid #0d6efd;
+  border-radius: 10px;
+  padding: 18px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all .3s ease;
+}
+
+.ice-packs:hover{
+    box-shadow: 0 8px 20px rgba(13,110,253,.12);
+    transform: translateY(-2px);
+}
+
 @media (min-width: 768px) {
     .category-bootstrap-nav .dropdown:hover > .category-dropdown-box,
     .category-bootstrap-nav .dropdown:focus-within > .category-dropdown-box,

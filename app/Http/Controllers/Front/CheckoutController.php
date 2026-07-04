@@ -18,6 +18,8 @@ use Stripe\Checkout\Session as StripeCheckoutSession;
 
 use Carbon\Carbon;
 use App\Helper;
+use App\Models\Category;
+use App\Models\Product;
 use Auth;
 use Hash;
 use Storage;
@@ -44,6 +46,10 @@ class CheckoutController extends Controller
     {   
         $user = Auth::user();
         $cart = Helper::getCartShowList($user);
+
+        $total_temp_sensitive=$cart->where('temp_sensitive',1)->count();
+
+        // dd($cart,$total_temp_sensitive);
         //print '<pre>'; print_r($cart->toArray()); die;
         if($cart->count() <= 0){
             return to_route('cart');
@@ -780,7 +786,18 @@ class CheckoutController extends Controller
             $coupon = Helper::getCouponDetails($user);
         }
 
-        return view($this->prefix.'.'.$this->folder.'.checkout')->with(compact('cart','checkout','addresses','addressBilling','addressShipping','allowedPaymentMethods','countries', 'isEnquiryWebsite', 'intent', 'paymentMethods','couponEnabled','coupon'));
+   $products = Product::where('status', 1)
+    ->whereHas('categories', function ($q) {
+        $q->where('category_id', Category::where('slug', 'canadian-ice-packs')->value('id'));
+    })
+    ->get();
+
+   
+
+    // dd($products);
+
+
+        return view($this->prefix.'.'.$this->folder.'.checkout')->with(compact('cart','products','total_temp_sensitive','checkout','addresses','addressBilling','addressShipping','allowedPaymentMethods','countries', 'isEnquiryWebsite', 'intent', 'paymentMethods','couponEnabled','coupon'));
         
     }
 

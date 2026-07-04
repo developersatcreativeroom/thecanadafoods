@@ -632,8 +632,31 @@ class Helper
             // if($already){
             //     $html .= '<a class="btn btn-secondary d-block btn-md rounded-1 delete-cart" data-key="'.$product->slug.'" data-page="list">Remove from Cart</a>';
             // }else{
-            $html .= '<button aria-label="Add To Cart" class="btn btn-secondary btn-sm d-block btn-md rounded-1 add-cart mb-3 w-100" data-key="' . $product->slug . '" data-page="list">Add to Cart</button>';
+            // $html .= '<button aria-label="Add To Cart" class="btn btn-secondary btn-sm d-block btn-md rounded-1 add-cart mb-3 w-100" data-key="' . $product->slug . '" data-page="list">Add to Cart</button>';
             // }
+
+            $html .= '
+<div class="mb-3 detail-info">
+
+    <div class="product-qty d-flex align-items-center detail-qty mb-2" style="max-width: unset;">
+        <button class="change-qty qty-down mh-31">-</button>
+
+        <input type="text"
+               class="qty-val product-qty-val only-numbers mh-31"
+               value="1" style="width: 68%;">
+
+        <button class="change-qty qty-up mh-31"
+                data-stock="'.$product->stock.'">+</button>
+    </div>
+
+    <button aria-label="Add To Cart"
+            class="btn btn-secondary btn-sm d-block rounded-1 add-cart w-100"
+            data-key="'.$product->slug.'"
+            data-page="list">
+        Add to Cart
+    </button>
+
+</div>';
 
         } else {
             $html .= '<button href="' . route('product', $product->slug) . '" class="btn btn-sm btn-secondary d-block btn-md rounded-1 mb-3 w-100">View Details</button>';
@@ -742,8 +765,31 @@ class Helper
             // if($already){
             //     $html .= '<a aria-label="Remove From Cart" class="action-btn hover-up delete-cart" data-key="'.$product->slug.'" data-page="list"><i class="fi-rs-trash"></i></a>';
             // }else{
-            $html .= '<button aria-label="Add To Cart" class="action-btn hover-up add-cart w-100" data-key="' . $product->slug . '" data-page="list"><i class="fi-rs-shopping-bag-add"></i></button>';
+            // $html .= '<button aria-label="Add To Cart" class="action-btn hover-up add-cart w-100" data-key="' . $product->slug . '" data-page="list"><i class="fi-rs-shopping-bag-add"></i></button>';
             // }
+
+            $html .= '
+<div class="mb-3">
+
+    <div class="product-qty d-flex align-items-center detail-qty mb-2">
+        <button class="change-qty qty-down">-</button>
+
+        <input type="text"
+               class="qty-val product-qty-val only-numbers"
+               value="1">
+
+        <button class="change-qty qty-up"
+                data-stock="'.$product->stock.'">+</button>
+    </div>
+
+    <button aria-label="Add To Cart"
+            class="btn btn-secondary btn-sm d-block rounded-1 add-cart w-100"
+            data-key="'.$product->slug.'"
+            data-page="list">
+        Add to Cart
+    </button>
+
+</div>';
 
         } else {
             $html .= '<button aria-label="View Product" class="action-btn hover-up w-100" href="' . route('product', $product->slug) . '" ><i class="fi-rs-eye"></i></button>';

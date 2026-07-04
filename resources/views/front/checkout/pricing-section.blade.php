@@ -27,7 +27,7 @@
 
     <tr>
         <td colspan="2">SubTotal</td>
-        <td colspan="2" class="text-end">
+        <td colspan="2" class="text-end subtotal-price">
             {{$checkout['currency']}}{{$checkout['sub_total']}}
         </td>
     </tr>
@@ -36,6 +36,13 @@
         <td colspan="2" class="text-end">
             <span id="shipping"
                 data-value="{{$checkout['shipping_calculate']}}">{{$checkout['currency']}}{{$checkout['shipping']}}</span>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">Temp Sensitive Products</td>
+        <td colspan="2" class="text-end">
+            {{$total_temp_sensitive}}
         </td>
     </tr>
 
@@ -67,6 +74,6 @@
 <span class="sidebar-spacer d-block my-4 opacity-50"></span>
 <div class="d-flex align-items-center justify-content-between">
     <h6 class="mb-0 fs-md">Total</h6>
-    <h6 class="mb-0 fs-md" id="total" data-value="{{$checkout['total_calculate']}}">
+    <h6 class="mb-0 fs-md subtotal-price" id="total" data-value="{{$checkout['total_calculate']}}">
         {{$checkout['currency']}}{{$checkout['total']}}</h6>
 </div>
