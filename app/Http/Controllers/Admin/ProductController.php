@@ -760,7 +760,7 @@ class ProductController extends Controller implements HasMiddleware
                 Helper::xeroItemAddUpdate($product, $oldProduct);
             }
             Helper::flashMessage(true, 'Product added/updated successfully!');
-            return to_route('admin.products');
+            return to_route('admin.product.edit', $product->id);
         } else {
             DB::rollBack();
             Helper::flashMessage(false, 'Something went wrong');
