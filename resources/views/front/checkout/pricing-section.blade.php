@@ -39,12 +39,14 @@
         </td>
     </tr>
 
+    @if(($total_temp_sensitive ?? 0) > 0)
     <tr>
         <td colspan="2">Temp Sensitive Products</td>
         <td colspan="2" class="text-end">
-            {{$total_temp_sensitive ?? 0}}
+            {{ $total_temp_sensitive }}
         </td>
     </tr>
+@endif
 
     @if($checkout['products_service'] > 0)
     <tr>
