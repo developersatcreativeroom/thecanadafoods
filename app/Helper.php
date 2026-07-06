@@ -26,6 +26,7 @@ use App\Models\SocialMarketing;
 use App\Models\ShippingPrice;
 use App\Models\Coupon;
 use App\Models\Order;
+use Illuminate\Support\Str;
 
 // use Gregwar\Image\Image;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -52,7 +53,6 @@ use DB;
 use Arr;
 use Route;
 use Storage;
-use Str;
 
 use Illuminate\Support\Facades\File;
 
@@ -163,7 +163,7 @@ class Helper
         }
     }
 
-    public static function uploadImage($image, $model, $directory, $isDirectoryID, $operation, $columnName, $isColumn = false, $isThumb = false, $deletePrevImage = true, $subFolderID = false)
+    public static function uploadImage($image, $model, $directory, $isDirectoryID, $operation, $columnName, $isColumn = false, $isThumb = false, $deletePrevImage = true, $subFolderID = false, $altText = false)
 {
 
     if ($image->getMimeType() == 'image/jpeg') {
@@ -175,9 +175,16 @@ class Helper
         $extension = '.png';
     } else {
         $extension = '.' . $image->getClientOriginalExtension();
+
+        // dd($model->id);
     }
 
-    $name = md5(time() + rand(10, 1000));
+    
+
+$name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 1000));
+
+
+
     $saveName = $name . $extension;
 
     // if(extension_loaded("exif")){
@@ -299,11 +306,25 @@ class Helper
     }
 
     if ($isColumn) {
-        $model->{$columnName} = $saveName;
-        $model->save();
-    } else {
-        $model->create([$columnName => $saveName]);
-    }
+    $model->{$columnName} = $saveName;
+    $model->image_alt = $altText ?: null;
+    $model->save();
+} else {
+    $model->create([
+        $columnName => $saveName,
+        'image_alt' => $altText ?: null,
+    ]);
+}
+
+    // if ($isColumn) {
+
+    // dd($altText);
+    //     $model->{$columnName} = $saveName;
+    //     $model->image_alt = $altText !== false ? $altText : null;
+    //     $model->save();
+    // } else {
+    //     $model->create([$columnName => $saveName]);
+    // }
 
     return $saveName;
 }
@@ -398,16 +419,19 @@ class Helper
     //     }
     // }
 
-    public static function uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isThumb,$deletePrevImage,$subFolderID) {
+    public static function uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn, $imagesAlt = [],$isThumb,$deletePrevImage,$subFolderID) {
 
     if (empty($images)) {
         return;
     }
 
-    foreach ($images as $image) {
+    foreach ($images as $key => $image) {
+        $altText = isset($imagesAlt[$key]) && !empty($imagesAlt[$key]) ? trim($imagesAlt[$key]) : false;
+
+        //  dd($altText);
 
         try {
-            self::uploadImage($image,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isThumb,$deletePrevImage,$subFolderID);
+            self::uploadImage($image,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isThumb,$deletePrevImage,$subFolderID,$altText);
 
         } catch (\Throwable $e) {
 

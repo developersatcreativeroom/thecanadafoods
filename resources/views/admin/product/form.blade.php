@@ -197,6 +197,35 @@
                                                 <div class="form-group">
                                                     <div class="form-row">
                                                         @foreach ($row->images as $image)
+<div class="col-md-4 mb-3">
+
+    <div class="gallery-img-container">
+
+        <a class="btn btn-sm btn-dark delete-btn btn-remove"
+            href="{{ route('admin.delete.product.gallery', [$row->id,$image->id]) }}">
+            <i class="fas fa-times"></i>
+        </a>
+
+        <img class="img-fluid img-thumbnail mb-2"
+            src="{{ asset('storage/products/'.$row->id.'/gallery/'.$image->image) }}"
+            alt="{{ $image->image_alt }}">
+
+        <input type="hidden" name="gallery_image_id[]" value="{{ $image->id }}">
+
+        <label>Image Alt Text</label>
+
+        <input
+            type="text"
+            class="form-control"
+            name="gallery_alt[{{ $image->id }}]"
+            value="{{ old('gallery_alt.'.$image->id,$image->image_alt) }}"
+            placeholder="Enter image alt text">
+
+    </div>
+
+</div>
+@endforeach
+                                                        {{-- @foreach ($row->images as $image)
                                                             <div class="col-md-4">
                                                                 <div class="gallery-img-container">
                                                                     <a class="btn btn-sm btn-dark delete-btn btn-remove"
@@ -206,7 +235,7 @@
                                                                         src="{{ asset('storage/products/') }}/{{ $row->id }}/gallery/{{ $image->image }}" />
                                                                 </div>
                                                             </div>
-                                                        @endforeach
+                                                        @endforeach --}}
                                                     </div>
                                                 </div>
                                             @endif

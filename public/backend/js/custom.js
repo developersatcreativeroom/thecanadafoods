@@ -2109,10 +2109,41 @@ $( document ).ready(function() {
       });
     }
 
-    $("#multiple_images").spartanMultiImagePicker({
-      fieldName:  'images[]',
-       allowedExt: "png|jpg|jpeg|webp|avif",
-    });
+    // $("#multiple_images").spartanMultiImagePicker({
+    //   fieldName:  'images[]',
+    //    allowedExt: "png|jpg|jpeg|webp|avif",
+    // });
+
+$("#multiple_images").spartanMultiImagePicker({
+    fieldName: 'images[]',
+    allowedExt: "png|jpg|jpeg|webp|avif",
+
+    onAddRow: function (index) {
+
+        setTimeout(function () {
+
+            var container = $("#multiple_images")
+                .find(".spartan_item_wrapper")
+                .last();
+
+            if (container.find(".gallery-alt-text").length === 0) {
+
+                container.append(`
+                    <div class="mt-2 gallery-alt-text">
+                        <label class="mb-1"><strong>Image Alt Text</strong></label>
+                        <input type="text"
+                               name="images_alt[]"
+                               class="form-control"
+                               placeholder="Enter image alt text">
+                    </div>
+                `);
+
+            }
+
+        }, 100);
+
+    }
+});
 
     $('body').on('keydown', '.only-numbers', function (e) {
       allow_numbers_only(e)

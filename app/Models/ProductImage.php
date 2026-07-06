@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductImage extends Model
 {
     protected $fillable = [
-        'image', 'is_default'
+        'image','image_alt', 'is_default'
     ];
 
     public function Products()
