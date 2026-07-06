@@ -730,15 +730,18 @@ class ProductController extends Controller implements HasMiddleware
         }
 
         $operation = empty($id) ? 'add' : 'update';
+        $altText = isset($imageAlt) && !empty($imageAlt) ? trim($imageAlt) : false;
 
         // add products images here start
         if (isset($image)) {
             // image, model, directory, is_directory_id, add_or_update, column_name ,is_column_update, is_thumb, delete_prev_image, sub_folder_id
-            Helper::uploadImage($image, $product, 'products', true, $operation, 'image', true, true, $isPreviousImageDelete, false);
+
+            
+            Helper::uploadImage($image, $product, 'products', true, $operation, 'image', true, true, $isPreviousImageDelete, false,$altText);
         }
         if (isset($hoverImage)) {
             // image, model, directory, is_directory_id, add_or_update, column_name ,is_column_update, is_thumb, delete_prev_image, sub_folder_id
-            Helper::uploadImage($hoverImage, $product, 'products', true, $operation, 'hover_image', true, true, $isPreviousImageDelete, false);
+            Helper::uploadImage($hoverImage, $product, 'products', true, $operation, 'hover_image', true, true, $isPreviousImageDelete, false,$altText);
         }
         if (isset($images) && is_array($images) && count($images) > 0) {
             //print '<pre>'; print_r($images); die;
