@@ -305,15 +305,24 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
     }
 
-    if ($isColumn) {
+   if ($isColumn) {
     $model->{$columnName} = $saveName;
-    $model->image_alt = $altText ?: null;
+
+    if (!empty($altText)) {
+        $model->image_alt = $altText;
+    }
+
     $model->save();
 } else {
-    $model->create([
+    $data = [
         $columnName => $saveName,
-        'image_alt' => $altText ?: null,
-    ]);
+    ];
+
+    if (!empty($altText)) {
+        $data['image_alt'] = $altText;
+    }
+
+    $model->create($data);
 }
 
     // if ($isColumn) {
