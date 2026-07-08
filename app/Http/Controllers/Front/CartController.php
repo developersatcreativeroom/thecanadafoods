@@ -228,7 +228,7 @@ class CartController extends Controller
     public function deleteCart(Request $request)
     {
 
-        $p_id=2907;
+        $p_id="2907";
         $slug = $request->key;
         $attribute = $request->attribute;
 
@@ -257,6 +257,7 @@ class CartController extends Controller
             $hasTempSensitive = $cartObj->get()->contains(fn($cart) => optional($cart->product)->temp_sensitive == 1);
 
             if ($hasTempSensitive) {
+
                  $cart = $cartObj->where('product_id', $p_id)->where('product_attribute_id', $attribute)->first();
                 $cart->delete();
             }
