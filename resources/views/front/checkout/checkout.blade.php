@@ -1227,58 +1227,96 @@
         });
     </script>
 
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
+   <script>
+(function () {
 
-    const form = document.querySelector('form');
+    const STORAGE_KEY = 'checkout_form_data';
 
-    if (!form) return;
-
-    const storageKey = 'checkout_form_data';
-
-    const savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
-
-    form.querySelectorAll('input, textarea, select').forEach(function (field) {
-
-        if (!field.name) return;
-
-        if (savedData[field.name] !== undefined) {
-
-            if (field.type === 'checkbox' || field.type === 'radio') {
-                field.checked = savedData[field.name];
-            } else {
-                field.value = savedData[field.name];
-            }
-
-            field.dispatchEvent(new Event('change'));
-        }
-
-        field.addEventListener('input', saveForm);
-        field.addEventListener('change', saveForm);
-    });
+    function getFields() {
+        return document.querySelectorAll(
+            'input[name], select[name], textarea[name]'
+        );
+    }
 
     function saveForm() {
         let data = {};
 
-        form.querySelectorAll('input, textarea, select').forEach(function (field) {
+        getFields().forEach(function (field) {
 
             if (!field.name) return;
 
-            if (field.type === 'checkbox' || field.type === 'radio') {
+            if (field.type === 'password' || field.type === 'file') {
+                return;
+            }
+
+            if (field.type === 'checkbox') {
                 data[field.name] = field.checked;
+            } else if (field.type === 'radio') {
+                if (field.checked) {
+                    data[field.name] = field.value;
+                }
             } else {
                 data[field.name] = field.value;
             }
+
         });
 
-        localStorage.setItem(storageKey, JSON.stringify(data));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    form.addEventListener('submit', function () {
-        localStorage.removeItem(storageKey);
+    function restoreForm() {
+
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+        getFields().forEach(function (field) {
+
+            if (!field.name || data[field.name] === undefined) {
+                return;
+            }
+
+            if (field.type === 'checkbox') {
+                field.checked = data[field.name];
+            } else if (field.type === 'radio') {
+                field.checked = field.value == data[field.name];
+            } else {
+                field.value = data[field.name];
+            }
+
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+    }
+
+    document.addEventListener('input', function (e) {
+        if (e.target.matches('input[name], select[name], textarea[name]')) {
+            saveForm();
+        }
     });
 
-});
+    document.addEventListener('change', function (e) {
+        if (e.target.matches('input[name], select[name], textarea[name]')) {
+            saveForm();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        restoreForm();
+
+        setTimeout(restoreForm, 300);
+        setTimeout(restoreForm, 800);
+        setTimeout(restoreForm, 1500);
+
+        document.querySelectorAll('form').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                localStorage.removeItem(STORAGE_KEY);
+            });
+        });
+
+    });
+
+})();
 </script>
 
 
