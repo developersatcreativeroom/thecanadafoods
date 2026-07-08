@@ -36,7 +36,7 @@ class CartController extends Controller
     public function addCart(Request $request)
     {
 
-    
+
         $quantity = $request->quantity;
         $attribute = $request->attribute;
         $slug = $request->key;
@@ -47,9 +47,9 @@ class CartController extends Controller
         }
 
         $product = Product::with(['attributes.details'])->where('slug', $slug)->first();
-    $hasTempSensitive = optional($product)->temp_sensitive == 1;
+        $hasTempSensitive = optional($product)->temp_sensitive == 1;
 
-    
+
 
 
 
@@ -109,26 +109,23 @@ class CartController extends Controller
                 }
             }
 
-            if($hasTempSensitive){
-                $iceProduct=Product::find(2907);
-        $already=Helper::alreadyInCart($iceProduct);
-        $stockQuantityIce = Helper::getProductStockQuantity($product, $attribute);
+            if ($hasTempSensitive) {
+                $iceProduct = Product::find(2907);
+                $already = Helper::alreadyInCart($iceProduct);
+                $stockQuantityIce = Helper::getProductStockQuantity($product, $attribute);
 
-        if(!$already){
-            if (1 > $stockQuantityIce) {
-                    return array('result' => false, 'message' => 'Product quantity is more than available');
+                if (!$already) {
+                    if (1 > $stockQuantityIce) {
+                        return array('result' => false, 'message' => 'Product quantity is more than available');
+                    }
+                    if ($user) {
+                        $query = $cartObj->create(['product_id' => $iceProduct->id, 'quantity' => 1, 'product_attribute_id' => $attributeID]);
+                    } else {
+                        $uuid = Helper::getUserUUID();
+                        $query = $cartObj->create(['product_id' => $iceProduct->id, 'quantity' => 1, 'uuid' => $uuid,  'product_attribute_id' => $attributeID]);
+                    }
                 }
-                if ($user) {
-                    $query = $cartObj->create(['product_id' => $iceProduct->id, 'quantity' => 1, 'product_attribute_id' => $attributeID]);
-                } else {
-                    $uuid = Helper::getUserUUID();
-                    $query = $cartObj->create(['product_id' => $iceProduct->id, 'quantity' => 1, 'uuid' => $uuid,  'product_attribute_id' => $attributeID]);
-                }
-
-        }
-
-      
-    }
+            }
 
             if ($page == 'wishlist') {
                 $wishlistObj = Helper::getWishlistObj($user);
@@ -227,129 +224,241 @@ class CartController extends Controller
 
     public function deleteCart(Request $request)
     {
+        $iceBagProductId = 2907;
 
-        $p_id=2907;
         $slug = $request->key;
         $attribute = $request->attribute;
 
-        //$cart=Auth::user()->cart();
-        //print $productID; die;
-        $product = Product::with(['attributes.details'])->where('slug', $slug)->first();
+        $product = Product::with(['attributes.details'])
+            ->where('slug', $slug)
+            ->first();
+
         $user = Auth::user();
         $cartObj = Helper::getCartObj($user);
 
+        if (!$product) {
+            return [
+                'count' => 0,
+                'result' => false,
+                'message' => 'Product not found'
+            ];
+        }
 
+        $cart = $cartObj
+            ->where('product_id', $product->id)
+            ->where('product_attribute_id', $attribute)
+            ->first();
 
-        $cart = $cartObj->where('product_id', $product->id)->where('product_attribute_id', $attribute)->first();
+        if (!$cart) {
+            return [
+                'count' => 0,
+                'result' => false,
+                'message' => 'Something went wrong'
+            ];
+        }
 
+        $deleted = $cart->delete();
 
-        //print '<pre>'; print_r($cart); die;
-        //$query = $cart->create(['product_id'=>$productID, 'quantity'=> $quantity]);
+        if (!$deleted) {
+            return [
+                'count' => 0,
+                'result' => false,
+                'message' => 'Something went wrong'
+            ];
+        }
 
-        if ($cart == null) {
-            //$count=$cart->count();
-            $count = 0;
-            return array('count' => $count, 'result' => false, 'message' => 'Something went wrong');
-        } else {
-            $deleted = $cart->delete();
-            $cartObj = Helper::getCartObj($user);
+        $cartObj = Helper::getCartObj($user);
 
-            $hasTempSensitive = $cartObj->get()->contains(fn($cart) => optional($cart->product)->temp_sensitive == 1);
+        $hasTempSensitive = $cartObj
+            ->get()
+            ->contains(fn($item) => optional($item->product)->temp_sensitive == 1);
 
-            if (!$hasTempSensitive) {
-                
-                 $cart = $cartObj->where('product_id', $p_id)->where('product_attribute_id', $attribute)->first();
-                $cart->delete();
+        if (!$hasTempSensitive) {
+
+            $iceBag = $cartObj
+                ->where('product_id', $iceBagProductId)
+                ->first();
+
+            if ($iceBag) {
+                $iceBag->delete();
             }
 
-            $count = $cartObj->count();
+            $cartObj = Helper::getCartObj($user);
+        }
 
-            $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');
-            $isEnquiryWebsite = $isEnquiryWebsite['is_enquiry_website'];
+        $count = $cartObj->count();
 
-            // if($deleted){
+        $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');
+        $isEnquiryWebsite = $isEnquiryWebsite['is_enquiry_website'];
 
-            //     $validateCoupon = Helper::validateCoupon($user);
-            //     $couponError = '';
-            //     $couponCode = '';
-            //     if(!$validateCoupon['result']){
-            //         $couponError = $validateCoupon['message'];
-            //         $couponCode = $validateCoupon['code'];
-            //         $coupon = Coupon::where('code', $couponCode)->first();
-            //         // print '<pre>'; print_r($coupon); die;
-            //         if($user){
-            //             $user->coupon()->where('coupon_id', $coupon->id)->delete();
-            //         }else{
-            //             $uuid = Helper::getUserUUID();
-            //             UserCoupon::where('coupon_id', $coupon->id)->where('uuid', $uuid)->delete();
-            //         }
-            //     }
+        $validateCoupon = Helper::validateCoupon($user);
 
-            // updated code by abhi
-            if ($deleted) {
+        $couponError = '';
+        $couponCode = '';
 
+        if (!$validateCoupon['result']) {
 
+            $couponError = $validateCoupon['message'];
+            $couponCode = $validateCoupon['code'];
 
-                // Check if any temperature-sensitive product still exists
-                $hasTempSensitive = $cartObj->where('temp_sensitive', 1)->exists();
+            $coupon = Coupon::where('code', $couponCode)->first();
 
-                // If no temperature-sensitive products remain,
-                // remove the Ice Bag (Product ID: 2907)
-                if (!$hasTempSensitive) {
-                    $cartObj->where('product_id', 2907)->delete();
+            if ($coupon) {
+
+                if ($user) {
+                    $user->coupon()
+                        ->where('coupon_id', $coupon->id)
+                        ->delete();
+                } else {
+
+                    $uuid = Helper::getUserUUID();
+
+                    UserCoupon::where('coupon_id', $coupon->id)
+                        ->where('uuid', $uuid)
+                        ->delete();
                 }
-
-                // Refresh cart again after removing Ice Bag (if removed)
-                $cartObj = Helper::getCartObj($user);
-                $count = $cartObj->count();
-
-                // Validate Coupon
-                $validateCoupon = Helper::validateCoupon($user);
-                $couponError = '';
-                $couponCode = '';
-
-                if (!$validateCoupon['result']) {
-
-                    $couponError = $validateCoupon['message'];
-                    $couponCode = $validateCoupon['code'];
-
-                    $coupon = Coupon::where('code', $couponCode)->first();
-
-                    if ($coupon) {
-                        if ($user) {
-                            $user->coupon()->where('coupon_id', $coupon->id)->delete();
-                        } else {
-                            $uuid = Helper::getUserUUID();
-                            UserCoupon::where('coupon_id', $coupon->id)
-                                ->where('uuid', $uuid)
-                                ->delete();
-                        }
-                    }
-
-
-                    $checkout = Helper::checkout($user);
-                    $cart = Helper::getCartShowList($user);
-
-                    return [
-                        'count' => $count,
-                        'result' => true,
-                        'productsHtml' => (string) View::make('front.cart.products-section')->with(compact('cart')),
-                        'checkoutHtml' => (string) View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')),
-                        'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart',
-                        'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart',
-                        'coupon_error' => $couponError,
-                        'coupon_code' => $couponCode,
-                    ];
-                }
-
-                $checkout = Helper::checkout($user);
-                $cart = Helper::getCartShowList($user);
-                return array('count' => $count, 'result' => true, 'productsHtml' => (string)View::make('front.cart.products-section')->with(compact('cart')), 'checkoutHtml' => (string)View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')), 'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart', 'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart', 'coupon_error' => $couponError, 'coupon_code' => $couponCode);
-            } else {
-                return array('count' => $count, 'result' => false, 'message' => 'Something went wrong');
             }
         }
+
+        $checkout = Helper::checkout($user);
+        $cart = Helper::getCartShowList($user);
+
+        return [
+            'count' => $count,
+            'result' => true,
+            'productsHtml' => (string) View::make('front.cart.products-section')->with(compact('cart')),
+            'checkoutHtml' => (string) View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')),
+            'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart',
+            'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart',
+            'coupon_error' => $couponError,
+            'coupon_code' => $couponCode,
+        ];
     }
+    // public function deleteCart(Request $request)
+    // {
+
+    //     $p_id=2907;
+    //     $slug = $request->key;
+    //     $attribute = $request->attribute;
+
+    //     //$cart=Auth::user()->cart();
+    //     //print $productID; die;
+    //     $product = Product::with(['attributes.details'])->where('slug', $slug)->first();
+    //     $user = Auth::user();
+    //     $cartObj = Helper::getCartObj($user);
+
+
+
+    //     $cart = $cartObj->where('product_id', $product->id)->where('product_attribute_id', $attribute)->first();
+
+
+    //     //print '<pre>'; print_r($cart); die;
+    //     //$query = $cart->create(['product_id'=>$productID, 'quantity'=> $quantity]);
+
+    //     if ($cart == null) {
+    //         //$count=$cart->count();
+    //         $count = 0;
+    //         return array('count' => $count, 'result' => false, 'message' => 'Something went wrong');
+    //     } else {
+    //         $deleted = $cart->delete();
+    //         $cartObj = Helper::getCartObj($user);
+
+    //         $hasTempSensitive = $cartObj->get()->contains(fn($cart) => optional($cart->product)->temp_sensitive == 1);
+
+    //         if (!$hasTempSensitive) {
+
+    //              $cart = $cartObj->where('product_id', $p_id)->where('product_attribute_id', $attribute)->first();
+    //             $cart->delete();
+    //         }
+
+    //         $count = $cartObj->count();
+
+    //         $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');
+    //         $isEnquiryWebsite = $isEnquiryWebsite['is_enquiry_website'];
+
+    //         // if($deleted){
+
+    //         //     $validateCoupon = Helper::validateCoupon($user);
+    //         //     $couponError = '';
+    //         //     $couponCode = '';
+    //         //     if(!$validateCoupon['result']){
+    //         //         $couponError = $validateCoupon['message'];
+    //         //         $couponCode = $validateCoupon['code'];
+    //         //         $coupon = Coupon::where('code', $couponCode)->first();
+    //         //         // print '<pre>'; print_r($coupon); die;
+    //         //         if($user){
+    //         //             $user->coupon()->where('coupon_id', $coupon->id)->delete();
+    //         //         }else{
+    //         //             $uuid = Helper::getUserUUID();
+    //         //             UserCoupon::where('coupon_id', $coupon->id)->where('uuid', $uuid)->delete();
+    //         //         }
+    //         //     }
+
+    //         // updated code by abhi
+    //         if ($deleted) {
+
+
+
+    //             // Check if any temperature-sensitive product still exists
+    //             $hasTempSensitive = $cartObj->where('temp_sensitive', 1)->exists();
+
+    //             // If no temperature-sensitive products remain,
+    //             // remove the Ice Bag (Product ID: 2907)
+    //             if (!$hasTempSensitive) {
+    //                 $cartObj->where('product_id', 2907)->delete();
+    //             }
+
+    //             // Refresh cart again after removing Ice Bag (if removed)
+    //             $cartObj = Helper::getCartObj($user);
+    //             $count = $cartObj->count();
+
+    //             // Validate Coupon
+    //             $validateCoupon = Helper::validateCoupon($user);
+    //             $couponError = '';
+    //             $couponCode = '';
+
+    //             if (!$validateCoupon['result']) {
+
+    //                 $couponError = $validateCoupon['message'];
+    //                 $couponCode = $validateCoupon['code'];
+
+    //                 $coupon = Coupon::where('code', $couponCode)->first();
+
+    //                 if ($coupon) {
+    //                     if ($user) {
+    //                         $user->coupon()->where('coupon_id', $coupon->id)->delete();
+    //                     } else {
+    //                         $uuid = Helper::getUserUUID();
+    //                         UserCoupon::where('coupon_id', $coupon->id)
+    //                             ->where('uuid', $uuid)
+    //                             ->delete();
+    //                     }
+    //                 }
+
+
+    //                 $checkout = Helper::checkout($user);
+    //                 $cart = Helper::getCartShowList($user);
+
+    //                 return [
+    //                     'count' => $count,
+    //                     'result' => true,
+    //                     'productsHtml' => (string) View::make('front.cart.products-section')->with(compact('cart')),
+    //                     'checkoutHtml' => (string) View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')),
+    //                     'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart',
+    //                     'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart',
+    //                     'coupon_error' => $couponError,
+    //                     'coupon_code' => $couponCode,
+    //                 ];
+    //             }
+
+    //             $checkout = Helper::checkout($user);
+    //             $cart = Helper::getCartShowList($user);
+    //             return array('count' => $count, 'result' => true, 'productsHtml' => (string)View::make('front.cart.products-section')->with(compact('cart')), 'checkoutHtml' => (string)View::make('front.cart.checkout-section')->with(compact('checkout', 'isEnquiryWebsite')), 'message' => $isEnquiryWebsite ? 'Product removed from enquiry cart' : 'Product removed from cart', 'update_html' => $isEnquiryWebsite ? 'Add to enquiry' : 'Add to cart', 'coupon_error' => $couponError, 'coupon_code' => $couponCode);
+    //         } else {
+    //             return array('count' => $count, 'result' => false, 'message' => 'Something went wrong');
+    //         }
+    //     }
+    // }
 
     public function emptyCart(Request $request)
     {
