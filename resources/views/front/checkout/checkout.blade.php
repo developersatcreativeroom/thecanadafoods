@@ -1227,5 +1227,59 @@
         });
     </script>
 
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form = document.querySelector('form');
+
+    if (!form) return;
+
+    const storageKey = 'checkout_form_data';
+
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+    form.querySelectorAll('input, textarea, select').forEach(function (field) {
+
+        if (!field.name) return;
+
+        if (savedData[field.name] !== undefined) {
+
+            if (field.type === 'checkbox' || field.type === 'radio') {
+                field.checked = savedData[field.name];
+            } else {
+                field.value = savedData[field.name];
+            }
+
+            field.dispatchEvent(new Event('change'));
+        }
+
+        field.addEventListener('input', saveForm);
+        field.addEventListener('change', saveForm);
+    });
+
+    function saveForm() {
+        let data = {};
+
+        form.querySelectorAll('input, textarea, select').forEach(function (field) {
+
+            if (!field.name) return;
+
+            if (field.type === 'checkbox' || field.type === 'radio') {
+                data[field.name] = field.checked;
+            } else {
+                data[field.name] = field.value;
+            }
+        });
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
+    }
+
+    form.addEventListener('submit', function () {
+        localStorage.removeItem(storageKey);
+    });
+
+});
+</script>
+
 
 @endpush
