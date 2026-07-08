@@ -1610,7 +1610,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
             $cartObj = $user->cart()->with('services');
         } else {
             $uuid = Self::getUserUUID();
-            $cartObj = Cart::with('services')->where('cart.uuid', $uuid);
+            $cartObj = Cart::with('services','product')->where('cart.uuid', $uuid);
         }
 
         $cartObj->select('cart.*')->join('products', 'products.id', '=', 'cart.product_id')->where('products.deleted_at', null);    //here
