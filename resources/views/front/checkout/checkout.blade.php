@@ -1227,10 +1227,11 @@
         });
     </script>
 
-   <script>
+ <script>
 (function () {
 
     const STORAGE_KEY = 'checkout_form_data';
+    let isRestoring = false;
 
     function getFields() {
         return document.querySelectorAll(
@@ -1239,15 +1240,17 @@
     }
 
     function saveForm() {
-        let data = {};
+
+        if (isRestoring) {
+            return;
+        }
+
+        const data = {};
 
         getFields().forEach(function (field) {
 
             if (!field.name) return;
-
-            if (field.type === 'password' || field.type === 'file') {
-                return;
-            }
+            if (field.type === 'password' || field.type === 'file') return;
 
             if (field.type === 'checkbox') {
                 data[field.name] = field.checked;
@@ -1264,54 +1267,139 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
+    function restoreField(field, value) {
+
+        if (field.type === 'checkbox') {
+            field.checked = value;
+        } else if (field.type === 'radio') {
+            field.checked = field.value == value;
+        } else {
+            field.value = value;
+        }
+
+    }
+
     function restoreForm() {
 
         const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
+        isRestoring = true;
+
         getFields().forEach(function (field) {
 
-            if (!field.name || data[field.name] === undefined) {
+            if (!field.name) return;
+
+            if (data[field.name] === undefined) return;
+
+            if (field.tagName === 'SELECT') {
+
+                const exists = Array.from(field.options).some(function (option) {
+                    return option.value == data[field.name];
+                });
+
+                if (!exists) {
+                    return;
+                }
+
+            }
+
+            restoreField(field, data[field.name]);
+
+        });
+
+        setTimeout(function () {
+            isRestoring = false;
+        }, 500);
+
+    }
+
+    function waitForShippingState() {
+
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+        const state = data['shipping[state]'];
+
+        if (!state) return;
+
+        let attempts = 0;
+
+        const timer = setInterval(function () {
+
+            attempts++;
+
+            const select = document.querySelector('[name="shipping[state]"]');
+
+            if (!select) {
+
+                if (attempts >= 20) {
+                    clearInterval(timer);
+                }
+
                 return;
             }
 
-            if (field.type === 'checkbox') {
-                field.checked = data[field.name];
-            } else if (field.type === 'radio') {
-                field.checked = field.value == data[field.name];
-            } else {
-                field.value = data[field.name];
+            const option = select.querySelector('option[value="' + state + '"]');
+
+            if (option) {
+
+                isRestoring = true;
+
+                select.value = state;
+
+                select.dispatchEvent(new Event('change', {
+                    bubbles: true
+                }));
+
+                setTimeout(function () {
+                    isRestoring = false;
+                }, 300);
+
+                clearInterval(timer);
+
+                console.log('Shipping state restored:', state);
+
             }
 
-            field.dispatchEvent(new Event('input', { bubbles: true }));
-            field.dispatchEvent(new Event('change', { bubbles: true }));
-        });
+            if (attempts >= 20) {
+                clearInterval(timer);
+            }
+
+        }, 500);
 
     }
 
     document.addEventListener('input', function (e) {
-        if (e.target.matches('input[name], select[name], textarea[name]')) {
-            saveForm();
+
+        if (!e.target.matches('input[name], select[name], textarea[name]')) {
+            return;
         }
+
+        saveForm();
+
     });
 
     document.addEventListener('change', function (e) {
-        if (e.target.matches('input[name], select[name], textarea[name]')) {
-            saveForm();
+
+        if (!e.target.matches('input[name], select[name], textarea[name]')) {
+            return;
         }
+
+        saveForm();
+
     });
 
     document.addEventListener('DOMContentLoaded', function () {
 
         restoreForm();
 
-        setTimeout(restoreForm, 300);
-        setTimeout(restoreForm, 800);
-        setTimeout(restoreForm, 1500);
+        waitForShippingState();
 
         document.querySelectorAll('form').forEach(function (form) {
+
             form.addEventListener('submit', function () {
                 localStorage.removeItem(STORAGE_KEY);
             });
+
         });
 
     });
