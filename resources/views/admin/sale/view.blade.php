@@ -171,6 +171,13 @@
 								<hr>
 
 							<div class="row">
+								<label class="col-sm-3 col-form-label">Shipping Method</label>
+								<div class="col-sm-9">
+								<p class="form-control-plaintext">{{ App\Helper::getShippingMethodLabel($row->shipping_type) }}</p>
+								</div>
+							</div>
+
+							<div class="row">
 								<label class="col-sm-3 col-form-label">Name</label>
 								<div class="col-sm-9">
 								<p class="form-control-plaintext">{{$row->shipping->first_name}} {{$row->shipping->last_name}}</p>

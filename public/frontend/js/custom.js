@@ -1627,14 +1627,20 @@ $('body').on('click', '.remove-wishlist', function (e) {
 
 
     function applyCouponHtml(code){
-        $('#coupon-cont').html('<div class="coupon-row">\
-                                    <span class="copyCode text-primary"> '+code+' </span>\
-                                    <span class="copyBtn bg-secondary text-white" id="remove-coupon" data-code="'+code+'">Remove</span>\
+        $('#coupon-cont').html('<div class="coupon-applied">\
+                                    <span class="coupon-applied-icon"><i class="fas fa-tag"></i></span>\
+                                    <span class="coupon-applied-body">\
+                                        <span class="coupon-applied-code">'+code+'</span>\
+                                        <span class="coupon-applied-label">Coupon applied</span>\
+                                    </span>\
+                                    <button type="button" class="coupon-applied-remove" id="remove-coupon" data-code="'+code+'">\
+                                        <i class="fas fa-xmark"></i> Remove\
+                                    </button>\
                                 </div>');
     }
 
     function removeCouponHtml(){
-        $('#coupon-cont').html('<h4 class="mb-3">Apply Coupon</h4>\
+        $('#coupon-cont').html('<h4 class="checkout-voucher-title mb-3">Have a coupon?</h4>\
                                 <div class="d-flex align-items-center">\
                                     <input type="text" placeholder="Enter Your Coupon" class="theme-input w-100" name="Coupon" id="coupon-code">\
                                     <button type="submit" class="btn btn-secondary flex-shrink-0" id="apply-coupon">Apply Coupon</button>\
@@ -2337,25 +2343,11 @@ $('body').on('click', '.remove-wishlist', function (e) {
             type: "GET",
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: site_url + "/get-state-shipping",
-            data: {state: state},
+            data: {state: state, shipping_method: $('input[name="shipping_method"]:checked').val() || standardMethodValue()},
             success: function (response) {
                 $('.loader').addClass('d-none');
                 console.log(response);
-                $('#pricing-section').html(response.html);
-
-                if(response.checkout.shipping_data.result){
-                        
-                    var noPaymentMethodCount = $('.place-order-cont').find('a.no-payment-method').length;
-                    var noUserAddressCount = $('.place-order-cont').find('a.no-user-address').length;
-                    // alert(noPaymentMethodCount)
-                    // alert(noUserAddressCount)
-                    if(noPaymentMethodCount <= 0 && noUserAddressCount <= 0){
-                        $('.place-order-cont').html('<input type="submit" class="btn btn-primary btn-md rounded w-100 submit-btn" value="Place Order" />');
-                    }
-
-                }else{
-                    $('.place-order-cont').html('<p class="text-danger mb-0"><small>*'+response.checkout.shipping_data.message+' </small></p><a disabled class="btn btn-primary btn-md rounded w-100 text-white disabled" >Place Order</a>');
-                }
+                applyPricingResponse(response);
 
                 // if(response.result){
 
@@ -2367,10 +2359,115 @@ $('body').on('click', '.remove-wishlist', function (e) {
                 //     // $('#shipping').attr('data-value',0);
                 //     // $('#shipping').html(site_currency+' '+0);
                 // }
-                
+
+            },
+            error: function(){
+                $('.loader').addClass('d-none');
             }
         });
     }
+
+    // Shared by getStateShipping() (guest, has #state) and the shipping_method
+    // radio handler for logged-in users (no #state on the page - see below).
+    function applyPricingResponse(response){
+        $('#pricing-section').html(response.html);
+
+        if(response.checkout.shipping_data.result){
+
+            var noPaymentMethodCount = $('.place-order-cont').find('a.no-payment-method').length;
+            var noUserAddressCount = $('.place-order-cont').find('a.no-user-address').length;
+            if(noPaymentMethodCount <= 0 && noUserAddressCount <= 0){
+                $('.place-order-cont').html('<input type="submit" class="btn btn-primary btn-md rounded w-100 submit-btn" value="Place Order" />');
+            }
+
+        }else{
+            $('.place-order-cont').html('<p class="text-danger mb-0"><small>*'+response.checkout.shipping_data.message+' </small></p><a disabled class="btn btn-primary btn-md rounded w-100 text-white disabled" >Place Order</a>');
+        }
+    }
+
+    // Express Shipping is a flat weight-only rate - the destination state/zone plays no
+    // part in it, so the state field is only mandatory while "standard" is selected.
+    function toggleStateRequiredForExpress(){
+        var $state = $('#state');
+        if(!$state.length){
+            return;
+        }
+        if(isExpressMethodValue($('input[name="shipping_method"]:checked').val())){
+            $state.removeAttr('required').removeClass('is-invalid');
+        }else{
+            $state.attr('required', 'required');
+        }
+    }
+
+    // The radio "value" attributes come straight from config('constants.SHIPPING_STATUS')
+    // (numeric, matches the orders.shipping_type column) rather than the literal words
+    // "standard"/"express" - so comparisons go through this instead of a hardcoded string,
+    // and automatically stay correct even if that config's values ever change.
+    function isExpressMethodValue(value){
+        return String(value) === String($('#shipping-method-express').val());
+    }
+
+    function standardMethodValue(){
+        return $('#shipping-method-standard').val();
+    }
+
+    toggleStateRequiredForExpress();
+
+    // Recomputes the whole pricing section (subtotal, shipping, tax, total) for
+    // whichever shipping method is passed in (or currently selected if omitted).
+    // Exposed on window so checkout.blade.php's own inline script - which sits
+    // outside this file's closure and can't see getStateShipping()/applyPricingResponse()
+    // directly - can trigger the same recompute after adding/removing the ice pack.
+    function refreshCheckoutPricing(method){
+        method = method || $('input[name="shipping_method"]:checked').val() || standardMethodValue();
+
+        if($('#state').length){
+            // Guest checkout: getStateShipping() already reads the picked shipping
+            // method itself (see above) and, on the server, a state is only required
+            // when "standard" is picked - so this is safe to call either way.
+            if(isExpressMethodValue(method) || $('#state').val()){
+                getStateShipping($('#state'));
+            }
+            // "standard" picked with no state selected yet: nothing to show until
+            // they pick one, same as today's behavior before Express existed.
+        }else{
+            // Logged-in checkout has no #state select on the page (address is
+            // fixed to the saved default), so recompute against Auth::user() instead.
+            $('.loader').removeClass('d-none');
+            $.ajax({
+                type: "GET",
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: site_url + "/refresh-pricing",
+                data: {shipping_method: method},
+                success: function(response){
+                    $('.loader').addClass('d-none');
+                    applyPricingResponse(response);
+                },
+                error: function(){
+                    $('.loader').addClass('d-none');
+                }
+            });
+        }
+    }
+
+    window.refreshCheckoutPricing = refreshCheckoutPricing;
+    window.applyPricingResponse = applyPricingResponse;
+
+    $('body').on('change', 'input[name="shipping_method"]', function(){
+        toggleStateRequiredForExpress();
+
+        // Reflect the pick immediately - the AJAX response below re-renders this
+        // same markup a moment later, this just avoids a flash of the old state.
+        $('.shipping-option').removeClass('is-selected');
+        $(this).closest('.shipping-option').addClass('is-selected');
+
+        refreshCheckoutPricing($(this).val());
+    });
+
+    $('body').on('change', 'input[name="payment_method"]', function(){
+        $('.payment-option').removeClass('is-selected');
+        $(this).closest('.payment-option').addClass('is-selected');
+    });
 
 
     // $('body').on('change', '#state-billing', function (e) {

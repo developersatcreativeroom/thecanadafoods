@@ -2114,6 +2114,37 @@ $( document ).ready(function() {
     //    allowedExt: "png|jpg|jpeg|webp|avif",
     // });
 
+// $("#multiple_images").spartanMultiImagePicker({
+//     fieldName: 'images[]',
+//     allowedExt: "png|jpg|jpeg|webp|avif",
+
+//     onAddRow: function (index) {
+
+//         setTimeout(function () {
+
+//             var container = $("#multiple_images")
+//                 .find(".spartan_item_wrapper")
+//                 .last();
+
+//             if (container.find(".gallery-alt-text").length === 0) {
+
+//                 container.append(`
+//                     <div class="mt-2 gallery-alt-text">
+//                         <label class="mb-1"><strong>Image Alt Text</strong></label>
+//                         <input type="text"
+//                                name="images_alt[]"
+//                                class="form-control"
+//                                placeholder="Enter image alt text">
+//                     </div>
+//                 `);
+
+//             }
+
+//         }, 100);
+
+//     }
+// });
+
 $("#multiple_images").spartanMultiImagePicker({
     fieldName: 'images[]',
     allowedExt: "png|jpg|jpeg|webp|avif",
@@ -2122,27 +2153,56 @@ $("#multiple_images").spartanMultiImagePicker({
 
         setTimeout(function () {
 
-            var container = $("#multiple_images")
+            let container = $("#multiple_images")
                 .find(".spartan_item_wrapper")
                 .last();
 
-            if (container.find(".gallery-alt-text").length === 0) {
-
-                container.append(`
-                    <div class="mt-2 gallery-alt-text">
-                        <label class="mb-1"><strong>Image Alt Text</strong></label>
-                        <input type="text"
-                               name="images_alt[]"
-                               class="form-control"
-                               placeholder="Enter image alt text">
-                    </div>
-                `);
-
+            if (container.find(".gallery-extra-fields").length) {
+                return;
             }
+
+            container.append(`
+                <div class="gallery-extra-fields mt-2">
+
+                    <label class="mb-1">
+                        <strong>Image Alt Text</strong>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="images_alt[]"
+                        class="form-control"
+                        placeholder="Enter image alt text">
+
+                </div>
+            `);
 
         }, 100);
 
     }
+});
+
+$(document).on('click', '.enable_copy_link', function () {
+
+    let button = $(this);
+    let link = button.data('link');
+
+    navigator.clipboard.writeText(link).then(function () {
+
+        button
+            .removeClass('btn-primary')
+            .addClass('btn-success')
+            .html('<i class="fas fa-check"></i> Copied!');
+
+        setTimeout(function () {
+            button
+                .removeClass('btn-success')
+                .addClass('btn-primary')
+                .html('<i class="fas fa-link"></i>');
+        }, 2000);
+
+    });
+
 });
 
     $('body').on('keydown', '.only-numbers', function (e) {

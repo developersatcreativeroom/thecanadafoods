@@ -509,11 +509,29 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                     <tr>
                                         <td style="width: 75%; text-align: right; color: #000;">
+                                            Shipping Method &nbsp;&nbsp;
+                                        </td>
+                                        <td style="width: 25%; text-align:right">
+                                            <p style="float: left; width: 100%; text-align: right; line-height: 1; color: #acacac; margin-bottom: 0; line-height: 1 padding: 0">
+                                                <span style="color: #acacac">
+                                                    {{ App\Helper::getShippingMethodLabel($order->shipping_type) }}
+                                                </span>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg_white" style="padding: 5px 25px; width: 100%;">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="width: 75%; text-align: right; color: #000;">
                                             Shipping &nbsp;&nbsp;
                                         </td>
                                         <td style="width: 25%; text-align:right">
                                             <p style="float: left; width: 100%; text-align: right; line-height: 1; color: #acacac; margin-bottom: 0; line-height: 1 padding: 0">
-                                                <span style="color: #acacac"> 
+                                                <span style="color: #acacac">
                                                     {{$order->currency}}{{$order->payment->shipping}}
                                                 </span>
                                             </p>

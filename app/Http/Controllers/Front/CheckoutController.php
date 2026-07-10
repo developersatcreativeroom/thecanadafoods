@@ -54,7 +54,19 @@ class CheckoutController extends Controller
         if($cart->count() <= 0){
             return to_route('cart');
         }
-        $checkout = Helper::checkout($user, true);  // $user, $isShipping, $state
+
+        // If the guest already picked a state (e.g. redirected back here after some
+        // other validation error) resolve it now so the first paint shows the real
+        // Standard price instead of "Select state" until the client-side AJAX runs.
+        $initialState = null;
+        if(!$user){
+            $oldStateCode = old('shipping.state');
+            if($oldStateCode){
+                $initialState = State::where('code', $oldStateCode)->first();
+            }
+        }
+
+        $checkout = Helper::checkout($user, true, $initialState);  // $user, $isShipping, $state
         //print '<pre>'; print_r($checkout); die;
 
         $allowedPaymentMethods = Helper::getPaymentSettings();
@@ -84,6 +96,7 @@ class CheckoutController extends Controller
                 $orderNotes = $request->input('order_notes');
                 $customerGST = $request->input('customer_gst');
                 $localPickup = $request->input('local_pickup');
+                $isExpress = Helper::isExpressShippingMethod($request->input('shipping_method'));
                 $stripePaymentMethod = $request->filled('stripe_payment_method') ? trim($request->input('stripe_payment_method')) : null;
 
                 $token = $request->input('g-recaptcha-response');
@@ -107,6 +120,7 @@ class CheckoutController extends Controller
                     'payment_method'=>'required|in:instamojo,cash,paypal,stripe_card,razorpay,stripe_checkout,stripe_express_checkout',
                     'customer_gst'=>'',
                     'local_pickup'=>'',
+                    'shipping_method'=>'nullable|in:'.config('constants.SHIPPING_STATUS.standard').','.config('constants.SHIPPING_STATUS.express'),
                     // 'stripe_payment_method'=>'required',
                     'stripe_payment_method'=>'',
                 );
@@ -123,7 +137,9 @@ class CheckoutController extends Controller
                     $validationArray['shipping.address_line_2'] = '';
                     $validationArray['shipping.street'] = '';
                     $validationArray['shipping.city'] = 'required';
-                    $validationArray['shipping.state'] = 'required';
+                    // Express Shipping is a flat weight-only rate - the destination state/zone
+                    // isn't needed to price it, so don't force the customer to pick one.
+                    $validationArray['shipping.state'] = $isExpress ? '' : 'required';
                     $validationArray['shipping.postal'] = 'required';
                     $validationArray['shipping.phone'] = 'required|numeric|digits:10';
                     $validationArray['shipping.email'] = 'required|email';
@@ -200,7 +216,9 @@ class CheckoutController extends Controller
 
                 $currency = Helper::getCurrency();
                 
-                $insertOrder = array('order_unique_id'=>Helper::unique_code(30), 'order_status'=> 'Initiated','payment_method'=>$paymentMethod,'order_type'=>$orderType,'order_notes'=>$orderNotes, 'currency' => $currency['sign'], 'currency_iso_code' => $currency['currency_iso_code'], 'discount' => null, 'local_pickup' => $localPickup);
+                $shippingType = $isExpress ? config('constants.SHIPPING_STATUS.express') : config('constants.SHIPPING_STATUS.standard');
+
+                $insertOrder = array('order_unique_id'=>Helper::unique_code(30), 'order_status'=> 'Initiated','payment_method'=>$paymentMethod,'order_type'=>$orderType,'order_notes'=>$orderNotes, 'currency' => $currency['sign'], 'currency_iso_code' => $currency['currency_iso_code'], 'discount' => null, 'local_pickup' => $localPickup, 'shipping_type' => $shippingType);
 
                 $coupon = Helper::getCouponDetails($user);
                 //print '<pre>'; print_r($coupon); die;
@@ -414,7 +432,7 @@ class CheckoutController extends Controller
                     
 
                     // add shipment details starts
-                    $shipment = Helper::addOrderShipmentDetails($order);
+                    $shipment = Helper::addOrderShipmentDetails($order, $isExpress);
                     // add shipment details ends
                     
                     $payment = Helper::makePayment($order, $paymentMethod, $user, $stripePaymentMethod);
@@ -1460,20 +1478,27 @@ class CheckoutController extends Controller
     }
 
     public function getStateShipping(Request $request){
- 
 
-        $state = trim($request->state);
-        // print $state; die;
+        $isExpress = Helper::isExpressShippingMethod($request->input('shipping_method'));
 
-        $state = State::where('code', $state)->first();
-        // print_r($state); die;
-        if(!$state){
-            return array('result' => false, 'message' => 'State not found');
+        // Express is a flat weight-only rate - no state/zone needed, so don't require
+        // one to be selected. Only the zone-based rate below needs a resolved state.
+        $state = null;
+
+        if (!$isExpress) {
+            $stateCode = trim($request->state);
+            // print $stateCode; die;
+
+            $state = State::where('code', $stateCode)->first();
+            // print_r($state); die;
+            if(!$state){
+                return array('result' => false, 'message' => 'State not found');
+            }
         }
 
         // return Helper::getStateShippingAmount($state);
 
-        $checkout = Helper::checkout(null, true, $state);  // $user, $isShipping, $state
+        $checkout = Helper::checkout(null, true, $state, $isExpress);  // $user, $isShipping, $state, $isExpress
         // print '<pre>'; print_r($checkout); die;
 
         $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');
@@ -1485,10 +1510,11 @@ class CheckoutController extends Controller
    
     }
 
-    public function refreshPricingSection(){
- 
+    public function refreshPricingSection(Request $request){
+
         $user = Auth::user();
-        $checkout = Helper::checkout($user, true);  // $user, $isShipping, $state
+        $isExpress = Helper::isExpressShippingMethod($request->input('shipping_method'));
+        $checkout = Helper::checkout($user, true, null, $isExpress);  // $user, $isShipping, $state, $isExpress
         // print '<pre>'; print_r($checkout); die;
 
         $isEnquiryWebsite = Helper::getWebsiteConfig('is_enquiry_website');

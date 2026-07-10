@@ -12,7 +12,7 @@ class Gallery extends Model
 
     protected $table = 'gallery';
     protected $fillable = [
-        'image', 'title', 'is_default', 'is_featured', 'order', 'status'
+        'image', 'title', 'is_default', 'image_alt', 'is_featured', 'order', 'status'
     ];
 
 }

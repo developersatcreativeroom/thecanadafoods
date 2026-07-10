@@ -17,7 +17,7 @@ class Order extends Model
     use HasFactory, Billable;
 
     protected $fillable = [
-        'order_no', 'order_unique_id', 'user_id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'stripe_id', 'pm_type', 'pm_last_four', 'order_status', 'is_payment_done', 'payment_method', 'currency', 'currency_iso_code', 'coupon_id', 'order_type', 'customer_gst', 'order_notes', 'status', 'discount', 'local_pickup', 'coupon_code', 'coupon_type', 'coupon_value', 'coupon_discount'
+        'order_no', 'order_unique_id', 'user_id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'stripe_id', 'pm_type', 'pm_last_four', 'order_status', 'is_payment_done', 'payment_method', 'currency', 'currency_iso_code', 'coupon_id', 'order_type', 'customer_gst', 'order_notes', 'status', 'discount', 'local_pickup', 'shipping_type', 'coupon_code', 'coupon_type', 'coupon_value', 'coupon_discount'
     ];
 
     public function products()

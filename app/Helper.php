@@ -305,6 +305,8 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
     }
 
+    // dd($altText,$model);
+
    if ($isColumn) {
     $model->{$columnName} = $saveName;
 
@@ -1466,27 +1468,33 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
     }
 
-    public static function getShipping($user, $cart, $state = null)
+    public static function getShipping($user, $cart, $state = null, $isExpress = false)
     {
-        if ($user) {
-            // $shipping = $user->addressShipping()->where('is_default',1)->first();
-            $address = Self::getDefaultShippingAddress($user);
-            // print '<pre>'; print_r($address->toArray()); die;
-            if ($address) {
-                $stateTo = State::where('code', $address['state'])->first();
-                if (!$stateTo) {
-                    return array('result' => false, 'message' => 'State not found');
+        $stateTo = null;
+
+        // Express is a flat weight-only rate (config('constants.EXPRESS_SHIPPING')) - it doesn't
+        // depend on a destination state/zone at all, so skip resolving one entirely.
+        if (!$isExpress) {
+            if ($user) {
+                // $shipping = $user->addressShipping()->where('is_default',1)->first();
+                $address = Self::getDefaultShippingAddress($user);
+                // print '<pre>'; print_r($address->toArray()); die;
+                if ($address) {
+                    $stateTo = State::where('code', $address['state'])->first();
+                    if (!$stateTo) {
+                        return array('result' => false, 'message' => 'State not found');
+                    }
+                } else {
+                    return ['result' => false];
                 }
+            } elseif (!$user && $state != null) {
+                $stateTo = $state;
             } else {
                 return ['result' => false];
             }
-        } elseif (!$user && $state != null) {
-            $stateTo = $state;
-        } else {
-            return ['result' => false];
         }
 
-        $shippingPrice = Self::getStateShippingAmount($stateTo);
+        $shippingPrice = Self::getStateShippingAmount($stateTo, $isExpress);
         // print '<pre>'; print_r($array); die;
 
         // $shippingPrice = Self::getWeightBasedShippingPrice($user);
@@ -1829,7 +1837,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
     }
 
-    public static function checkout($user, $isShipping = null, $state = null)
+    public static function checkout($user, $isShipping = null, $state = null, $isExpress = false)
     {
 
         $cartObj = Self::getCartObj($user);
@@ -1841,7 +1849,10 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         $subTotal = 0;
 
         if ($isShipping) {
-            $shipping = Self::getShipping($user, $cart, $state);
+            $shipping = Self::getShipping($user, $cart, $state, $isExpress);
+            // Both prices are computed regardless of $isExpress so the checkout page can
+            // display Standard and Express side by side and let the customer pick either.
+            $shippingOptions = Self::getShippingOptions($user, $cart, $state);
         }
 
         // $shippingAmount = Self::getShipping();
@@ -1882,10 +1893,15 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
             'total_calculate' => Self::numberFormat($subTotal + $shippingAmount + $productServicesAmount + $tax - ($coupon ? $coupon->calculated_discount : null)),
             'min_cart_amount' => $minCartAmount,
             'is_min_amount' => $isMinAmount,
+            'is_express' => $isExpress,
         );
 
         if (isset($shipping)) {
             $array['shipping_data'] = $shipping;
+        }
+
+        if (isset($shippingOptions)) {
+            $array['shipping_options'] = $shippingOptions;
         }
 
         return $array;
@@ -2246,7 +2262,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         return array('shipping' => Self::numberFormat($shipping), 'subTotal' => Self::numberFormat($subTotal), 'is_state_tax' => $isStateTax, 'is_central_tax' => $isCentralTax, 'is_integrated_tax' => $isIntegratedTax, 'tax' => Self::numberFormat($tax), 'products_service' => $productService, 'discount' => Self::numberFormat($productDiscount), 'coupon_discount' => Self::numberFormat($couponDiscount), 'total' => Self::numberFormat($shipping + $subTotal + $productService + $tax - ($order->coupon_discount ? $order->coupon_discount : 0)));
     }
 
-    public static function addOrderShipmentDetails($order)
+    public static function addOrderShipmentDetails($order, $isExpress = false)
     {
         // print_r($order); die;
         $address = $order->shipping;
@@ -2267,10 +2283,17 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
         $weight = Self::gramsToPounds($weight);
 
-        $shippingPrice = ShippingPrice::where('min_weight', '<=', $weight)->where('max_weight', '>=', $weight)->where('zone', $state->zone)->first();
-        // print '<pre>'; print_r($shippingPrice->toArray()); die;
-        if ($shippingPrice) {
-            $shippingAmount = $shippingPrice->price;
+        if ($isExpress) {
+            $expressPrice = Self::getExpressShippingAmount($weight);
+            if ($expressPrice['result']) {
+                $shippingAmount = $expressPrice['price'];
+            }
+        } else {
+            $shippingPrice = ShippingPrice::where('min_weight', '<=', $weight)->where('max_weight', '>=', $weight)->where('zone', $state->zone)->first();
+            // print '<pre>'; print_r($shippingPrice->toArray()); die;
+            if ($shippingPrice) {
+                $shippingAmount = $shippingPrice->price;
+            }
         }
         // print $shippingAmount; die;
 
@@ -3700,11 +3723,15 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         return Self::gramsToPounds($weight);
     }
 
-    public static function getStateShippingAmount($state)
+    public static function getStateShippingAmount($state, $isExpress = false)
     {
         // print'<pre>'; print_r($state); die;
         $user = Auth::user();
         $weight = Self::getCartProductsWeight($user);
+
+        if ($isExpress) {
+            return Self::getExpressShippingAmount($weight);
+        }
 
         // print $weight; die;
         $shippingPrice = ShippingPrice::where('min_weight', '<=', $weight)->where('max_weight', '>=', $weight)->where('zone', $state->zone)->first();
@@ -3717,6 +3744,68 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         // print $weight; die;
         // print '<pre>'; print_r($state->toArray()); die;
 
+    }
+
+    // Flat weight-only rate lookup for the "Express Shipping" checkout option (config('constants.EXPRESS_SHIPPING')).
+    // Tiers are matched by upper bound only, so the configured list must stay in ascending order with no gaps.
+    public static function getExpressShippingAmount($weight)
+    {
+        $express = config('constants.EXPRESS_SHIPPING');
+
+        foreach ($express['tiers'] as $tier) {
+            if ($weight <= $tier['max_weight']) {
+                return array('result' => true, 'price' => $tier['price']);
+            }
+        }
+
+        return array('result' => false, 'message' => "There is an issue with the express shipping, please contact administrator");
+    }
+
+    // Computes the Standard (zone-based) and Express (weight-based) prices together, regardless
+    // of which one is currently selected, so the checkout page can show both side by side.
+    public static function getShippingOptions($user, $cart, $state = null)
+    {
+        $weight = Self::getCartProductsWeight($user);
+
+        $resolvedState = $state;
+        if (!$resolvedState && $user) {
+            $address = Self::getDefaultShippingAddress($user);
+            if ($address) {
+                $resolvedState = State::where('code', $address['state'])->first();
+            }
+        }
+
+        if ($resolvedState) {
+            $shippingPrice = ShippingPrice::where('min_weight', '<=', $weight)->where('max_weight', '>=', $weight)->where('zone', $resolvedState->zone)->first();
+            if ($shippingPrice) {
+                $standard = array('result' => true, 'price' => $shippingPrice->price, 'price_show' => Self::priceFormat($shippingPrice->price));
+            } else {
+                $standard = array('result' => false, 'message' => 'There is an issue with the shipping, please contact administrator');
+            }
+        } else {
+            $standard = array('result' => false, 'message' => 'Select your state to see this price');
+        }
+
+        $express = Self::getExpressShippingAmount($weight);
+        if ($express['result']) {
+            $express['price_show'] = Self::priceFormat($express['price']);
+        }
+
+        return array('standard' => $standard, 'express' => $express);
+    }
+
+    // Human-readable label for an order's stored shipping_type column (config('constants.SHIPPING_STATUS')).
+    // Used on the admin order/sale detail pages and in the order confirmation emails.
+    public static function getShippingMethodLabel($shippingType)
+    {
+        return $shippingType == config('constants.SHIPPING_STATUS.express') ? 'Express Shipping' : 'Standard Shipping';
+    }
+
+    // Single source of truth for "is this submitted shipping_method value Express?".
+    // Loose == on purpose: form input arrives as a string ("1"), config value is an int.
+    public static function isExpressShippingMethod($value)
+    {
+        return $value == config('constants.SHIPPING_STATUS.express');
     }
 
 

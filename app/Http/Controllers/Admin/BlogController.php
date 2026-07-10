@@ -11,6 +11,7 @@ use App\Models\BlogCategory;
 
 use Carbon\Carbon;
 use App\Helper;
+use App\Models\Gallery;
 use Auth;
 use Hash;
 use Storage;
@@ -55,16 +56,19 @@ class BlogController extends Controller implements HasMiddleware
     public function edit($id){
         //print '<pre>'; print_r($attributes[0]['values']); die;
         //$product = Coupon::join('categories', 'products.category_id', '=', 'categories.id')->select('products.*', 'categories.name as category_name')->find($id);
-        $row = Blog::find($id);
+        $row = Blog:: with('galleries')->find($id);
         if($row == null){
             return to_route('admin.blogs');
         }
         $categories = BlogCategory::where('status',1)->get();
         $data=array('row' => $row, 'categories' => $categories);
+        // dd($data);
         return view($this->prefix.'.'.$this->folder.'.form')->with($data);
     }
 
     public function postData(Request $request){
+
+    // dd($request->all());
         $id = trim($request->input('id'));
         $title = trim($request->input('title'));
         $slug = trim($request->input('slug'));
@@ -76,6 +80,10 @@ class BlogController extends Controller implements HasMiddleware
         $seoDescription = trim($request->input('seo_description'));
         $seoKeywords = trim($request->input('seo_keywords'));
         $status = trim($request->input('status'));
+         $images = $request->file('images');
+        $imagesAlt = $request->input('images_alt');
+
+        // dd($imagesAlt);
 
         //if(empty($id)){
             $validationArray=array(
@@ -121,12 +129,17 @@ class BlogController extends Controller implements HasMiddleware
             }
 
             $operation = empty($id) ? 'add' : 'update';
+             $altText = isset($imageAlt) && !empty($imageAlt) ? trim($imageAlt) : false;
 
             // add products images here start
             if(isset($image)){
                 // image, model, directory, is_directory_id, add_or_update, column_name ,is_column_update, is_thumb, delete_prev_image, sub_folder_id
                 Helper::uploadImage($image, $blog, 'blogs', true, $operation, 'image', true, true, true, false);
             }
+             if (isset($images) && is_array($images) && count($images) > 0) {
+                $gallery = new Gallery();
+            Helper::uploadImages($images, $blog->galleries(), 'blogs/' . $blog->id . '/gallery/', false, $operation, 'image', false, $imagesAlt, true, false, false);
+        }
            
             if($blog){
                 DB::commit();

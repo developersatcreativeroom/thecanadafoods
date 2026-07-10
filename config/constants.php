@@ -146,6 +146,30 @@ return [
         'xero' => false,
     ],
 
+
+    'SHIPPING_STATUS'=>[
+        'standard' => 0,
+        'express' => 1,
+
+    ],
+
+    
+    'EXPRESS_SHIPPING' => [
+        'enabled' => true,
+        'label' => 'Express Shipping (2-4 business days)',
+        'tiers' => [
+            ['max_weight' => 1.9,  'price' => 55],
+            ['max_weight' => 4.9,  'price' => 62],
+            ['max_weight' => 9.9,  'price' => 69],
+            ['max_weight' => 14.9, 'price' => 75],
+            ['max_weight' => 19.9, 'price' => 89],
+            ['max_weight' => 29.9, 'price' => 133],
+            ['max_weight' => 39.9, 'price' => 177],
+            ['max_weight' => 49.9, 'price' => 229],
+            ['max_weight' => 99.9, 'price' => 347],
+        ],
+    ],
+
     'PAYMENTS' => [
         'cash_on_delivery' => false,
         'instamojo' => false,

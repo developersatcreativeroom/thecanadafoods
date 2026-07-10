@@ -632,8 +632,12 @@
                         <div class="checkout-sidebar">
                             <div class="sidebar-widget checkout-sidebar py-6 px-4 bg-white rounded-2">
                                 <div class="widget-title d-flex">
-                                    <h5 class="mb-0 flex-shrink-0">Order Summery</h5>
-                                    <span class="hr-line w-100 position-relative d-block align-self-end ms-1"></span>
+                                    <div class="shipping-methods-heading">
+                                        <span class="step-badge">1</span>
+                                        <span>Order Summery</span>
+                                    </div>
+                                    {{-- <h5 class="mb-0 flex-shrink-0">Order Summery</h5>
+                                    <span class="hr-line w-100 position-relative d-block align-self-end ms-1"></span> --}}
                                 </div>
                                 <table class="sidebar-table w-100 mt-5">
 
@@ -649,102 +653,101 @@
                                     @endphp
 
                                     @foreach ($cart as $cartSingle)
-                                      @if ($cartSingle->product_id != 2907)
-                                        @php
-                                            if ($cartSingle->temp_sensitive) {
-                                                $is_temp_sensitive = true;
-                                            }
+                                        @if ($cartSingle->product_id != 2907)
+                                            @php
+                                                if ($cartSingle->temp_sensitive) {
+                                                    $is_temp_sensitive = true;
+                                                }
 
-                                        @endphp
-                                        <tr>
-                                            <td width="25%">
-                                                <!-- <img src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->image }}" alt="#"> -->
-                                                @if ($cartSingle->is_variant && $cartSingle->attribute)
-                                                    <img class="img-thumbnail bg-white"
-                                                        style="width: 100px;height:70; object-fit:contain"
-                                                        src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->attribute->image }}"
-                                                        alt="{{ $cartSingle->name }}">
-                                                @else
-                                                    <img class="img-thumbnail bg-white"
-                                                        style="width: 100px;height:70px;object-fit:contain"
-                                                        src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->image }}"
-                                                        alt="{{ $cartSingle->name }}">
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <h6><a class="text-dark"
-                                                        href="{{ route('product', $cartSingle->slug) }}">{{ $cartSingle->name }}</a>
-                                                </h6>
-                                                <!-- <span class="product-qty">x 2</span> -->
-                                                @if ($cartSingle->is_variant && $cartSingle->attribute)
-                                                    @if (isset($cartSingle->attribute->details))
-                                                        <p class="">
-                                                            @foreach ($cartSingle->attribute->details as $detail)
-                                                                <span
-                                                                    class="badge text-dark ps-0 pe-1">{{ $detail->attribute_name }}:
-                                                                    {{ $detail->attribute_option_name }}</span>
-                                                            @endforeach
-                                                        </p>
+                                            @endphp
+                                            <tr>
+                                                <td width="25%">
+                                                    <!-- <img src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->image }}" alt="#"> -->
+                                                    @if ($cartSingle->is_variant && $cartSingle->attribute)
+                                                        <img class="img-thumbnail bg-white"
+                                                            style="width: 100px;height:70; object-fit:contain"
+                                                            src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->attribute->image }}"
+                                                            alt="{{ $cartSingle->name }}">
+                                                    @else
+                                                        <img class="img-thumbnail bg-white"
+                                                            style="width: 100px;height:70px;object-fit:contain"
+                                                            src="{{ asset('storage/products/') }}/{{ $cartSingle->product_id }}/{{ $cartSingle->image }}"
+                                                            alt="{{ $cartSingle->name }}">
                                                     @endif
-                                                @endif
-                                            </td>
-                                            <td>{{ $cartSingle->quantity }}</td>
-                                            <td>
-                                                {{ $cartSingle->productQuantityPriceShow() }}
-                                                @if ($cartSingle->is_tax_included)
-                                                    <small class="font-xxs">({{ $cartSingle->tax }}% inc)</small>
-                                                @endif
-                                            </td>
-                                        </tr>
-
-                                        @php
-                                            $config = App\Helper::getWebsiteConfig('product_services');
-                                        @endphp
-
-                                        @if ($config['product_services'])
-                                            @if (!empty($cartSingle->productServices) && count($cartSingle->productServices) > 0)
-                                                @foreach ($cartSingle->productServices as $service)
-                                                    @php
-                                                        $alreadyService = App\Helper::serviceAlreadyInCart(
-                                                            $cartSingle->product_row_id,
-                                                            $cartSingle->product_attribute_id,
-                                                            $service,
-                                                        );
-                                                    @endphp
-
-                                                    @if ($alreadyService)
-                                                        <tr class="service-row">
-                                                            <td colspan="4">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="">
-                                                                        <img class="btn-shadow-brand hover-up border-radius-5 bg-brand-muted"
-                                                                            style="width:80px"
-                                                                            src="{{ asset('storage/product-services/') }}/{{ $service->id }}/{{ $service->image }}"
-                                                                            alt="">
-                                                                    </div>
-                                                                    <div class="pl-10">
-                                                                        <h5 class="mb-5 fw-500">
-                                                                            {{ $service->name }}
-                                                                        </h5>
-                                                                        <p>Price: {{ $service->getPrice() }}</p>
-                                                                        <p class="font-sm text-grey-5">
-                                                                            {{ $service->summary }}</p>
-                                                                        <!-- <p class="text-grey-3">{{ $service->description }}</p> -->
-
-
-
-                                                                    </div>
-
-                                                                </div>
-                                                            </td>
-
-
-                                                        </tr>
+                                                </td>
+                                                <td>
+                                                    <h6><a class="text-dark"
+                                                            href="{{ route('product', $cartSingle->slug) }}">{{ $cartSingle->name }}</a>
+                                                    </h6>
+                                                    <!-- <span class="product-qty">x 2</span> -->
+                                                    @if ($cartSingle->is_variant && $cartSingle->attribute)
+                                                        @if (isset($cartSingle->attribute->details))
+                                                            <p class="">
+                                                                @foreach ($cartSingle->attribute->details as $detail)
+                                                                    <span
+                                                                        class="badge text-dark ps-0 pe-1">{{ $detail->attribute_name }}:
+                                                                        {{ $detail->attribute_option_name }}</span>
+                                                                @endforeach
+                                                            </p>
+                                                        @endif
                                                     @endif
-                                                @endforeach
+                                                </td>
+                                                <td>{{ $cartSingle->quantity }}</td>
+                                                <td>
+                                                    {{ $cartSingle->productQuantityPriceShow() }}
+                                                    @if ($cartSingle->is_tax_included)
+                                                        <small class="font-xxs">({{ $cartSingle->tax }}% inc)</small>
+                                                    @endif
+                                                </td>
+                                            </tr>
+
+                                            @php
+                                                $config = App\Helper::getWebsiteConfig('product_services');
+                                            @endphp
+
+                                            @if ($config['product_services'])
+                                                @if (!empty($cartSingle->productServices) && count($cartSingle->productServices) > 0)
+                                                    @foreach ($cartSingle->productServices as $service)
+                                                        @php
+                                                            $alreadyService = App\Helper::serviceAlreadyInCart(
+                                                                $cartSingle->product_row_id,
+                                                                $cartSingle->product_attribute_id,
+                                                                $service,
+                                                            );
+                                                        @endphp
+
+                                                        @if ($alreadyService)
+                                                            <tr class="service-row">
+                                                                <td colspan="4">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <div class="">
+                                                                            <img class="btn-shadow-brand hover-up border-radius-5 bg-brand-muted"
+                                                                                style="width:80px"
+                                                                                src="{{ asset('storage/product-services/') }}/{{ $service->id }}/{{ $service->image }}"
+                                                                                alt="">
+                                                                        </div>
+                                                                        <div class="pl-10">
+                                                                            <h5 class="mb-5 fw-500">
+                                                                                {{ $service->name }}
+                                                                            </h5>
+                                                                            <p>Price: {{ $service->getPrice() }}</p>
+                                                                            <p class="font-sm text-grey-5">
+                                                                                {{ $service->summary }}</p>
+                                                                            <!-- <p class="text-grey-3">{{ $service->description }}</p> -->
+
+
+
+                                                                        </div>
+
+                                                                    </div>
+                                                                </td>
+
+
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
                                             @endif
-                                        @endif
-
                                         @endif
                                     @endforeach
                                     @if ($is_temp_sensitive)
@@ -754,71 +757,70 @@
                                             @endphp
 
                                             <tr class="ice-packs">
-                                                <td width="25%">
-                                                    @if ($item->is_variant && $item->attribute)
-                                                        <img class="img-thumbnail bg-white"
-                                                            style="width:100px;height:70px;object-fit:contain"
-                                                            src="{{ asset('storage/products/' . $item->id . '/' . $item->attribute->image) }}"
-                                                            alt="{{ $item->name }}">
-                                                    @else
-                                                        <img class="img-thumbnail bg-white"
-                                                            style="width:100px;height:70px;object-fit:contain"
-                                                            src="{{ asset('storage/products/' . $item->id . '/' . $item->image) }}"
-                                                            alt="{{ $item->name }}">
-                                                    @endif
-                                                </td>
-
-                                                <td>
-                                                    <h6 class="mb-1">
-                                                        <a class="text-dark" href="{{ route('product', $item->slug) }}">
-                                                            {{ $item->name }}
-                                                        </a>
-                                                    </h6>
-
-                                                    @if ($item->is_variant && $item->attribute && $item->attribute->details)
-                                                        <p class="mb-0">
-                                                            @foreach ($item->attribute->details as $detail)
-                                                                <span class="badge text-dark ps-0 pe-1">
-                                                                    {{ $detail->attribute_name }}:
-                                                                    {{ $detail->attribute_option_name }}
+                                                <td colspan="4" style="padding: 6px 0;">
+                                                    <label class="temp-sensitive-card">
+                                                        <input type="checkbox"
+                                                            class="ice-bag-checkbox temp-sensitive-checkbox"
+                                                            data-key="{{ $item->slug }}"
+                                                            data-price="{{ $item->price }}"
+                                                            data-attribute="{{ $item->attribute_id ?? '' }}"
+                                                            {{ $already ? 'checked' : '' }}>
+                                                        <span class="temp-sensitive-icon"><i
+                                                                class="fas fa-snowflake"></i></span>
+                                                        <span class="temp-sensitive-content">
+                                                            <span class="temp-sensitive-row">
+                                                                <span class="temp-sensitive-title">Temperature-sensitive
+                                                                    items</span>
+                                                                <span class="temp-sensitive-price">
+                                                                    ${{ number_format($item->price, 2) }}
+                                                                    @if ($item->is_tax_included)
+                                                                        <small>({{ $item->tax }}% inc)</small>
+                                                                    @endif
                                                                 </span>
-                                                            @endforeach
-                                                        </p>
-                                                    @endif
-                                                </td>
-
-                                                <td>1</td>
-
-                                                <td>
-                                                    ${{ number_format($item->price, 2) }}
-
-                                                    @if ($item->is_tax_included)
-                                                        <small>({{ $item->tax }}% inc)</small>
-                                                    @endif
-                                                </td>
-
-                                                <td width="5%" class="text-center align-middle">
-                                                    <input type="checkbox" class="form-check-input ice-bag-checkbox"
-                                                        data-key="{{ $item->slug }}"
-                                                        data-price="{{ $item->price }}"
-                                                        data-attribute="{{ $item->attribute_id ?? '' }}"
-                                                        {{ $already ? 'checked' : '' }}>
+                                                            </span>
+                                                            <span class="temp-sensitive-row temp-sensitive-row-bottom">
+                                                                <span class="temp-sensitive-sub">We've added a reusable ice
+                                                                    pack to keep things fresh during shipping.</span>
+                                                                <span class="temp-sensitive-actions">
+                                                                    <span
+                                                                        class="temp-sensitive-pill temp-sensitive-pill-added"><i
+                                                                            class="fas fa-check"></i> Added</span>
+                                                                    <button type="button"
+                                                                        class="temp-sensitive-remove">Remove</button>
+                                                                    <span
+                                                                        class="temp-sensitive-pill temp-sensitive-pill-add"><i
+                                                                            class="fas fa-plus"></i> Add</span>
+                                                                </span>
+                                                            </span>
+                                                        </span>
+                                                    </label>
                                                 </td>
                                             </tr>
                                         @endforeach
-
-                                        <tr class="ice-packs">
-                                            <td colspan="5">
-                                                <small class="text-warning d-block">
-                                                    <i class="fas fa-exclamation-triangle me-1"></i>
-                                                    Some products are temperature-sensitive. We recommend adding an ice bag
-                                                    to help maintain product quality during shipping.
-                                                </small>
-                                            </td>
-                                        </tr>
                                     @endif
 
                                 </table>
+
+                                <div class="checkout-section-divider"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                
 
                                 <div id="pricing-section">
                                     @include('front.checkout.pricing-section')
@@ -831,18 +833,24 @@
 
                                 @if (!$isEnquiryWebsite)
                                     @if ($couponEnabled['coupon'] == true)
-                                        <span class="sidebar-spacer d-block my-4 opacity-50"></span>
+                                        <div class="checkout-section-divider"></div>
                                         <div
-                                            class="checkout-voucher-box mt-5 @if (!$checkout['is_min_amount']) disable-fields @endif">
+                                            class="checkout-voucher-box @if (!$checkout['is_min_amount']) disable-fields @endif">
                                             <div id="coupon-cont">
                                                 @if ($coupon)
-                                                    <div class="coupon-row">
-                                                        <span class="copyCode text-primary"> {{ $coupon->code }} </span>
-                                                        <span class="copyBtn bg-secondary text-white" id="remove-coupon"
-                                                            data-code="{{ $coupon->code }}">Remove</span>
+                                                    <div class="coupon-applied">
+                                                        <span class="coupon-applied-icon"><i class="fas fa-tag"></i></span>
+                                                        <span class="coupon-applied-body">
+                                                            <span class="coupon-applied-code">{{ $coupon->code }}</span>
+                                                            <span class="coupon-applied-label">Coupon applied</span>
+                                                        </span>
+                                                        <button type="button" class="coupon-applied-remove" id="remove-coupon"
+                                                            data-code="{{ $coupon->code }}">
+                                                            <i class="fas fa-xmark"></i> Remove
+                                                        </button>
                                                     </div>
                                                 @else
-                                                    <h4 class="mb-3">Apply Coupon</h4>
+                                                    <h4 class="checkout-voucher-title mb-3">Have a coupon?</h4>
                                                     <div class="d-flex align-items-center">
                                                         <input type="text" placeholder="Enter Your Coupon"
                                                             class="theme-input w-100" name="Coupon" id="coupon-code">
@@ -860,13 +868,14 @@
 
                                 @if (!$isEnquiryWebsite)
                                     @if (count($allowedPaymentMethods) > 0)
-                                        {{-- <span class="sidebar-spacer d-block my-4 opacity-50"></span> --}}
+                                        <div class="checkout-section-divider"></div>
 
                                         <div @if (!$checkout['is_min_amount']) class="disable-fields" @endif>
 
 
                                             <div class="d-flex align-items-end justify-content-between">
-                                                <h4 class="mt-8 mb-0">Payment Details</h4>
+
+                                                {{-- <h4 class="mt-8 mb-0">Payment Details</h4> --}}
                                                 @auth('web')
                                                     {{-- @if (isset($paymentMethods) && count($paymentMethods) > 0)
                                                     <a class="btn btn-secondary btn-sm py-1 px-2 show-add-payment-method"><i class="fas fa-plus"></i> Card</a>
@@ -875,32 +884,63 @@
                                             </div>
                                             <div class="my-6 @if (array_key_exists('stripe_checkout', $allowedPaymentMethods)) d-none @endif">
 
-
+                                                <div class="shipping-methods-heading">
+                                                    <span class="step-badge">3</span>
+                                                    <span>Payment Methods</span>
+                                                </div>
                                                 @foreach (config('constants.PAYMENT_METHODS') as $key => $paymentMethod)
                                                     @if (array_key_exists($key, $allowedPaymentMethods))
                                                         @if ($key != 'stripe_checkout')
-                                                            <div
-                                                                class="form-title d-flex align-items-center pb-5 @if ($key == 'stripe_express_checkout') position-relative mb-5 @endif">
-                                                                <div class="theme-radio">
+                                                            @php
+                                                                $isStripeMethod = in_array($key, [
+                                                                    'stripe_card',
+                                                                    'stripe_checkout',
+                                                                    'stripe_express_checkout',
+                                                                ]);
+                                                                $isPaypal = $key === 'paypal';
+                                                                $isCash = $key === 'cash';
+                                                                $paymentColorClass = $isStripeMethod
+                                                                    ? 'payment-option-stripe'
+                                                                    : ($isPaypal
+                                                                        ? 'payment-option-paypal'
+                                                                        : ($isCash
+                                                                            ? 'payment-option-cash'
+                                                                            : 'payment-option-default'));
+                                                                $paymentIsChecked =
+                                                                    (old('payment_method') != null &&
+                                                                        old('payment_method') == $key) ||
+                                                                    count($allowedPaymentMethods) == 1;
+                                                            @endphp
+                                                            <label
+                                                                class="payment-option {{ $paymentColorClass }} {{ $paymentIsChecked ? 'is-selected' : '' }}"
+                                                                for="{{ $key }}Radio">
+                                                                <span class="payment-option-icon">
+                                                                    @if ($isStripeMethod)
+                                                                        <i class="fa-brands fa-stripe-s"></i>
+                                                                    @elseif ($isPaypal)
+                                                                        <i class="fa-brands fa-paypal"></i>
+                                                                    @elseif ($isCash)
+                                                                        <i class="fas fa-money-bill-wave"></i>
+                                                                    @else
+                                                                        <i class="fas fa-credit-card"></i>
+                                                                    @endif
+                                                                </span>
+                                                                <span class="payment-option-body">
+                                                                    <span
+                                                                        class="payment-option-title">{{ $paymentMethod }}</span>
+                                                                    @if ($key == 'stripe_express_checkout')
+                                                                        <span class="payment-option-sub">After placing the
+                                                                            order, you'll be redirected to Stripe to
+                                                                            complete payment.</span>
+                                                                    @endif
+                                                                </span>
+                                                                <span class="payment-option-radio">
                                                                     <input type="radio" name="payment_method"
                                                                         id="{{ $key }}Radio"
-                                                                        @if (old('payment_method') != null && old('payment_method') == $key) checked 
-                                                                        @elseif (count($allowedPaymentMethods) == 1) 
-                                                                        checked @endif
+                                                                        @if ($paymentIsChecked) checked @endif
                                                                         value="{{ $key }}">
-                                                                    <span class="custom-radio"></span>
-                                                                </div>
-                                                                <label
-                                                                    class="h6 mb-0 ms-2 {{ $errors->has('payment_method') ? ' is-invalid' : '' }}"
-                                                                    for="{{ $key }}Radio">{{ $paymentMethod }}
-                                                                </label>
-
-                                                                @if ($key == 'stripe_express_checkout')
-                                                                    <small class="position-absolute fs-12"
-                                                                        style="top:24px">After placing the order, you'll be
-                                                                        redirected to Stripe to complete payment.</small>
-                                                                @endif
-                                                            </div>
+                                                                </span>
+                                                            </label>
                                                         @else
                                                             <input type="hidden" name="payment_method"
                                                                 value="stripe_checkout">
@@ -920,13 +960,34 @@
                                     @endif
                                 @endif
 
+                                <div class="checkout-section-divider"></div>
 
                                 <div id="place-order-section">
                                     @include('front.checkout.place-order-section')
                                 </div>
 
-                                <p class="mt-3 mb-0 fs-xs">By Placing your order your agree to our company
-                                    <a target="_blank" href="{{ route('privacy') }}">Privacy Policy</a>
+                                <div class="checkout-trust-badges">
+                                    <div class="checkout-trust-row">
+                                        <span class="checkout-trust-item"><i class="fas fa-check"></i> Secure Stripe
+                                            checkout</span>
+                                        <span class="checkout-trust-item"><i class="fas fa-check"></i> Ships from
+                                            Canada</span>
+                                    </div>
+                                    <div class="checkout-trust-row">
+                                        <span class="checkout-trust-item"><i class="fas fa-check"></i> Tracking
+                                            included</span>
+                                        <span class="checkout-trust-item"><i class="fas fa-check"></i> No customs fees
+                                            (USA)</span>
+                                    </div>
+                                    <div class="checkout-trust-divider"></div>
+                                    <div class="checkout-trust-family">
+                                        <i class="fas fa-check"></i> Family business since 2020
+                                    </div>
+                                </div>
+
+                                <p class="mt-3 mb-0 fs-xs checkout-trust-legal">By placing your order you agree to our
+                                    <a target="_blank" href="{{ route('privacy') }}">Privacy Policy</a> and
+                                    <a target="_blank" href="{{ route('terms') }}">Terms of Service</a>.
                                 </p>
 
                                 <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
@@ -1141,8 +1202,6 @@
                             });
                         }
                     });
-
-                   
                 </script>
             @endauth
         @endif
@@ -1191,20 +1250,14 @@
                         return;
                     }
 
-                    let subtotal = parseFloat($('.subtotal-price').text().replace(/[^0-9.-]+/g, ''));
-                    let price = parseFloat(checkbox.data('price'));
-
-                    if (checked) {
-                        subtotal += price;
-                    } else {
-                        subtotal -= price;
-        //                  location.reload();
-        // return;
-                    }
-
-                    $('.subtotal-price').text('$' + subtotal.toFixed(2));
-
                     toastr.success(response.message, 'Success');
+
+                    // Recompute the whole pricing section (subtotal, shipping, tax, total)
+                    // instead of just nudging the subtotal - adding/removing the ice pack
+                    // changes cart weight, which can change the shipping price too.
+                    if (typeof window.refreshCheckoutPricing === 'function') {
+                        window.refreshCheckoutPricing();
+                    }
                 },
 
                 error: function(xhr) {
@@ -1225,187 +1278,195 @@
             });
 
         });
+
+        $(document).on('click', '.temp-sensitive-remove', function(e) {
+            e.preventDefault();
+            let checkbox = $(this).closest('.temp-sensitive-card').find('.ice-bag-checkbox');
+            if (checkbox.is(':checked')) {
+                checkbox.prop('checked', false).trigger('change');
+            }
+        });
     </script>
 
- <script>
-(function () {
+    <script>
+        (function() {
 
-    const STORAGE_KEY = 'checkout_form_data';
-    let isRestoring = false;
+            const STORAGE_KEY = 'checkout_form_data';
+            let isRestoring = false;
 
-    function getFields() {
-        return document.querySelectorAll(
-            'input[name], select[name], textarea[name]'
-        );
-    }
-
-    function saveForm() {
-
-        if (isRestoring) {
-            return;
-        }
-
-        const data = {};
-
-        getFields().forEach(function (field) {
-
-            if (!field.name) return;
-            if (field.type === 'password' || field.type === 'file') return;
-
-            if (field.type === 'checkbox') {
-                data[field.name] = field.checked;
-            } else if (field.type === 'radio') {
-                if (field.checked) {
-                    data[field.name] = field.value;
-                }
-            } else {
-                data[field.name] = field.value;
+            function getFields() {
+                return document.querySelectorAll(
+                    'input[name], select[name], textarea[name]'
+                );
             }
 
-        });
+            function saveForm() {
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function restoreField(field, value) {
-
-        if (field.type === 'checkbox') {
-            field.checked = value;
-        } else if (field.type === 'radio') {
-            field.checked = field.value == value;
-        } else {
-            field.value = value;
-        }
-
-    }
-
-    function restoreForm() {
-
-        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-        isRestoring = true;
-
-        getFields().forEach(function (field) {
-
-            if (!field.name) return;
-
-            if (data[field.name] === undefined) return;
-
-            if (field.tagName === 'SELECT') {
-
-                const exists = Array.from(field.options).some(function (option) {
-                    return option.value == data[field.name];
-                });
-
-                if (!exists) {
+                if (isRestoring) {
                     return;
                 }
 
+                const data = {};
+
+                getFields().forEach(function(field) {
+
+                    if (!field.name) return;
+                    if (field.type === 'password' || field.type === 'file') return;
+
+                    if (field.type === 'checkbox') {
+                        data[field.name] = field.checked;
+                    } else if (field.type === 'radio') {
+                        if (field.checked) {
+                            data[field.name] = field.value;
+                        }
+                    } else {
+                        data[field.name] = field.value;
+                    }
+
+                });
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             }
 
-            restoreField(field, data[field.name]);
+            function restoreField(field, value) {
 
-        });
-
-        setTimeout(function () {
-            isRestoring = false;
-        }, 500);
-
-    }
-
-    function waitForShippingState() {
-
-        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-        const state = data['shipping[state]'];
-
-        if (!state) return;
-
-        let attempts = 0;
-
-        const timer = setInterval(function () {
-
-            attempts++;
-
-            const select = document.querySelector('[name="shipping[state]"]');
-
-            if (!select) {
-
-                if (attempts >= 20) {
-                    clearInterval(timer);
+                if (field.type === 'checkbox') {
+                    field.checked = value;
+                } else if (field.type === 'radio') {
+                    field.checked = field.value == value;
+                } else {
+                    field.value = value;
                 }
 
-                return;
             }
 
-            const option = select.querySelector('option[value="' + state + '"]');
+            function restoreForm() {
 
-            if (option) {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
                 isRestoring = true;
 
-                select.value = state;
+                getFields().forEach(function(field) {
 
-                select.dispatchEvent(new Event('change', {
-                    bubbles: true
-                }));
+                    if (!field.name) return;
 
-                setTimeout(function () {
+                    if (data[field.name] === undefined) return;
+
+                    if (field.tagName === 'SELECT') {
+
+                        const exists = Array.from(field.options).some(function(option) {
+                            return option.value == data[field.name];
+                        });
+
+                        if (!exists) {
+                            return;
+                        }
+
+                    }
+
+                    restoreField(field, data[field.name]);
+
+                });
+
+                setTimeout(function() {
                     isRestoring = false;
-                }, 300);
-
-                clearInterval(timer);
-
-                console.log('Shipping state restored:', state);
+                }, 500);
 
             }
 
-            if (attempts >= 20) {
-                clearInterval(timer);
+            function waitForShippingState() {
+
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+                const state = data['shipping[state]'];
+
+                if (!state) return;
+
+                let attempts = 0;
+
+                const timer = setInterval(function() {
+
+                    attempts++;
+
+                    const select = document.querySelector('[name="shipping[state]"]');
+
+                    if (!select) {
+
+                        if (attempts >= 20) {
+                            clearInterval(timer);
+                        }
+
+                        return;
+                    }
+
+                    const option = select.querySelector('option[value="' + state + '"]');
+
+                    if (option) {
+
+                        isRestoring = true;
+
+                        select.value = state;
+
+                        select.dispatchEvent(new Event('change', {
+                            bubbles: true
+                        }));
+
+                        setTimeout(function() {
+                            isRestoring = false;
+                        }, 300);
+
+                        clearInterval(timer);
+
+                        console.log('Shipping state restored:', state);
+
+                    }
+
+                    if (attempts >= 20) {
+                        clearInterval(timer);
+                    }
+
+                }, 500);
+
             }
 
-        }, 500);
+            document.addEventListener('input', function(e) {
 
-    }
+                if (!e.target.matches('input[name], select[name], textarea[name]')) {
+                    return;
+                }
 
-    document.addEventListener('input', function (e) {
+                saveForm();
 
-        if (!e.target.matches('input[name], select[name], textarea[name]')) {
-            return;
-        }
-
-        saveForm();
-
-    });
-
-    document.addEventListener('change', function (e) {
-
-        if (!e.target.matches('input[name], select[name], textarea[name]')) {
-            return;
-        }
-
-        saveForm();
-
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        restoreForm();
-
-        waitForShippingState();
-
-        document.querySelectorAll('form').forEach(function (form) {
-
-            form.addEventListener('submit', function () {
-                localStorage.removeItem(STORAGE_KEY);
             });
 
-        });
+            document.addEventListener('change', function(e) {
 
-    });
+                if (!e.target.matches('input[name], select[name], textarea[name]')) {
+                    return;
+                }
 
-})();
-</script>
+                saveForm();
+
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                restoreForm();
+
+                waitForShippingState();
+
+                document.querySelectorAll('form').forEach(function(form) {
+
+                    form.addEventListener('submit', function() {
+                        localStorage.removeItem(STORAGE_KEY);
+                    });
+
+                });
+
+            });
+
+        })();
+    </script>
 
 
 @endpush

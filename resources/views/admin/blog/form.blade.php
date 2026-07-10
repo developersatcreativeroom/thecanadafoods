@@ -166,6 +166,85 @@
                       </div>
 
                     </div>
+<div class="col-md-6">
+
+    <div class="form-group">
+        <label for="gallery_images">Gallery Images</label>
+
+        <div id="multiple_images" class="row"></div>
+
+        @error('images')
+            <span class="invalid-feedback d-block">
+                {{ $message }}
+            </span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+
+            @forelse($row->galleries ?? [] as $image)
+
+                @php
+                    $imageUrl = asset('storage/blogs/' . $row->id . '/gallery/' . $image->image);
+                @endphp
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="gallery-img-container">
+
+                        {{-- Copy Link --}}
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm gallery-copy-btn enable_copy_link"
+                            data-link="{{ $imageUrl }}"
+                            title="Copy Image Link">
+                            <i class="fas fa-link"></i>
+                        </button>
+
+                        {{-- Delete --}}
+                        <a href="{{ route('admin.delete.product.gallery', [$row->id, $image->id]) }}"
+                           class="btn btn-danger btn-sm gallery-delete-btn delete-btn btn-remove"
+                           title="Delete Image">
+                            <i class="fas fa-times"></i>
+                        </a>
+
+                        {{-- Image --}}
+                        <img
+                            src="{{ $imageUrl }}"
+                            class="img-fluid img-thumbnail"
+                            alt="{{ $image->image_alt }}">
+
+                    </div>
+
+                    <input
+                        type="hidden"
+                        name="gallery_image_id[]"
+                        value="{{ $image->id }}">
+
+                    <div class="mt-2">
+
+                        <label><strong>Image Alt Text</strong></label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="gallery_alt[{{ $image->id }}]"
+                            value="{{ old('gallery_alt.'.$image->id, $image->image_alt) }}"
+                            placeholder="Enter image alt text">
+
+                    </div>
+
+                </div>
+
+            @empty
+                {{-- No gallery images found --}}
+            @endforelse
+
+        </div>
+    </div>
+
+</div>
 					        </div>
 
                 <!-- /.card-body -->
