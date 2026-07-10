@@ -44,6 +44,8 @@ class CheckoutController extends Controller
 
     public function checkout(Request $request)
     {   
+
+   
         $user = Auth::user();
         $cart = Helper::getCartShowList($user);
 
@@ -78,6 +80,7 @@ class CheckoutController extends Controller
         $countries = Helper::getCountries();
 
         if($request->isMethod('post')){
+            //  dd($request->all());
             //print 'aa'; die;
             // print '<pre>'; print_r($request->all()); die;
 
@@ -98,6 +101,8 @@ class CheckoutController extends Controller
                 $localPickup = $request->input('local_pickup');
                 $isExpress = Helper::isExpressShippingMethod($request->input('shipping_method'));
                 $stripePaymentMethod = $request->filled('stripe_payment_method') ? trim($request->input('stripe_payment_method')) : null;
+
+               
 
                 $token = $request->input('g-recaptcha-response');
                 
@@ -124,6 +129,8 @@ class CheckoutController extends Controller
                     // 'stripe_payment_method'=>'required',
                     'stripe_payment_method'=>'',
                 );
+
+               
                 
                 if($user){
                     
@@ -217,6 +224,7 @@ class CheckoutController extends Controller
                 $currency = Helper::getCurrency();
                 
                 $shippingType = $isExpress ? config('constants.SHIPPING_STATUS.express') : config('constants.SHIPPING_STATUS.standard');
+                 
 
                 $insertOrder = array('order_unique_id'=>Helper::unique_code(30), 'order_status'=> 'Initiated','payment_method'=>$paymentMethod,'order_type'=>$orderType,'order_notes'=>$orderNotes, 'currency' => $currency['sign'], 'currency_iso_code' => $currency['currency_iso_code'], 'discount' => null, 'local_pickup' => $localPickup, 'shipping_type' => $shippingType);
 

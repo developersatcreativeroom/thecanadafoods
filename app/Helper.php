@@ -3803,6 +3803,8 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
     // Single source of truth for "is this submitted shipping_method value Express?".
     // Loose == on purpose: form input arrives as a string ("1"), config value is an int.
+
+    
     public static function isExpressShippingMethod($value)
     {
         return $value == config('constants.SHIPPING_STATUS.express');
