@@ -84,7 +84,7 @@ $selectedShippingMethod = old('shipping_method', ($checkout['is_express'] ?? fal
         <span class="shipping-option-icon express"><i class="fas fa-bolt"></i></span>
         <span class="shipping-option-body">
             <span class="shipping-option-title">Express shipping</span>
-            <span class="shipping-option-sub">Delivered in 1-2 business days</span>
+            <span class="shipping-option-sub">Delivered in 2-4 business days for most destinations; rural and remote areas may take 3-4 business days</span>
         </span>
         <span class="shipping-option-price">
             @if($shippingOptions && ($shippingOptions['express']['result'] ?? false))
