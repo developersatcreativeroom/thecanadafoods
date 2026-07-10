@@ -80,6 +80,7 @@ class CheckoutController extends Controller
         $countries = Helper::getCountries();
 
         if($request->isMethod('post')){
+          try {
             //  dd($request->all());
             //print 'aa'; die;
             // print '<pre>'; print_r($request->all()); die;
@@ -735,6 +736,21 @@ class CheckoutController extends Controller
                 }
 
             }
+          } catch (\Illuminate\Validation\ValidationException $e) {
+              throw $e;
+          } catch (\Throwable $e) {
+            dd($e->getMessage());
+              DB::rollBack();
+              \Log::error('Checkout failed: '.$e->getMessage(), ['exception' => $e]);
+
+              $message = 'Something went wrong while placing your order. Please try again.';
+              if(config('app.debug')){
+                  $message .= ' ('.$e->getMessage().' in '.$e->getFile().':'.$e->getLine().')';
+              }
+
+              Helper::flashMessage(false, $message);
+              return redirect()->back()->withInput();
+          }
         }
 
 
