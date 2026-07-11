@@ -38,14 +38,14 @@ use Razorpay\Api\Errors\SignatureVerificationError as RazorpaySignatureVerificat
 
 
 class CheckoutController extends Controller
-{   
+{
     private $prefix = 'front';
     private $folder = 'checkout';
 
     public function checkout(Request $request)
-    {   
+    {
 
-   
+
         $user = Auth::user();
         $cart = Helper::getCartShowList($user);
 
@@ -91,7 +91,7 @@ class CheckoutController extends Controller
                 if(!$checkout['is_min_amount']){
                     Helper::flashMessage(false, 'Minimum items of amount '.$checkout['currency'].''.$checkout['min_cart_amount'].' to be added in cart to place an order');
                     return redirect()->back();
-                } 
+                }
                 $billing = $request->input('billing');
                 $billingAddress = $request->input('billing_address');
                 $shipping = $request->input('shipping');
@@ -103,13 +103,13 @@ class CheckoutController extends Controller
                 $isExpress = Helper::isExpressShippingMethod($request->input('shipping_method'));
                 $stripePaymentMethod = $request->filled('stripe_payment_method') ? trim($request->input('stripe_payment_method')) : null;
 
-               
+
 
                 $token = $request->input('g-recaptcha-response');
-                
 
-                
-                if($user){ 
+
+
+                if($user){
                    $email = $user->email;
                 } else{
                     $email = $shipping['email'];
@@ -131,10 +131,10 @@ class CheckoutController extends Controller
                     'stripe_payment_method'=>'',
                 );
 
-               
-                
+
+
                 if($user){
-                    
+
                 }else{
                     $validationArray['shipping'] = 'required|array';
                     $validationArray['shipping.first_name'] = 'required';
@@ -151,7 +151,7 @@ class CheckoutController extends Controller
                     $validationArray['shipping.postal'] = 'required';
                     $validationArray['shipping.phone'] = 'required|numeric|digits:10';
                     $validationArray['shipping.email'] = 'required|email';
-                    
+
                     if($billingAddress != 'on'){
                         $validationArray['billing'] = 'required|array';
                         $validationArray['billing.first_name'] = 'required';
@@ -168,7 +168,7 @@ class CheckoutController extends Controller
                         $validationArray['billing.email'] = 'required|email';
                     }
                 }
-                
+
                 $request->validate($validationArray);
 
                 $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
@@ -208,24 +208,24 @@ class CheckoutController extends Controller
                     return to_route('checkout')->withInput();
 
                 }
-                
+
                 DB::beginTransaction();
-                
+
 
                 $isPaymentMehodAllowed = Helper::isPaymentMethodEnabled($paymentMethod);
                 if(!$isPaymentMehodAllowed){
                     return to_route('home');
                 }
-                
+
 
                 $billingAddress = $billingAddress == 'on' ? 1 : 0;
                 $localPickup = $localPickup == 'on' ? 1 : 0;
                 //die;
 
                 $currency = Helper::getCurrency();
-                
+
                 $shippingType = $isExpress ? config('constants.SHIPPING_STATUS.express') : config('constants.SHIPPING_STATUS.standard');
-                 
+
 
                 $insertOrder = array('order_unique_id'=>Helper::unique_code(30), 'order_status'=> 'Initiated','payment_method'=>$paymentMethod,'order_type'=>$orderType,'order_notes'=>$orderNotes, 'currency' => $currency['sign'], 'currency_iso_code' => $currency['currency_iso_code'], 'discount' => null, 'local_pickup' => $localPickup, 'shipping_type' => $shippingType);
 
@@ -242,7 +242,7 @@ class CheckoutController extends Controller
                 if($customerGST){
                     $insertOrder['customer_gst'] = $customerGST;
                 }
-                
+
                 //print '<pre>'; print_r($insertOrder); die;
 
                 $config = Helper::getWebsiteConfig('country_code');
@@ -259,9 +259,9 @@ class CheckoutController extends Controller
                     $order = Order::create($insertOrder);
                 }
 
-                // $order->order_no = str_pad($order->id, 8, "0", STR_PAD_LEFT);  
-                $CustOrderId  = $order->id + 10126 ;            
-                $order->order_no = str_pad($CustOrderId, 8, "0", STR_PAD_LEFT); 
+                // $order->order_no = str_pad($order->id, 8, "0", STR_PAD_LEFT);
+                $CustOrderId  = $order->id + 10126 ;
+                $order->order_no = str_pad($CustOrderId, 8, "0", STR_PAD_LEFT);
                 $order->save();
                 // DB::commit();
                 // die;
@@ -285,30 +285,30 @@ class CheckoutController extends Controller
                         $order->billing()->create(['first_name' => $addressShipping['first_name'], 'last_name' => $addressShipping['last_name'], 'company_name' => $addressShipping['company_name'], 'email' => $addressShipping['email'], 'country_code' => $addressShipping['country_code'], 'phone' => $addressShipping['phone'], 'address_line_1' => $addressShipping['address_line_1'], 'address_line_2' => $addressShipping['address_line_2'], 'street' => $addressShipping['street'], 'city' => $addressShipping['city'], 'state' => $addressShipping['state'], 'country' => $addressShipping['country'], 'postal' => $addressShipping['postal']]);
                     }else{
                         $order->billing()->create(['first_name' => $addressBilling['first_name'], 'last_name' => $addressBilling['last_name'], 'company_name' => $addressBilling['company_name'], 'email' => $addressBilling['email'], 'country_code' => $addressBilling['country_code'], 'phone' => $addressBilling['phone'], 'address_line_1' => $addressBilling['address_line_1'], 'address_line_2' => $addressBilling['address_line_2'], 'street' => $addressBilling['street'], 'city' => $addressBilling['city'], 'state' => $addressBilling['state'], 'country' => $addressBilling['country'], 'postal' => $addressBilling['postal']]);
-                    }                    
+                    }
 
 
                     if(!$localPickup){
-                        
+
                         $order->shipping()->create(['first_name' => $addressShipping['first_name'], 'last_name' => $addressShipping['last_name'], 'company_name' => $addressShipping['company_name'], 'email' => $addressShipping['email'], 'country_code' => $addressShipping['country_code'], 'phone' => $addressShipping['phone'], 'address_line_1' => $addressShipping['address_line_1'], 'address_line_2' => $addressShipping['address_line_2'], 'street' => $addressShipping['street'], 'city' => $addressShipping['city'], 'state' => $addressShipping['state'], 'country' => $addressShipping['country'], 'postal' => $addressShipping['postal']]);
                     }
-                    
 
-                    
+
+
                 }else{
 
                     if($billingAddress){
                         $order->billing()->create(['first_name' => $shipping['first_name'], 'last_name' => $shipping['last_name'], 'company_name' => $shipping['company_name'], 'email' => $shipping['email'], 'country_code' => $config['country_code'], 'phone' => $shipping['phone'], 'address_line_1' => $shipping['address_line_1'], 'address_line_2' => $shipping['address_line_2'], 'street' => $shipping['street'], 'city' => $shipping['city'], 'state' => $shipping['state'], 'country' => $shipping['country'], 'postal' => $shipping['postal']]);
                     }else{
                         $order->billing()->create(['first_name' => $billing['first_name'], 'last_name' => $billing['last_name'], 'company_name' => $billing['company_name'], 'email' => $billing['email'], 'country_code' => $config['country_code'], 'phone' => $billing['phone'], 'address_line_1' => $billing['address_line_1'], 'address_line_2' => $billing['address_line_2'], 'street' => $billing['street'], 'city' => $billing['city'], 'state' => $billing['state'], 'country' => $billing['country'], 'postal' => $billing['postal']]);
-                    }   
+                    }
 
-                    
+
 
                     if(!$localPickup){
-                        
+
                         $order->shipping()->create(['first_name' => $shipping['first_name'], 'last_name' => $shipping['last_name'], 'company_name' => $shipping['company_name'], 'email' => $shipping['email'], 'country_code' => $config['country_code'], 'phone' => $shipping['phone'], 'address_line_1' => $shipping['address_line_1'], 'address_line_2' => $shipping['address_line_2'], 'street' => $shipping['street'], 'city' => $shipping['city'], 'state' => $shipping['state'], 'country' => $shipping['country'], 'postal' => $shipping['postal']]);
-                        
+
                         $shippingState = $order->shipping->state;
                     }
                 }
@@ -319,7 +319,7 @@ class CheckoutController extends Controller
                 if(isset($shippingState) && (strtolower($shippingState) == strtolower(config('constants.ADDRESS.state')))){
                     $sameShippingState = true;
                 }
-                
+
 
                 foreach($cart as $cartSingle){
                     //print '<pre>'; print_r($cartSingle); die;
@@ -338,7 +338,7 @@ class CheckoutController extends Controller
                     // if($cartSingle->is_variant){
                     //     //print 'a'; die;
                     //     $cartSingle->attribute->quantity;
-                        
+
                     // }else{
                     //     //print 'b'; die;
                     //     $quantityDB = $cartSingle->quantity;
@@ -347,14 +347,14 @@ class CheckoutController extends Controller
 
                     // continue;
 
-                    
+
                     $orderProduct = Helper::getProductOrderPriceDetails($cartSingle, $sameShippingState);
-                    
+
                     //print '<pre>'; print_r($orderProduct); die;
-                    
+
 
                     $orderProduct = $order->products()->create([
-                    
+
                         'product_id' => $cartSingle->product_id,
                         'product_attribute_id' => $cartSingle->product_attribute_id,
 
@@ -375,9 +375,9 @@ class CheckoutController extends Controller
 
                         'quantity' => $cartSingle->quantity,
                         //'price' => $cartSingle->is_variant ? $cartSingle->attribute->price : $cartSingle->productPrice(),
-                        //'old_price' => $cartSingle->is_variant ? $cartSingle->attribute->old_price : $cartSingle->productOldPrice(), 
+                        //'old_price' => $cartSingle->is_variant ? $cartSingle->attribute->old_price : $cartSingle->productOldPrice(),
                         'price' => $orderProduct['price'],
-                        'old_price' => $orderProduct['old_price'], 
+                        'old_price' => $orderProduct['old_price'],
 
                         'sale_price' => $orderProduct['sale_price'],
                         'final_price' => $orderProduct['final_price'],
@@ -438,12 +438,12 @@ class CheckoutController extends Controller
 
 
                 if($order){
-                    
+
 
                     // add shipment details starts
                     $shipment = Helper::addOrderShipmentDetails($order, $isExpress);
                     // add shipment details ends
-                    
+
                     $payment = Helper::makePayment($order, $paymentMethod, $user, $stripePaymentMethod);
                     // print '<pre>'; print_R($payment); die;
                     if($payment['result'] && $paymentMethod == 'stripe_card'){
@@ -452,13 +452,17 @@ class CheckoutController extends Controller
                     if($payment['result'] && $paymentMethod == 'razorpay'){
                         return to_route('razorpay.checkout', ['order_id' => $order->order_unique_id]);
                     }
+                    if($payment['result'] && $paymentMethod == 'stripe_express_checkout'){
+                        DB::commit();
+                        return redirect($payment['checkout_url']);
+                    }
                     if($payment['result']){
                         $config = Helper::getAccountingSettings('is_xero');
                         $isXero = $config['is_xero'];
                         if($isXero){
                             Helper::createXeroInvoice($order);
                         }
-                        
+
                         $cartObj = Helper::getCartObj($user);
                         $cartObj->delete();
 
@@ -467,11 +471,11 @@ class CheckoutController extends Controller
                     }else{
                         return to_route('order.placed', ['order' => $order->order_unique_id]);
                     }
-                    
+
                 }else{
                     return to_route('order.placed', ['order' => $order->order_unique_id]);
                 }
-            
+
             }else{
 
                 // enquiry code starts here
@@ -485,15 +489,15 @@ class CheckoutController extends Controller
 
                 //print $id; die;
 
-                
+
                 $validationArray=array(
                     // 'order_type'=>'required|in:Distributor,Commercial,Personal',
                     'order_type'=>'',
                     'customer_gst'=>'',
                 );
-                
+
                 if($user){
-                    
+
                 }else{
                     $validationArray['shipping'] = 'required|array';
                     $validationArray['shipping.first_name'] = 'required';
@@ -508,7 +512,7 @@ class CheckoutController extends Controller
                     $validationArray['shipping.postal'] = 'required|numeric';
                     $validationArray['shipping.phone'] = 'required|numeric|digits:10';
                     $validationArray['shipping.email'] = 'required|email';
-                    
+
                     if($billingAddress != 'on'){
                         $validationArray['billing'] = 'required|array';
                         $validationArray['billing.first_name'] = 'required';
@@ -525,24 +529,24 @@ class CheckoutController extends Controller
                         $validationArray['billing.email'] = 'required|email';
                     }
                 }
-                
+
                 $request->validate($validationArray);
-                
+
                 DB::beginTransaction();
-                
+
 
                 $billingAddress = $billingAddress == 'on' ? 1 : 0;
                 //die;
 
                 $currency = Helper::getCurrency();
-                
+
                 $insertEnquiry = array('enquiry_unique_id'=>Helper::unique_code(30), 'enquiry_status'=> 'Initiated', 'order_type'=>$orderType,'order_notes'=>$orderNotes, 'currency' => $currency['sign'], 'currency_iso_code' => $currency['currency_iso_code'], 'discount' => null);
 
 
                 if($customerGST){
                     $insertEnquiry['customer_gst'] = $customerGST;
                 }
-                
+
                 //print '<pre>'; print_r($insertEnquiry); die;
 
                 $config = Helper::getWebsiteConfig('country_code');
@@ -559,7 +563,7 @@ class CheckoutController extends Controller
                     $enquiry = Enquiry::create($insertEnquiry);
                 }
 
-                
+
                 $enquiry->enquiry_no = str_pad($enquiry->id, 8, "0", STR_PAD_LEFT);
                 $enquiry->save();
                 // DB::commit();
@@ -574,14 +578,14 @@ class CheckoutController extends Controller
                     $address = Helper::getDefaultBillingAndShippingAddress($user);
                     //print'<pre>';print_r($address); die;
                     $addressBilling = $address['billing'];
-                    
+
 
                     $enquiry->billing()->create(['first_name' => $addressBilling['first_name'], 'last_name' => $addressBilling['last_name'], 'company_name' => $addressBilling['company_name'], 'email' => $addressBilling['email'], 'country_code' => $addressBilling['country_code'], 'phone' => $addressBilling['phone'], 'address_line_1' => $addressBilling['address_line_1'],  'address_line_2' => $addressBilling['address_line_2'], 'street' => $addressBilling['street'], 'city' => $addressBilling['city'], 'state' => $addressBilling['state'], 'country' => $addressBilling['country'], 'postal' => $addressBilling['postal']]);
 
-                    
+
                 }else{
                     $enquiry->billing()->create(['first_name' => $billing['first_name'], 'last_name' => $billing['last_name'], 'company_name' => $billing['company_name'], 'email' => $billing['email'], 'country_code' => $config['country_code'], 'phone' => $billing['phone'], 'address_line_1' => $billing['address_line_1'], 'address_line_2' => $billing['address_line_2'], 'street' => $billing['street'], 'city' => $billing['city'], 'state' => $billing['state'], 'country' => $billing['country'], 'postal' => $billing['postal']]);
-                    
+
                 }
 
 
@@ -590,7 +594,7 @@ class CheckoutController extends Controller
                 if(isset($shippingState) && (strtolower($shippingState) == strtolower(config('constants.ADDRESS.state')))){
                     $sameShippingState = true;
                 }
-                
+
 
                 foreach($cart as $cartSingle){
                     //print '<pre>'; print_r($cartSingle); die;
@@ -609,7 +613,7 @@ class CheckoutController extends Controller
                     // if($cartSingle->is_variant){
                     //     //print 'a'; die;
                     //     $cartSingle->attribute->quantity;
-                        
+
                     // }else{
                     //     //print 'b'; die;
                     //     $quantityDB = $cartSingle->quantity;
@@ -618,14 +622,14 @@ class CheckoutController extends Controller
 
                     // continue;
 
-                    
+
                     $enquiryProduct = Helper::getProductOrderPriceDetails($cartSingle, $sameShippingState);
-                    
+
                     //print '<pre>'; print_r($enquiryProduct); die;
-                    
+
 
                     $enquiryProduct = $enquiry->products()->create([
-                    
+
                         'product_id' => $cartSingle->product_id,
                         'product_attribute_id' => $cartSingle->product_attribute_id,
 
@@ -646,9 +650,9 @@ class CheckoutController extends Controller
 
                         'quantity' => $cartSingle->quantity,
                         //'price' => $cartSingle->is_variant ? $cartSingle->attribute->price : $cartSingle->productPrice(),
-                        //'old_price' => $cartSingle->is_variant ? $cartSingle->attribute->old_price : $cartSingle->productOldPrice(), 
+                        //'old_price' => $cartSingle->is_variant ? $cartSingle->attribute->old_price : $cartSingle->productOldPrice(),
                         'price' => $enquiryProduct['price'],
-                        'old_price' => $enquiryProduct['old_price'], 
+                        'old_price' => $enquiryProduct['old_price'],
 
                         'sale_price' => $enquiryProduct['sale_price'],
                         'final_price' => $enquiryProduct['final_price'],
@@ -710,18 +714,18 @@ class CheckoutController extends Controller
 
                 if($user){
                     $emailData = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'enquiry_no' => $enquiry->enquiry_no, 'enquiry' => $enquiry, 'to' => $user->email);
-    
+
                     $emailDataAdmin = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'enquiry_no' => $enquiry->enquiry_no, 'enquiry' => $enquiry, 'to' => config('constants.EMAIL.send'));
-    
+
                 }else{
-    
+
                     $config = Helper::getWebsiteConfig('country_code');
-                    
+
                     $emailData = array('logo' => $logo, 'name' => $enquiry->first_name.' '.$enquiry->last_name, 'email' => $enquiry->email, 'country_code' => $config['country_code'], 'phone' => $enquiry->phone, 'enquiry_no' => $enquiry->enquiry_no, 'enquiry' => $enquiry, 'to' => $enquiry->email);
-    
+
                     $emailDataAdmin = array('logo' => $logo, 'name' => $enquiry->first_name.' '.$enquiry->last_name, 'email' => $enquiry->email, 'country_code' => $config['country_code'], 'phone' => $enquiry->phone, 'enquiry_no' => $enquiry->enquiry_no, 'enquiry' => $enquiry, 'to' => config('constants.EMAIL.send'));
                 }
-                
+
                 dispatch(new \App\Jobs\EnquiryPlacedQueue($emailData));
 
                 dispatch(new \App\Jobs\EnquiryAdminPlacedQueue($emailDataAdmin));
@@ -739,7 +743,7 @@ class CheckoutController extends Controller
           } catch (\Illuminate\Validation\ValidationException $e) {
               throw $e;
           } catch (\Throwable $e) {
-            dd($e->getMessage());
+            // dd($e->getMessage());
               DB::rollBack();
               \Log::error('Checkout failed: '.$e->getMessage(), ['exception' => $e]);
 
@@ -761,15 +765,15 @@ class CheckoutController extends Controller
         }else{
             $addressesCount = 0;
         }
-        
-        
+
+
         $addressBilling = (object)[];
         $addressShipping = (object)[];
         if($addressesCount > 0){
             $address = Helper::getDefaultBillingAndShippingAddress($user);
             $addressBilling = $address['billing'];
             $addressShipping = $address['shipping'];
-        }        
+        }
 
         if($user){
             $addresses = $addressesObj->get();
@@ -818,13 +822,13 @@ class CheckoutController extends Controller
                 ]);
 
             }
-            
+
         }
 
 
         $coupon = '';
         $couponEnabled = Helper::getWebsiteConfig('coupon');
-        if($couponEnabled['coupon'] == true){             
+        if($couponEnabled['coupon'] == true){
             $coupon = Helper::getCouponDetails($user);
         }
 
@@ -834,19 +838,19 @@ class CheckoutController extends Controller
     })
     ->get();
 
-   
+
 
     // dd($products);
 
 
         return view($this->prefix.'.'.$this->folder.'.checkout')->with(compact('cart','products','total_temp_sensitive','checkout','addresses','addressBilling','addressShipping','allowedPaymentMethods','countries', 'isEnquiryWebsite', 'intent', 'paymentMethods','couponEnabled','coupon'));
-        
+
     }
 
 
-    
+
     public function instamojoRedirect(Request $request)
-    { 
+    {
 
         $uniqueID = Session::get('instamojo');
         //print '<pre>'; print_R($data);
@@ -868,7 +872,7 @@ class CheckoutController extends Controller
             $payment->payment_status = 'Paid';
             $payment->status = 1;
             $payment->save();
-    
+
             $order->order_status = 'Payment Done';
             $order->is_payment_done = 1;
             $order->status = 1;
@@ -881,23 +885,23 @@ class CheckoutController extends Controller
             // $order, $user, $event, $type, $remarks, $userLevel, $note, $productID, $productAttributeID, $quantity, $productPrice
             Helper::addStockLog($order, $user, 'sold', 2, 'Product sold', 1, null, null, null, null, null);
 
-            
+
             if($user){
                 $emailData = array('name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $user->email);
-                
+
                 $emailDataAdmin = array('name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }else{
                 $config = Helper::getWebsiteConfig('country_code');
 
                 $emailData = array('name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $order->email);
-                
+
                 $emailDataAdmin = array('name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }
 
             dispatch(new \App\Jobs\OrderPlacedQueue($emailData));
 
             dispatch(new \App\Jobs\OrderAdminPlacedQueue($emailDataAdmin));
-            
+
             $order->history()->create(['status'=> 'Payment Done', 'type'=> 'payment_done']);
         }else{
 
@@ -912,7 +916,7 @@ class CheckoutController extends Controller
             $order->order_status = 'Payment Cancel';
             $order->is_payment_done = 0;
             $order->save();
-            
+
             $order->history()->create(['status'=> 'Payment Cancel', 'type'=> 'payment_cancel']);
         }
 
@@ -934,9 +938,9 @@ class CheckoutController extends Controller
 
     public function paypalRedirect(Request $request){
 
-        
+
         //print $request->order_id; die;
- 
+
         $user = Auth::user();
 
         $order = Order::where('order_unique_id',$request->order_id)->first();
@@ -948,7 +952,7 @@ class CheckoutController extends Controller
         //print '<pre>';print_r($order); die;
 
         if($request->payment_status == 'success'){
-        
+
             //$order = $provider->capturePaymentOrder($order_id);
 
             //die;
@@ -960,7 +964,7 @@ class CheckoutController extends Controller
             $response = $provider->capturePaymentOrder($request->token);
 
             //print '<pre>'; print_r($response); die;
-            
+
             if((isset($response['status']) && $response['status'] != 'COMPLETED') || (isset($response['error']) && count($response['error']) > 0)){
                 return to_route('order.placed', ['order' => $order->order_unique_id]);
                 //print 'Payment Failure'; die;
@@ -974,7 +978,7 @@ class CheckoutController extends Controller
             $payment->payment_status = 'Paid';
             $payment->status = 1;
             $payment->save();
-    
+
             $order->order_status = 'Payment Done';
             $order->is_payment_done = 1;
             $order->status = 1;
@@ -988,23 +992,23 @@ class CheckoutController extends Controller
             Helper::addStockLog($order, $user, 'sold', 2, 'Product sold', 1, null, null, null, null, null);
 
             $logo = Helper::getLightLogo();
-            
+
             if($user){
                 $emailData = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $user->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }else{
                 $config = Helper::getWebsiteConfig('country_code');
 
                 $emailData = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $order->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }
 
             dispatch(new \App\Jobs\OrderPlacedQueue($emailData));
 
             dispatch(new \App\Jobs\OrderAdminPlacedQueue($emailDataAdmin));
-            
+
             $order->history()->create(['status'=> 'Payment Done', 'type'=> 'payment_done']);
 
             //return redirect()->to('order-success/'.$order->order_unique_id);
@@ -1058,7 +1062,7 @@ class CheckoutController extends Controller
 
         // $order = Order::where('order_unique_id',$request->order_id)->first();
 
-        // print $razorpayOrderId; die; 
+        // print $razorpayOrderId; die;
 
         if($user){
             $order = $user->orders()->whereHas('payments', function ($subQuery) use($razorpayOrderId) {
@@ -1075,7 +1079,7 @@ class CheckoutController extends Controller
             // })
             ->first();
         }
-        
+
         $payment = $order->payments()->where('razorpay_order_id', $razorpayOrderId)->first();
         // print '<pre>'; print_r($payment->toArray()); die;
 
@@ -1107,35 +1111,35 @@ class CheckoutController extends Controller
             Helper::addStockLog($order, $user, 'sold', 2, 'Product sold', 1, null, null, null, null, null);
 
             $logo = Helper::getLightLogo();
-            
+
             if($user){
                 $emailData = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $user->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }else{
                 $config = Helper::getWebsiteConfig('country_code');
 
                 $emailData = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $order->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }
 
             dispatch(new \App\Jobs\OrderPlacedQueue($emailData));
 
             dispatch(new \App\Jobs\OrderAdminPlacedQueue($emailDataAdmin));
-            
+
             $order->history()->create(['status'=> 'Payment Done', 'type'=> 'payment_done']);
 
             //return redirect()->to('order-success/'.$order->order_unique_id);
 
             DB::commit();
-            
+
             $config = Helper::getAccountingSettings('is_xero');
             $isXero = $config['is_xero'];
             if($isXero){
                 Helper::createXeroInvoice($order);
             }
-            
+
             return to_route('order.placed', ['order' => $order->order_unique_id]);
 
         }
@@ -1144,8 +1148,8 @@ class CheckoutController extends Controller
         // $api = new RazorpayApi(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
         // $verify = $api->utility->verifyPaymentSignature(
         //     array(
-        //         'razorpay_order_id' => $razorpayOrderId, 
-        //         'razorpay_payment_id' => $razorpayPaymentId, 
+        //         'razorpay_order_id' => $razorpayOrderId,
+        //         'razorpay_payment_id' => $razorpayPaymentId,
         //         'razorpay_signature' => $razorpaySignature
         //     )
         // );
@@ -1157,7 +1161,7 @@ class CheckoutController extends Controller
         // die;
         // print_r($verify); die;
 
-        
+
 
     }
 
@@ -1179,7 +1183,10 @@ class CheckoutController extends Controller
 
         // payment_intent
 
-        $uniqueID = Session::get('stripe_express');
+        // order_id in the URL / Stripe's client_reference_id is authoritative; the session value
+        // is only a fallback since the session cookie isn't guaranteed to survive the redirect to
+        // and from Stripe's hosted checkout page.
+        $uniqueID = $request->query('order_id') ?: ($session->client_reference_id ?: Session::get('stripe_express'));
         //print '<pre>'; print_R($data);
 
         //print_r($_GET); die;
@@ -1188,8 +1195,19 @@ class CheckoutController extends Controller
 
         $order = Order::where('order_unique_id',$uniqueID)->first();
         //print '<pre>'; print_r($order); die;
+
+        if (!$order) {
+            DB::rollBack();
+            return to_route('cart')->with('error', 'We could not find your order. If you were charged, please contact us so we can confirm your payment.');
+        }
+
         $payment = $order->payments()->where('order_id',$order->id)->where('type','stripe_express_checkout')->where('payment_id',null)->latest()->first();
         //print '<pre>'; print_r($payment); die;
+
+        if (!$payment) {
+            DB::rollBack();
+            return to_route('cart')->with('error', 'We could not find your payment record. If you were charged, please contact us so we can confirm your payment.');
+        }
 
         $user = Auth::user();
 
@@ -1199,7 +1217,7 @@ class CheckoutController extends Controller
             $payment->payment_status = 'Paid';
             $payment->status = 1;
             $payment->save();
-    
+
             $order->order_status = 'Payment Done';
             $order->is_payment_done = 1;
             $order->status = 1;
@@ -1213,23 +1231,23 @@ class CheckoutController extends Controller
             Helper::addStockLog($order, $user, 'sold', 2, 'Product sold', 1, null, null, null, null, null);
 
             $logo = Helper::getLightLogo();
-            
+
             if($user){
                 $emailData = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $user->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }else{
                 $config = Helper::getWebsiteConfig('country_code');
 
                 $emailData = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $order->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }
 
             dispatch(new \App\Jobs\OrderPlacedQueue($emailData));
 
             dispatch(new \App\Jobs\OrderAdminPlacedQueue($emailDataAdmin));
-            
+
             $order->history()->create(['status'=> 'Payment Done', 'type'=> 'payment_done']);
         }else{
 
@@ -1244,7 +1262,7 @@ class CheckoutController extends Controller
             $order->order_status = 'Payment Cancel';
             $order->is_payment_done = 0;
             $order->save();
-            
+
             $order->history()->create(['status'=> 'Payment Cancel', 'type'=> 'payment_cancel']);
         }
 
@@ -1293,7 +1311,7 @@ class CheckoutController extends Controller
 
 
     public function checkoutStripeCard(Request $request){
- 
+
         $user = Auth::user();
 
         $order = Order::where('order_unique_id',$request->order_id)->first();
@@ -1344,7 +1362,7 @@ class CheckoutController extends Controller
                 }
 
                 //print '<pre>'; print_r($stripeCharge); die;
-                
+
                 // $options = [
 
                 //         //'off_session' => true,
@@ -1373,7 +1391,7 @@ class CheckoutController extends Controller
             $payment->payment_status = 'Paid';
             $payment->status = 1;
             $payment->save();
-    
+
             $order->order_status = 'Payment Done';
             $order->is_payment_done = 1;
             $order->status = 1;
@@ -1387,23 +1405,23 @@ class CheckoutController extends Controller
             Helper::addStockLog($order, $user, 'sold', 2, 'Product sold', 1, null, null, null, null, null);
 
             $logo = Helper::getLightLogo();
-            
+
             if($user){
                 $emailData = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $user->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $user->first_name.' '.$user->last_name, 'email' => $user->email, 'country_code' => $user->country_code, 'phone' => $user->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }else{
                 $config = Helper::getWebsiteConfig('country_code');
 
                 $emailData = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => $order->email);
-                
+
                 $emailDataAdmin = array('logo' => $logo, 'name' => $order->first_name.' '.$order->last_name, 'email' => $order->email, 'country_code' => $config['country_code'], 'phone' => $order->phone, 'order_no' => $order->order_no, 'order' => $order, 'to' => config('constants.EMAIL.send'));
             }
 
             dispatch(new \App\Jobs\OrderPlacedQueue($emailData));
 
             dispatch(new \App\Jobs\OrderAdminPlacedQueue($emailDataAdmin));
-            
+
             $order->history()->create(['status'=> 'Payment Done', 'type'=> 'payment_done']);
 
             $config = Helper::getAccountingSettings('is_xero');
@@ -1413,9 +1431,9 @@ class CheckoutController extends Controller
             }
 
             return to_route('order.placed', ['order' => $order->order_unique_id]);
-            
+
             //return to_route('order.placed', ['order' => $order->order_unique_id]);
-            
+
 
         }else{
             $paymentMethods = [];
@@ -1434,12 +1452,12 @@ class CheckoutController extends Controller
             return view($this->prefix.'.'.$this->folder.'.stripe-payment')->with(compact('order','payment','intent','paymentMethods'));
         }
 
-        
-
-        
 
 
-        
+
+
+
+
 
 
         // DB::commit();
@@ -1452,7 +1470,7 @@ class CheckoutController extends Controller
     }
 
     public function checkoutRazorpay(Request $request){
- 
+
         $user = Auth::user();
 
         $order = Order::where('order_unique_id',$request->order_id)->first();
@@ -1474,11 +1492,11 @@ class CheckoutController extends Controller
         $payment->save();
 
         return view($this->prefix.'.'.$this->folder.'.razorpay-payment')->with(compact('order','payment','currency','razorOrderID'));
-        
+
     }
 
     public function getStates(Request $request){
- 
+
 
         $country = trim($request->country);
         // print $country; die;
@@ -1498,7 +1516,7 @@ class CheckoutController extends Controller
         }
 
         return array('result' => true, 'html' => $html);
-   
+
     }
 
     public function getStateShipping(Request $request){
@@ -1531,7 +1549,7 @@ class CheckoutController extends Controller
         return array('checkout' => $checkout, 'html' => (String)View::make('front.checkout.pricing-section')->with(compact('checkout','isEnquiryWebsite')));
 
 
-   
+
     }
 
     public function refreshPricingSection(Request $request){
@@ -1547,7 +1565,7 @@ class CheckoutController extends Controller
         return array('checkout' => $checkout, 'html' => (String)View::make('front.checkout.pricing-section')->with(compact('checkout','isEnquiryWebsite')));
 
 
-   
+
     }
 
 
@@ -1567,7 +1585,7 @@ class CheckoutController extends Controller
     }
 
 
-        
-    
+
+
 
 }

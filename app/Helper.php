@@ -2647,31 +2647,20 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
                 'line_items' => [$productsData],
                 'mode' => 'payment',
                 'customer_email' => $order->email ?? $order->email, // ✅ Prefill email
+                'client_reference_id' => $order->order_unique_id,
                 // 'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
                 // 'cancel_url' => route('checkout.cancel'),
-                'success_url' => route('stripe.redirect') . '?session_id={CHECKOUT_SESSION_ID}&status=success',
-                'cancel_url'  => route('stripe.redirect') . '?session_id={CHECKOUT_SESSION_ID}&status=cancel',
+                'success_url' => route('stripe.redirect') . '?session_id={CHECKOUT_SESSION_ID}&status=success&order_id=' . $order->order_unique_id,
+                'cancel_url'  => route('stripe.redirect') . '?session_id={CHECKOUT_SESSION_ID}&status=cancel&order_id=' . $order->order_unique_id,
             ]);
 
             // print '<pre>'; print_r($checkoutSession); die;
 
-            // Session::put('stripe_checkout_session', array('stripe_checkout_session' => $checkoutSession->id));
-            // Session::save();
-
+            // Kept as a fallback only; the order is now identified via order_id/client_reference_id above
+            // because the session cookie isn't guaranteed to survive the round trip to Stripe's hosted page.
             Session::put('stripe_express', $order->order_unique_id);
 
-            DB::commit();
-            // return redirect($checkoutSession->url);
-            redirect()->to($checkoutSession->url)->send();
-
-
-
-            // if($payment){
-            //     DB::commit();
-            //     return array('result' => true);
-            // }else{
-            //     return array('result' => false);
-            // }
+            return array('result' => true, 'checkout_url' => $checkoutSession->url);
 
         }
 
