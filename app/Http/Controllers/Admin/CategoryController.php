@@ -220,7 +220,7 @@ public function edit($id)
     } else {
         $validationArray['name'] = 'required|unique:categories,name,' . $id . ',id,deleted_at,NULL';
         $validationArray['slug'] = 'required|alpha_dash|unique:categories,slug,' . $id . ',id,deleted_at,NULL';
-        $validationArray['priority'] = 'required|integer|min:1|unique:categories,priority,' . $id . ',id,deleted_at,NULL';
+       $validationArray['priority'] = 'required|integer|min:1';
     }
 
     $request->validate($validationArray);
