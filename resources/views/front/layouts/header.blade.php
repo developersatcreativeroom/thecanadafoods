@@ -496,7 +496,9 @@
                                 @if ($category->subcategories->isNotEmpty())
                                     <div class="dropdown-menu category-dropdown-box category-mega-panel"
                                         aria-labelledby="categoryDropdown{{ $category->id }}">
+                                        <a href="{{ route('category', $category->slug) }}" class="category-mega-viewall">
                                         <span class="category-mega-title">Shop {{ $category->name }}</span>
+                                        </a>
 
                                         <ul class="category-mega-list">
                                             @foreach ($category->subcategories as $subcategory)

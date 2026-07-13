@@ -575,11 +575,16 @@ jQuery(function ($) {
   $(".offcanvas-left-menu .offcanvas-close").on("click", function () {
     $(".offcanvas-left-menu").removeClass("active");
   });
-  $(".mobile-menu ul li.has-submenu a").each(function () {
-    $(this).on("click", function () {
-      $(this).siblings("ul").slideToggle();
-      $(this).toggleClass("icon-rotate");
-    });
+  $(".mobile-menu ul li.has-submenu > a").on("click", function () {
+    var $link = $(this);
+    var $submenu = $link.siblings("ul");
+    var isOpen = $link.hasClass("icon-rotate");
+
+    $(".mobile-menu ul li.has-submenu > ul").not($submenu).slideUp();
+    $(".mobile-menu ul li.has-submenu > a").not($link).removeClass("icon-rotate").attr("aria-expanded", "false");
+
+    $submenu.slideToggle();
+    $link.toggleClass("icon-rotate").attr("aria-expanded", !isOpen);
   });
   $(document).on("mouseup", function (e) {
     var offCanvusMenu = $(".offcanvas-left-menu");

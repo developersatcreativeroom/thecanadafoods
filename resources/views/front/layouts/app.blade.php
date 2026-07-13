@@ -304,36 +304,28 @@
                 <nav class="mobile-menu-wrapper scrollbar">
                     <ul>
                         @php
-                            $categoriesList = App\Helper::getCategoriesList();
+                            $categoriesListMenu = App\Helper::getCategoriesNav(true);
                         @endphp
 
-                        @foreach ($categoriesList as $category)
+                        @foreach ($categoriesListMenu as $category)
                             <li
                                 class="ps-3 dropdown-submenu {{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
 
                                 <a href="{{ route('category', [$category->slug]) }}"
-                                    class="d-flex align-items-center {{ $category->subcategories->isNotEmpty() ? 'dropdown-toggle' : '' }}"
-                                    @if ($category->subcategories->isNotEmpty()) data-bs-toggle="dropdown"
-                   aria-expanded="false" @endif>
-
-                                    @if (!empty($category) && ($category->image != null || $category->image != ''))
-                                        <div class="me-2 avatar-icon">
-                                            <img src="{{ asset('storage/categories/' . $category->id . '/' . $category->image) }}"
-                                                alt="{{ $category->image_alt ?: $category->name }}"
-                                                class="w-100 h-100 rounded-circle">
-                                        </div>
-                                    @endif
+                                    class="d-flex align-items-center justify-content-between {{ $category->subcategories->isNotEmpty() ? 'dropdown-toggle' : '' }}"
+                                    @if ($category->subcategories->isNotEmpty()) aria-expanded="false"
+                   onclick="event.preventDefault();" @endif>
 
                                     <span>{{ $category->name }}</span>
-
-                                    {{-- @if ($category->subcategories->isNotEmpty())
-                    <i class="fa-solid fa-angle-right ms-auto"></i>
-                @endif --}}
+                                    @if ($category->subcategories->isNotEmpty())
+                                        <i class="fa-solid fa-chevron-right toggle-icon"></i>
+                                    @endif
 
                                 </a>
 
                                 @if ($category->subcategories->isNotEmpty())
-                                    <ul class="dropdown-menu subcategory-dropdown">
+                                    <ul class="dropdown-menu subcategory-dropdown mobile-mega-panel">
+                                        <li class="mobile-mega-title">Shop {{ $category->name }}</li>
                                         @foreach ($category->subcategories as $subcategory)
                                             <li>
                                                 <a class="dropdown-item"
@@ -342,6 +334,11 @@
                                                 </a>
                                             </li>
                                         @endforeach
+                                        <li class="mobile-mega-viewall">
+                                            <a href="{{ route('category', [$category->slug]) }}">
+                                                View all {{ $category->name }} <i class="fa-solid fa-arrow-right"></i>
+                                            </a>
+                                        </li>
                                     </ul>
                                 @endif
 

@@ -1363,6 +1363,65 @@ ul.wsp-pages-list {
     }
 }
 
+/* Mobile off-canvas menu accordion — one category open at a time */
+.mobile-menu ul li.has-submenu > a.dropdown-toggle::after {
+    display: none !important;
+}
+
+.mobile-menu ul li.has-submenu > a .toggle-icon {
+    font-size: 12px;
+    color: #9aa0ac;
+    transition: transform .3s ease, color .3s ease;
+}
+
+.mobile-menu ul li.has-submenu > a.icon-rotate .toggle-icon {
+    transform: rotate(90deg);
+    color: #be1532;
+}
+
+.mobile-menu ul li.has-submenu > a.icon-rotate span {
+    color: #be1532;
+    font-weight: 700;
+}
+
+/* Mobile off-canvas "All Categories" drawer — mirrors the desktop mega panel */
+.mobile-menu .mobile-mega-panel {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 14px !important;
+}
+
+.mobile-menu .mobile-mega-title {
+    display: block;
+    margin: 6px 0 4px;
+    padding: 0 !important;
+    border-bottom: 0 !important;
+    color: #be1532;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.mobile-menu .mobile-mega-viewall {
+    margin-top: 4px;
+    border-top: 1px solid rgba(233, 233, 233, .6);
+}
+
+.mobile-menu .mobile-mega-viewall a {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0 !important;
+    border-bottom: 0 !important;
+    color: #14213d !important;
+    font-weight: 700 !important;
+}
+
+.mobile-menu .mobile-mega-viewall a i {
+    font-size: 11px;
+}
+
 /* Checkout - shipping method cards (Standard / Express) */
 .shipping-row-hidden {
     display: none !important;
