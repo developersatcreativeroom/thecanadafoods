@@ -156,7 +156,7 @@ return [
     
     'EXPRESS_SHIPPING' => [
         'enabled' => true,
-        'label' => 'Express Shipping (2-4 business days)',
+        'label' => 'Express Shipping',
         'tiers' => [
             ['max_weight' => 1.9,  'price' => 55],
             ['max_weight' => 4.9,  'price' => 62],
