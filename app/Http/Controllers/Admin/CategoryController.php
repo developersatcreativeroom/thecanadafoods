@@ -50,20 +50,20 @@ class CategoryController extends Controller implements HasMiddleware
         return view($this->prefix . '.' . $this->folder . '.list')->with($data);
     }
 
-    public function add()
+public function add()
 {
     $categories = Helper::getCategories();
 
-    // Get all categories ordered by display order
-    $orderCategories = Category::orderBy('order', 'asc')->get();
+    // Get all categories ordered by priority
+    $priorityCategories = Category::orderBy('priority', 'asc')->get();
 
-    // Next available order
-    $maxOrder = $orderCategories->count() + 1;
+    // Next available priority
+    $maxPriority = $priorityCategories->count() + 1;
 
     return view($this->prefix . '.' . $this->folder . '.form', [
-        'categories'      => $categories,
-        'orderCategories' => $orderCategories,
-        'maxOrder'        => $maxOrder,
+        'categories'         => $categories,
+        'priorityCategories' => $priorityCategories,
+        'maxPriority'        => $maxPriority,
     ]);
 }
 
@@ -73,17 +73,17 @@ public function edit($id)
 
     $categories = Helper::getCategories();
 
-    // Get all categories ordered by display order
-    $orderCategories = Category::orderBy('order', 'asc')->get();
+    // Get all categories ordered by priority
+    $priorityCategories = Category::orderBy('priority', 'asc')->get();
 
-    // Total available order options
-    $maxOrder = $orderCategories->count();
+    // Total priority options
+    $maxPriority = $priorityCategories->count();
 
     return view($this->prefix . '.' . $this->folder . '.form', [
-        'row'             => $row,
-        'categories'      => $categories,
-        'orderCategories' => $orderCategories,
-        'maxOrder'        => $maxOrder,
+        'row'                => $row,
+        'categories'         => $categories,
+        'priorityCategories' => $priorityCategories,
+        'maxPriority'        => $maxPriority,
     ]);
 }
     // public function add()
@@ -178,7 +178,7 @@ public function edit($id)
     //     }
     // }
 
-    public function postData(Request $request)
+ public function postData(Request $request)
 {
     $id = trim($request->input('id'));
     $name = trim($request->input('name'));
@@ -189,8 +189,8 @@ public function edit($id)
     $categoryID = $request->input('parent_category_id') ?: null;
     $imageAlt = trim($request->input('image_alt'));
     $image = $request->file('image');
-    $status = trim($request->input('status'));
-    $order = $request->input('order');
+    $status = $request->input('status');
+    $priority = $request->input('priority');
 
     if ($categoryID) {
         $parentCategory = Category::find($categoryID);
@@ -207,20 +207,20 @@ public function edit($id)
         'short_description' => 'nullable',
         'description' => 'nullable',
         'image_alt' => 'nullable|string|max:255',
+        'priority' => 'required|integer|min:1',
         'status' => 'required|boolean',
-        'order' => 'required|integer|min:1',
-        'image' => 'image|mimes:jpeg,jpg,png,webp',
+        'image' => 'nullable|image|mimes:jpeg,jpg,png,webp',
     ];
 
     if (empty($id)) {
         $validationArray['name'] = 'required|unique:categories,name,NULL,id,deleted_at,NULL';
         $validationArray['slug'] = 'required|alpha_dash|unique:categories,slug,NULL,id,deleted_at,NULL';
-        $validationArray['order'] = 'required|integer|min:1|unique:categories,order,NULL,id,deleted_at,NULL';
-        $validationArray['image'] = 'required|mimes:jpeg,jpg,png,webp';
+        $validationArray['priority'] = 'required|integer|min:1|unique:categories,priority,NULL,id,deleted_at,NULL';
+        $validationArray['image'] = 'required|image|mimes:jpeg,jpg,png,webp';
     } else {
         $validationArray['name'] = 'required|unique:categories,name,' . $id . ',id,deleted_at,NULL';
         $validationArray['slug'] = 'required|alpha_dash|unique:categories,slug,' . $id . ',id,deleted_at,NULL';
-        $validationArray['order'] = 'required|integer|min:1|unique:categories,order,' . $id . ',id,deleted_at,NULL';
+        $validationArray['priority'] = 'required|integer|min:1|unique:categories,priority,' . $id . ',id,deleted_at,NULL';
     }
 
     $request->validate($validationArray);
@@ -236,7 +236,7 @@ public function edit($id)
             'description' => $description,
             'image_alt' => $imageAlt,
             'level' => $level,
-            'order' => $order,
+            'priority' => $priority,
             'status' => $status,
             'is_approved' => true,
         ]);
@@ -253,8 +253,9 @@ public function edit($id)
         $category->description = $description;
         $category->image_alt = $imageAlt;
         $category->level = $level;
-        $category->order = $order;
+        $category->priority = $priority;
         $category->status = $status;
+
         $category->save();
     }
 

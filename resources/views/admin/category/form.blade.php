@@ -159,23 +159,24 @@
 							</div>
 
 							<div class="form-group">
-    <label for="order">Order <span class="text-danger">*</span></label>
+    <label for="priority">Priority <span class="text-danger">*</span></label>
 
-    <select class="form-control {{ $errors->has('order') ? 'is-invalid' : '' }}"
-            id="order"
-            name="order">
+    <select class="form-control {{ $errors->has('priority') ? 'is-invalid' : '' }}"
+            id="priority"
+            name="priority">
 
-        <option value="">-- Select Order --</option>
+        <option value="">-- Select Priority --</option>
 
-        @for($i = 1; $i <= $maxOrder; $i++)
+        @for($i = 1; $i <= $maxPriority; $i++)
+
             @php
-                $category = $orderCategories->firstWhere('order', $i);
+                $category = $priorityCategories->firstWhere('priority', $i);
 
                 $disabled = $category && (!isset($row) || $category->id != $row->id);
             @endphp
 
             <option value="{{ $i }}"
-                {{ old('order', $row->order ?? '') == $i ? 'selected' : '' }}
+                {{ old('priority', $row->priority ?? '') == $i ? 'selected' : '' }}
                 {{ $disabled ? 'disabled' : '' }}>
 
                 {{ $i }}
@@ -185,10 +186,12 @@
                 @endif
 
             </option>
+
         @endfor
+
     </select>
 
-    @error('order')
+    @error('priority')
         <span class="invalid-feedback">{{ $message }}</span>
     @enderror
 </div>
