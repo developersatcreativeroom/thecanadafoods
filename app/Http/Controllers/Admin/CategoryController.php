@@ -180,17 +180,17 @@ public function edit($id)
 
  public function postData(Request $request)
 {
-    $id = trim($request->input('id'));
-    $name = trim($request->input('name'));
-    $title_h1 = trim($request->input('title_h1'));
-    $slug = trim($request->input('slug'));
-    $short_description = trim($request->input('short_description'));
-    $description = trim($request->input('description'));
-    $categoryID = $request->input('parent_category_id') ?: null;
-    $imageAlt = trim($request->input('image_alt'));
+    $id = trim($request->id);
+    $name = trim($request->name);
+    $title_h1 = trim($request->title_h1);
+    $slug = trim($request->slug);
+    $short_description = trim($request->short_description);
+    $description = trim($request->description);
+    $categoryID = $request->parent_category_id ?: null;
+    $imageAlt = trim($request->image_alt);
     $image = $request->file('image');
-    $status = $request->input('status');
-    $priority = $request->input('priority');
+    $status = $request->status;
+    $priority = (int)$request->priority;
 
     if ($categoryID) {
         $parentCategory = Category::find($categoryID);
@@ -215,49 +215,86 @@ public function edit($id)
     if (empty($id)) {
         $validationArray['name'] = 'required|unique:categories,name,NULL,id,deleted_at,NULL';
         $validationArray['slug'] = 'required|alpha_dash|unique:categories,slug,NULL,id,deleted_at,NULL';
-        $validationArray['priority'] = 'required|integer|min:1|unique:categories,priority,NULL,id,deleted_at,NULL';
         $validationArray['image'] = 'required|image|mimes:jpeg,jpg,png,webp';
     } else {
         $validationArray['name'] = 'required|unique:categories,name,' . $id . ',id,deleted_at,NULL';
         $validationArray['slug'] = 'required|alpha_dash|unique:categories,slug,' . $id . ',id,deleted_at,NULL';
-       $validationArray['priority'] = 'required|integer|min:1';
     }
 
     $request->validate($validationArray);
 
-    if (empty($id)) {
+    DB::transaction(function () use (
+        &$category,
+        $id,
+        $name,
+        $title_h1,
+        $slug,
+        $categoryID,
+        $short_description,
+        $description,
+        $imageAlt,
+        $level,
+        $priority,
+        $status
+    ) {
 
-        $category = Category::create([
-            'name' => $name,
-            'title_h1' => $title_h1,
-            'slug' => $slug,
-            'parent_category_id' => $categoryID,
-            'short_description' => $short_description,
-            'description' => $description,
-            'image_alt' => $imageAlt,
-            'level' => $level,
-            'priority' => $priority,
-            'status' => $status,
-            'is_approved' => true,
-        ]);
+        if (empty($id)) {
 
-    } else {
+            // Shift all categories from selected priority onwards
+            Category::where('priority', '>=', $priority)
+                ->increment('priority');
 
-        $category = Category::findOrFail($id);
+            $category = Category::create([
+                'name' => $name,
+                'title_h1' => $title_h1,
+                'slug' => $slug,
+                'parent_category_id' => $categoryID,
+                'short_description' => $short_description,
+                'description' => $description,
+                'image_alt' => $imageAlt,
+                'level' => $level,
+                'priority' => $priority,
+                'status' => $status,
+                'is_approved' => true,
+            ]);
 
-        $category->name = $name;
-        $category->title_h1 = $title_h1;
-        $category->slug = $slug;
-        $category->parent_category_id = $categoryID;
-        $category->short_description = $short_description;
-        $category->description = $description;
-        $category->image_alt = $imageAlt;
-        $category->level = $level;
-        $category->priority = $priority;
-        $category->status = $status;
+        } else {
 
-        $category->save();
-    }
+            $category = Category::findOrFail($id);
+
+            $oldPriority = $category->priority;
+
+            if ($priority != $oldPriority) {
+
+                if ($priority < $oldPriority) {
+
+                    // Moving up
+                    Category::where('id', '!=', $category->id)
+                        ->whereBetween('priority', [$priority, $oldPriority - 1])
+                        ->increment('priority');
+
+                } else {
+
+                    // Moving down
+                    Category::where('id', '!=', $category->id)
+                        ->whereBetween('priority', [$oldPriority + 1, $priority])
+                        ->decrement('priority');
+                }
+            }
+
+            $category->name = $name;
+            $category->title_h1 = $title_h1;
+            $category->slug = $slug;
+            $category->parent_category_id = $categoryID;
+            $category->short_description = $short_description;
+            $category->description = $description;
+            $category->image_alt = $imageAlt;
+            $category->level = $level;
+            $category->priority = $priority;
+            $category->status = $status;
+            $category->save();
+        }
+    });
 
     $operation = empty($id) ? 'add' : 'update';
 
