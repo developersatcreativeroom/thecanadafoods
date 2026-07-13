@@ -203,7 +203,7 @@
                         </button>
 
                         {{-- Delete --}}
-                        <a href="{{ route('admin.delete.product.gallery', [$row->id, $image->id]) }}"
+                        <a href="{{ route('admin.delete.blog.gallery', [$row->id, $image->id]) }}"
                            class="btn btn-danger btn-sm gallery-delete-btn delete-btn btn-remove"
                            title="Delete Image">
                             <i class="fas fa-times"></i>

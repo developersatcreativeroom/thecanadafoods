@@ -157,6 +157,41 @@
 									</span>
 								@endif
 							</div>
+
+							<div class="form-group">
+    <label for="order">Order <span class="text-danger">*</span></label>
+
+    <select class="form-control {{ $errors->has('order') ? 'is-invalid' : '' }}"
+            id="order"
+            name="order">
+
+        <option value="">-- Select Order --</option>
+
+        @for($i = 1; $i <= $maxOrder; $i++)
+            @php
+                $category = $orderCategories->firstWhere('order', $i);
+
+                $disabled = $category && (!isset($row) || $category->id != $row->id);
+            @endphp
+
+            <option value="{{ $i }}"
+                {{ old('order', $row->order ?? '') == $i ? 'selected' : '' }}
+                {{ $disabled ? 'disabled' : '' }}>
+
+                {{ $i }}
+
+                @if($category)
+                    - {{ $category->name }}
+                @endif
+
+            </option>
+        @endfor
+    </select>
+
+    @error('order')
+        <span class="invalid-feedback">{{ $message }}</span>
+    @enderror
+</div>
 	
 						</div>
 					</div>

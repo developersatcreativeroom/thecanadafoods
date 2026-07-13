@@ -895,7 +895,7 @@ ul.wsp-pages-list {
 }
 
 .category-dropdown-btn {
-    padding: 0;
+    padding: 15px 18px;
     cursor: pointer;
 }
 
@@ -1067,26 +1067,22 @@ ul.wsp-pages-list {
 }
 
 .category-bootstrap-nav .category-dropdown-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 0;
-    /* padding: 10px 12px; */
-    border: 0;
-    border-radius: 4px;
-    background: transparent;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: none;
-    white-space: nowrap;
+   display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  padding: 15px 18px !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
 }
 
 .category-bootstrap-nav .category-dropdown-btn:hover,
 .category-bootstrap-nav .category-dropdown-btn:focus,
 .category-bootstrap-nav .category-dropdown.show > .category-dropdown-btn {
-    background: rgba(255, 255, 255, .14);
+    /* background: rgba(255, 255, 255, .14); */
     color: #fff;
 }
 
@@ -1164,6 +1160,79 @@ ul.wsp-pages-list {
     box-shadow: 0 16px 35px rgba(30, 30, 30, .18);
 } */
 
+/* Mega dropdown panel (per top-level nav category) */
+.category-bootstrap-nav .category-dropdown-box.category-mega-panel {
+  min-width: 260px;
+  max-width: 320px;
+  padding: 18px 20px;
+  border-top: 3px solid #be1532;
+}
+
+.category-mega-title {
+    display: block;
+    margin-bottom: 12px;
+    color: #be1532;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.category-mega-list {
+    margin: 0 0 14px;
+    padding: 0;
+    list-style: none;
+}
+
+.category-mega-list li + li {
+    margin-top: 2px;
+}
+
+.category-bootstrap-nav .category-mega-list a {
+    display: block;
+    padding: 6px 4px;
+    border-radius: 4px;
+    color: #222;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: normal;
+    /* transition: color .15s ease, background-color .15s ease; */
+}
+
+.category-bootstrap-nav .category-mega-list a:hover,
+.category-bootstrap-nav .category-mega-list a:focus {
+    background: #fff0f3;
+    color: #be1532;
+}
+
+.category-bootstrap-nav .category-mega-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    width: 100%;
+    color: #14213d;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: normal;
+}
+
+.category-mega-viewall i {
+    font-size: 12px;
+    transition: transform .15s ease;
+}
+
+.category-mega-viewall:hover {
+    color: #be1532;
+}
+
+.category-mega-viewall:hover i {
+    transform: translateX(3px);
+}
+
 .category-navbar-toggler {
     display: inline-flex;
     align-items: center;
@@ -1206,7 +1275,7 @@ ul.wsp-pages-list {
     transform: translateY(-2px);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .category-bootstrap-nav .dropdown:hover > .category-dropdown-box,
     .category-bootstrap-nav .dropdown:focus-within > .category-dropdown-box,
     .category-bootstrap-nav .dropdown-submenu:hover > .subcategory-dropdown,
@@ -1218,21 +1287,7 @@ ul.wsp-pages-list {
         right: 0;
         left: auto;
     }
-}
 
-@media (max-width: 991.98px) {
-    .category-bootstrap-nav .navbar-nav {
-        overflow-x: auto;
-        scrollbar-width: thin;
-    }
-
-    .category-bootstrap-nav .category-dropdown-btn {
-        padding-inline: 10px;
-        font-size: 13px;
-    }
-}
-
-@media (min-width: 992px) {
     .category-dropdown:hover > .dropdown-menu {
         display: block;
         margin-top: 0;
@@ -1240,10 +1295,13 @@ ul.wsp-pages-list {
 }
 
 @media (max-width: 767.98px) {
+    /* Mobile uses the dedicated "All Categories" off-canvas drawer instead */
     .bg-red.category-nav-bar {
         display: none;
     }
+}
 
+@media (max-width: 991.98px) {
     .category-bootstrap-nav {
         padding-block: 4px !important;
     }
@@ -1272,7 +1330,8 @@ ul.wsp-pages-list {
     }
 
     .category-bootstrap-nav .category-dropdown-box,
-    .category-bootstrap-nav .subcategory-dropdown {
+    .category-bootstrap-nav .subcategory-dropdown,
+    .category-bootstrap-nav .category-mega-panel {
         position: static;
         width: 100%;
         min-width: 0;
@@ -1285,6 +1344,22 @@ ul.wsp-pages-list {
         display: block;
         padding-left: 16px;
         background: #f8f9fa;
+    }
+
+    .category-bootstrap-nav .category-mega-panel {
+        padding: 10px 4px 14px;
+    }
+
+    .category-mega-title {
+        padding-left: 4px;
+    }
+
+    .category-bootstrap-nav .category-mega-list a {
+        padding: 8px 4px;
+    }
+
+    .category-bootstrap-nav .category-mega-viewall {
+        margin-left: 4px;
     }
 }
 

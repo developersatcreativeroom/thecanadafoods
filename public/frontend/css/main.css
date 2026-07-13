@@ -18587,10 +18587,10 @@ fieldset:disabled .btn {
         position: absolute
     }
 
-    .navbar-expand-lg .navbar-nav .nav-link {
+    /* .navbar-expand-lg .navbar-nav .nav-link {
         padding-right: var(--bs-navbar-nav-link-padding-x);
         padding-left: var(--bs-navbar-nav-link-padding-x)
-    }
+    } */
 
     .navbar-expand-lg .navbar-nav-scroll {
         overflow: visible
@@ -41860,7 +41860,7 @@ body {
 }
 
 .category-dropdown-menu li a:hover {
-    transform: translateY(-3px);
+    /* transform: translateY(-3px); */
     /* color: #BE1532; */
 }
 

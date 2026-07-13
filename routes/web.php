@@ -317,12 +317,14 @@ Route::group( [ 'prefix' => 'admin' ], function(){
             Route::get('blog-category/{id}', [AdminBlogCategoryController::class, 'edit'])->name('admin.blog.category.edit');
             Route::post('blog-category-post-data', [AdminBlogCategoryController::class, 'postData'])->name('admin.blog.category.post');
             Route::get('blog-category-delete-data/{id}', [AdminBlogCategoryController::class, 'delete'])->name('admin.blog.category.delete');
+            
 
             Route::get('blogs', [AdminBlogController::class, 'list'])->name('admin.blogs');
             Route::get('blog', [AdminBlogController::class, 'add'])->name('admin.blog');
             Route::get('blog/{id}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
             Route::post('blog-post-data', [AdminBlogController::class, 'postData'])->name('admin.blog.post');
             Route::get('blog-delete/{id}', [AdminBlogController::class, 'delete'])->name('admin.blog.delete');
+             Route::get('delete-product-gallery/{product_id}/{id}', [AdminBlogController::class, 'deleteBlogGallery'])->name('admin.delete.blog.gallery');
         });
 
         Route::group(['middleware' => 'permissions:faq'], function () {

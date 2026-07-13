@@ -42,6 +42,7 @@
                                             <th>Main Nav</th>
                                             <th>Top Category</th>
                                             <th>Trending</th>
+                                            <th>Type</th>
                                             <th>Added on</th>
                                             <th style="width: 130px">Actions</th>
                                         </tr>
@@ -62,8 +63,7 @@
                                                 <td>
                                                     <label class="switch">
                                                         <input type="checkbox" class="nav-toggle"
-                                                            data-id="{{ $row->id }}"
-                                                            data-col="is_main_nav"
+                                                            data-id="{{ $row->id }}" data-col="is_main_nav"
                                                             {{ $row->is_main_nav ? 'checked' : '' }}>
                                                         <span class="slider"></span>
                                                     </label>
@@ -71,8 +71,7 @@
                                                 <td>
                                                     <label class="switch">
                                                         <input type="checkbox" class="nav-toggle"
-                                                            data-id="{{ $row->id }}"
-                                                            data-col="is_top"
+                                                            data-id="{{ $row->id }}" data-col="is_top"
                                                             {{ $row->is_top ? 'checked' : '' }}>
                                                         <span class="slider"></span>
                                                     </label>
@@ -80,11 +79,17 @@
                                                 <td>
                                                     <label class="switch">
                                                         <input type="checkbox" class="nav-toggle"
-                                                            data-id="{{ $row->id }}"
-                                                             data-col="is_trending"
+                                                            data-id="{{ $row->id }}" data-col="is_trending"
                                                             {{ $row->is_trending ? 'checked' : '' }}>
                                                         <span class="slider"></span>
                                                     </label>
+                                                </td>
+                                                <td>
+                                                    @if (empty($row->parent_category_id) || $row->parent_category_id == 0)
+                                                        <span class="badge bg-success">Parent</span>
+                                                    @else
+                                                        <span class="badge bg-warning text-dark">Child</span>
+                                                    @endif
                                                 </td>
                                                 <td>{{ $row->created_at?->format(App\Helper::universalDateTimeFormat()) ?? '' }}
                                                 </td>

@@ -17,6 +17,7 @@ use Hash;
 use Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage as FacadesStorage;
 use Image;
 use Validator;
 use Mail;
@@ -151,6 +152,26 @@ class BlogController extends Controller implements HasMiddleware
                 return redirect()->back();
             }
         
+    }
+
+
+    public function deleteBlogGallery($blog_id, $id)
+    {
+        // print $product_id;
+        // print ' ';
+        // print $id; die;
+
+        $blog = Blog::find($blog_id);
+        $image = $blog->galleries()->find($id);
+        if ($image) {
+            //print 'blogs/'.$image->blogs_id.'/gallery/'.$image->image_name; die;
+            Storage::disk('public')->delete('blogs/' . $blog->id . '/gallery/' . $image->image);
+            Storage::disk('public')->delete('blogs/' . $blog->id . '/gallery/thumb/' . $image->image);
+            $image->delete();
+            Helper::flashMessage(true, 'Blog Image deleted successfully!');
+        }
+
+        return redirect()->back();
     }
 
     public function delete(Request $request){
