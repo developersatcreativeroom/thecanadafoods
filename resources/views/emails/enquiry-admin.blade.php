@@ -292,9 +292,25 @@
                     </tr>
                     <!-- end:tr -->
 
+                    <tr>
+                        <td class="bg_white" style="padding: 5px 25px; width: 100%;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td style="width: 50%; text-align: left; color: #000;">
+                                        Enquiry Date &amp; Time
+                                    </td>
+                                    <td style="width: 50%">
+                                        <p style="float: left; width: 100%; text-align: right; line-height: 1; color: #acacac; margin-bottom: 0; line-height: 1 padding: 0">
+                                            <span style="color: #acacac"> {{ $enquiry->created_at->format('d M Y, h:i A') }} </span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
                     <tr>
-                        <td style="width: 100%; padding: 1em 0 0;"> 
+                        <td style="width: 100%; padding: 1em 0 0;">
                             &nbsp;
                         </td>
                     </tr>
@@ -305,7 +321,7 @@
                                 <tr>
                                     <td style="width: 100%;">
                                         <div class="text" style="padding: 0 2.5em; text-align: center;">
-                                            
+
                                             <p style="float: left; width: 100%; text-align: left; color: #000; margin-bottom: 0;">Enquiry Products are:-</p>
                                         </div>
                                     </td>

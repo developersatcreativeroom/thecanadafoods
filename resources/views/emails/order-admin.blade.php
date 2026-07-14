@@ -292,6 +292,23 @@
                     </tr>
                     <!-- end:tr -->
 
+                    <tr>
+                        <td class="bg_white" style="padding: 5px 25px; width: 100%;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td style="width: 50%; text-align: left; color: #000;">
+                                        Order Date &amp; Time
+                                    </td>
+                                    <td style="width: 50%">
+                                        <p style="float: left; width: 100%; text-align: right; line-height: 1; color: #acacac; margin-bottom: 0; line-height: 1 padding: 0">
+                                            <span style="color: #acacac"> {{ $order->created_at->format('d M Y, h:i A') }} </span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
                     @if($order->local_pickup)
                     <!-- end:tr -->
                     <tr>
