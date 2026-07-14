@@ -1,5 +1,13 @@
 @extends('front.layouts.app')
 
+@if(count($banners) > 0)
+@section('head')
+    {{-- Preload the LCP hero image so the browser fetches it immediately instead of
+    waiting for CSS/JS to finish before the img tag is even discovered. --}}
+    <link rel="preload" as="image" href="{{ asset('storage/banners/') }}/{{ $banners->first()->id }}/{{ $banners->first()->image }}" fetchpriority="high">
+@endsection
+@endif
+
 @section('content')
 
 
@@ -40,7 +48,7 @@
                             <div class="col-xl-6 col-lg-7">
                                 <div class="hero-right text-center position-relative z-1 mt-8 mt-xl-0">
 
-                                    <img src="{{ URL::asset('frontend/img/initial-image.png') }}" data-src="{{ asset('storage/banners/') }}/{{$banner->id}}/{{$banner->image}}" alt="fruits" class="lazyload img-fluid position-absolute end-0 top-50 hero-img">
+                                    <img src="{{ asset('storage/banners/') }}/{{$banner->id}}/{{$banner->image}}" alt="fruits" class="img-fluid position-absolute end-0 top-50 hero-img" fetchpriority="{{ $loop->first ? 'high' : 'low' }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
 
                                     {{-- 
                                     <img src="{{ URL::asset('frontend/img/initial-image.png') }}" data-src="{{ URL::asset('frontend/img/shapes/tree.png') }}" alt="tree" class="img-fluid position-absolute tree z-1">
