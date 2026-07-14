@@ -44,8 +44,16 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ App\Helper::getFavicon() }}">
 
+    <!-- Google Fonts were previously loaded via @import inside main.css, which blocks CSSOM
+    construction until a second round-trip resolves. Preconnecting + linking them directly here
+    lets the browser discover and start the font CSS fetch immediately from the HTML. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oleo+Script&display=swap">
+
     <!--build:css-->
-    <link rel="stylesheet" href="{{ URL::asset('frontend/css/main.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('frontend/css/main.min.css') }}">
     <!-- endbuild -->
 
     <!-- toastr -->
@@ -53,7 +61,7 @@
         onload="this.media='all'">
 
 
-    <link rel="stylesheet" href="{{ URL::asset('frontend/css/custom.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('frontend/css/custom.min.css') }}">
 
 
     @php
@@ -387,11 +395,11 @@
     <script src="{{ URL::asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
     <script src="{{ URL::asset('frontend/plugins/typeahead/typeahead.js') }}"></script>
 
-    <script src="{{ URL::asset('frontend/js/app.js') }}"></script>
+    <script src="{{ URL::asset('frontend/js/app.min.js') }}"></script>
     <!--endbuild-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" async></script>
 
-    <script src="{{ URL::asset('frontend/js/custom.js') }}"></script>
+    <script src="{{ URL::asset('frontend/js/custom.min.js') }}"></script>
 
     <script>
         var site_url = "{{ url('/') }}";
