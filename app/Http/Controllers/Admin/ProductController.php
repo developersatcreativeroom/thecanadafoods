@@ -30,6 +30,7 @@ use Hash;
 use Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Image;
 use Validator;
 use Mail;
@@ -957,6 +958,113 @@ class ProductController extends Controller implements HasMiddleware
         }
 
         return redirect()->back();
+    }
+
+
+    /**
+     * TEMPORARY one-time utility: renames existing product image / gallery
+     * image files on disk so the filename matches the alt text that is
+     * already saved against them. Only touches images that already have a
+     * non-empty alt text AND whose current filename doesn't already match
+     * it — safe to run more than once (idempotent), and a single failed
+     * image is skipped (logged in the report) rather than aborting the run.
+     */
+    public function syncImageNamesWithAlt()
+    {
+        $report = [];
+
+        $products = Product::whereNotNull('image_alt')
+            ->where('image_alt', '!=', '')
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->get();
+
+        foreach ($products as $product) {
+            $alt = trim((string) $product->image_alt);
+            $currentBaseName = pathinfo($product->image, PATHINFO_FILENAME);
+            $expectedSlug = Str::slug($alt);
+
+            if ($alt === '' || Str::startsWith($currentBaseName, $expectedSlug)) {
+                continue;
+            }
+
+            try {
+                $oldName = $product->image;
+                Helper::renameImageFile($product, 'image', 'products/' . $product->id, $alt);
+
+                $report[] = [
+                    'type' => 'Product Image',
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'old' => $oldName,
+                    'new' => $product->fresh()->image,
+                    'status' => 'renamed',
+                ];
+            } catch (\Throwable $e) {
+                $report[] = [
+                    'type' => 'Product Image',
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'old' => $product->image,
+                    'new' => null,
+                    'status' => 'skipped: ' . $e->getMessage(),
+                ];
+            }
+        }
+
+        $galleryImages = \App\Models\ProductImage::whereNotNull('image_alt')
+            ->where('image_alt', '!=', '')
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->get();
+
+        foreach ($galleryImages as $galleryImage) {
+            $alt = trim((string) $galleryImage->image_alt);
+            $currentBaseName = pathinfo($galleryImage->image, PATHINFO_FILENAME);
+            $expectedSlug = Str::slug($alt);
+
+            if ($alt === '' || Str::startsWith($currentBaseName, $expectedSlug)) {
+                continue;
+            }
+
+            try {
+                $oldName = $galleryImage->image;
+                Helper::renameImageFile($galleryImage, 'image', 'products/' . $galleryImage->product_id . '/gallery/', $alt);
+
+                $report[] = [
+                    'type' => 'Gallery Image',
+                    'product_id' => $galleryImage->product_id,
+                    'product_name' => optional(Product::find($galleryImage->product_id))->name,
+                    'old' => $oldName,
+                    'new' => $galleryImage->fresh()->image,
+                    'status' => 'renamed',
+                ];
+            } catch (\Throwable $e) {
+                $report[] = [
+                    'type' => 'Gallery Image',
+                    'product_id' => $galleryImage->product_id,
+                    'product_name' => optional(Product::find($galleryImage->product_id))->name,
+                    'old' => $galleryImage->image,
+                    'new' => null,
+                    'status' => 'skipped: ' . $e->getMessage(),
+                ];
+            }
+        }
+
+        $renamedCount = count(array_filter($report, fn ($row) => $row['status'] === 'renamed'));
+        $skippedCount = count($report) - $renamedCount;
+
+        $html = '<h2>Image rename sync complete</h2>';
+        $html .= '<p>Renamed: ' . $renamedCount . ' &nbsp; | &nbsp; Skipped/failed: ' . $skippedCount . '</p>';
+        $html .= '<table border="1" cellpadding="6" cellspacing="0"><tr><th>Type</th><th>Product ID</th><th>Product</th><th>Old file</th><th>New file</th><th>Status</th></tr>';
+
+        foreach ($report as $row) {
+            $html .= '<tr><td>' . e($row['type']) . '</td><td>' . e($row['product_id']) . '</td><td>' . e($row['product_name']) . '</td><td>' . e($row['old']) . '</td><td>' . e($row['new'] ?? '-') . '</td><td>' . e($row['status']) . '</td></tr>';
+        }
+
+        $html .= '</table>';
+
+        return response($html);
     }
 
 

@@ -265,7 +265,10 @@ Route::group( [ 'prefix' => 'admin' ], function(){
 
             Route::get('attribute-combinations', [AdminProductController::class, 'attributeCombinations'])->name('admin.attribute.combinations');
             Route::get('attribute-custom-combinations', [AdminProductController::class, 'attributeCustomCombinations'])->name('admin.attribute.custom.combinations');
-        
+
+            // TEMPORARY one-time utility — remove after running once.
+            Route::get('sync-product-image-names', [AdminProductController::class, 'syncImageNamesWithAlt'])->name('admin.products.sync.image.names');
+
         });
 
         
