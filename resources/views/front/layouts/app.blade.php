@@ -301,7 +301,7 @@
                 <a href="{{ route('home') }}" class="d-inline-block mb-5">
                     <img class="header-logo" src="{{ App\Helper::getLightLogo() }}" alt="logo">
                 </a>
-                <nav class="mobile-menu-wrapper scrollbar">
+                <nav class="mobile-menu-wrapper">
                     <ul>
                         @php
                             $categoriesListMenu = App\Helper::getCategoriesNav(true);

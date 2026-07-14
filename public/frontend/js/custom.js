@@ -106,52 +106,7 @@ $( document ).ready(function() {
         // productDetails();
     //});
 
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const menuItems = document.querySelectorAll('.mobile-menu .has-submenu');
-
-    menuItems.forEach(function (item) {
-
-        const trigger = item.querySelector('a.dropdown-toggle');
-        const submenu = item.querySelector('.dropdown-menu');
-
-        trigger.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            // Close all other open submenus
-            menuItems.forEach(function (otherItem) {
-                if (otherItem !== item) {
-                    otherItem.classList.remove('active');
-
-                    const otherSubmenu = otherItem.querySelector('.dropdown-menu');
-                    if (otherSubmenu) {
-                        otherSubmenu.style.display = 'none';
-                    }
-
-                    const otherTrigger = otherItem.querySelector('a.dropdown-toggle');
-                    if (otherTrigger) {
-                        otherTrigger.setAttribute('aria-expanded', 'false');
-                    }
-                }
-            });
-
-            // Toggle current submenu
-            if (submenu.style.display === 'block') {
-                submenu.style.display = 'none';
-                item.classList.remove('active');
-                trigger.setAttribute('aria-expanded', 'false');
-            } else {
-                submenu.style.display = 'block';
-                item.classList.add('active');
-                trigger.setAttribute('aria-expanded', 'true');
-            }
-        });
-
-    });
-
-});
-
+    
 
     cartCount();
 
