@@ -153,6 +153,7 @@
      $(document).on('change', '.nav-toggle', function() {
 
             let checkbox = $(this);
+            let statusLabel = checkbox.closest('td').find('.status-label');
 
             $.ajax({
                 url: "{{ route('admin.products.toggle') }}",
@@ -161,6 +162,15 @@
                     _token: "{{ csrf_token() }}",
                     id: checkbox.data('id'),
                     col: checkbox.data('col')
+                },
+                success: function(response) {
+                    if (statusLabel.length) {
+                        checkbox.prop('checked', response.status);
+                        statusLabel
+                            .text(response.status ? 'Active' : 'Inactive')
+                            .toggleClass('bg-success', response.status)
+                            .toggleClass('bg-danger', !response.status);
+                    }
                 },
                 error: function() {
                     checkbox.prop('checked', !checkbox.prop('checked'));

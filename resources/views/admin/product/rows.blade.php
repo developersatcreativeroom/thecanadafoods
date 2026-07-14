@@ -7,7 +7,7 @@
                       <th>Image</th>
                       <th>Price</th>
                       <th>Temp Sensitive</th>
-                      <th>Status</th>
+                      <th>Active/Inactive</th>
                       <th>Meta Status</th>
                       <th>Added on</th>
                       <th style="width: 130px">Actions</th>
@@ -40,11 +40,16 @@
                                                     </label>
                                                 </td>
                       <td>
-                        @if($row->status)
-                          <span class="badge bg-success">Active</span>
-                        @else
-                          <span class="badge bg-danger">In-active</span>
-                        @endif
+                        <div class="d-flex align-items-center gap-2">
+                          <label class="switch mb-0">
+                            <input type="checkbox" class="nav-toggle status-toggle"
+                                data-id="{{ $row->id }}"
+                                data-col="status"
+                                {{ $row->status ? 'checked' : '' }}>
+                            <span class="slider"></span>
+                          </label>
+                          {{-- <span class="badge {{ $row->status ? 'bg-success' : 'bg-danger' }} status-label">{{ $row->status ? 'Active' : 'Inactive' }}</span> --}}
+                        </div>
                       </td>
                       <td> {!! App\Helper::metaStatus($row) !!} </td>
                       <td>{{$row->created_at?->format(App\Helper::universalDateTimeFormat()) ?? ''}}</td>

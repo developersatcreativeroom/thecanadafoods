@@ -1275,7 +1275,7 @@ class ProductController extends Controller implements HasMiddleware
     {
         $request->validate([
             'id'  => 'required|exists:products,id',
-            'col' => 'required|in:temp_sensitive',
+            'col' => 'required|in:temp_sensitive,status',
         ]);
         $category = Product::findOrFail($request->id);
         $column = $request->col;
