@@ -139,8 +139,10 @@ class HomeController extends Controller
         }
 
 
-        $query->whereHas('categories', function ($subQuery) use ($categoryID) {
-            $subQuery->where('category_id', $categoryID);
+        $categoryIDs = $categoryDB->subcategories()->pluck('id')->push($categoryID)->all();
+
+        $query->whereHas('categories', function ($subQuery) use ($categoryIDs) {
+            $subQuery->whereIn('category_id', $categoryIDs);
         });
 
         $query->orderBy('is_best_sell', 'desc');
