@@ -430,6 +430,33 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
     //     }
     // }
 
+    public static function renameGalleryImage($imageModel, $directory, $newAltText, $isThumb = true)
+    {
+        $oldName = $imageModel->image;
+
+        if (empty($oldName) || !Storage::disk('public')->exists($directory . '/' . $oldName)) {
+            $imageModel->image_alt = $newAltText;
+            $imageModel->save();
+
+            return $imageModel;
+        }
+
+        $extension = '.' . pathinfo($oldName, PATHINFO_EXTENSION);
+        $newName = Str::slug($newAltText) . '-' . uniqid() . $extension;
+
+        Storage::disk('public')->move($directory . '/' . $oldName, $directory . '/' . $newName);
+
+        if ($isThumb && Storage::disk('public')->exists($directory . '/thumb/' . $oldName)) {
+            Storage::disk('public')->move($directory . '/thumb/' . $oldName, $directory . '/thumb/' . $newName);
+        }
+
+        $imageModel->image = $newName;
+        $imageModel->image_alt = $newAltText;
+        $imageModel->save();
+
+        return $imageModel;
+    }
+
     public static function uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn, $imagesAlt = [],$isThumb,$deletePrevImage,$subFolderID) {
 
     if (empty($images)) {

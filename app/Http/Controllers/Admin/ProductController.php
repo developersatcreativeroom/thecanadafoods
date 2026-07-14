@@ -241,6 +241,7 @@ class ProductController extends Controller implements HasMiddleware
         $images = $request->file('images');
         $imageAlt = $request->input('image_alt');
         $imagesAlt = $request->input('images_alt');
+        $galleryAlt = $request->input('gallery_alt');
         //$files = $request->file('images');
 
         $specifications = $request->input('specifications');
@@ -749,6 +750,28 @@ class ProductController extends Controller implements HasMiddleware
             // uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn,$isAltText=false,$altText=null,$isThumb,$deletePrevImage,$subFolderID) {
             Helper::uploadImages($images, $product->images(), 'products/' . $product->id . '/gallery/', false, $operation, 'image', false, $imagesAlt, true, false, false);
             // Helper::uploadImages($images, $product->images(), 'products/' . $product->id . '/gallery/', false, $operation, 'image', false, true, false, false);
+        }
+
+        if (isset($galleryAlt) && is_array($galleryAlt) && count($galleryAlt) > 0) {
+            foreach ($galleryAlt as $galleryImageId => $newAlt) {
+                $newAlt = trim((string) $newAlt);
+
+                if ($newAlt === '') {
+                    continue;
+                }
+
+                $galleryImage = $product->images()->find($galleryImageId);
+
+                if (!$galleryImage) {
+                    continue;
+                }
+
+                if ($galleryImage->image_alt === $newAlt) {
+                    continue;
+                }
+
+                Helper::renameGalleryImage($galleryImage, 'products/' . $product->id . '/gallery/', $newAlt);
+            }
         }
         //die;
         // add products images here ends
