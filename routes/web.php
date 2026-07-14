@@ -324,7 +324,7 @@ Route::group( [ 'prefix' => 'admin' ], function(){
             Route::get('blog/{id}', [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
             Route::post('blog-post-data', [AdminBlogController::class, 'postData'])->name('admin.blog.post');
             Route::get('blog-delete/{id}', [AdminBlogController::class, 'delete'])->name('admin.blog.delete');
-             Route::get('delete-product-gallery/{product_id}/{id}', [AdminBlogController::class, 'deleteBlogGallery'])->name('admin.delete.blog.gallery');
+             Route::get('delete-blog-gallery/{product_id}/{id}', [AdminBlogController::class, 'deleteBlogGallery'])->name('admin.delete.blog.gallery');
         });
 
         Route::group(['middleware' => 'permissions:faq'], function () {
