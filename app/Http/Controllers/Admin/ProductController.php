@@ -429,6 +429,7 @@ class ProductController extends Controller implements HasMiddleware
             }
 
             $oldStock = $product->stock;
+            $oldImageAlt = $product->image_alt;
 
             $product->name = $name;
             $product->slug = $slug;
@@ -737,8 +738,11 @@ class ProductController extends Controller implements HasMiddleware
         if (isset($image)) {
             // image, model, directory, is_directory_id, add_or_update, column_name ,is_column_update, is_thumb, delete_prev_image, sub_folder_id
 
-            
+
             Helper::uploadImage($image, $product, 'products', true, $operation, 'image', true, true, $isPreviousImageDelete, false,$altText);
+        } elseif ($operation == 'update' && $altText && $altText !== trim((string) $oldImageAlt)) {
+            // No new file uploaded, but the alt text changed — rename the existing image file to match.
+            Helper::renameImageFile($product, 'image', 'products/' . $product->id, $altText);
         }
         if (isset($hoverImage)) {
             // image, model, directory, is_directory_id, add_or_update, column_name ,is_column_update, is_thumb, delete_prev_image, sub_folder_id
@@ -770,7 +774,7 @@ class ProductController extends Controller implements HasMiddleware
                     continue;
                 }
 
-                Helper::renameGalleryImage($galleryImage, 'products/' . $product->id . '/gallery/', $newAlt);
+                Helper::renameImageFile($galleryImage, 'image', 'products/' . $product->id . '/gallery/', $newAlt);
             }
         }
         //die;

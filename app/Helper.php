@@ -430,15 +430,15 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
     //     }
     // }
 
-    public static function renameGalleryImage($imageModel, $directory, $newAltText, $isThumb = true)
+    public static function renameImageFile($model, $columnName, $directory, $newAltText, $altColumn = 'image_alt', $isThumb = true)
     {
-        $oldName = $imageModel->image;
+        $oldName = $model->{$columnName};
 
         if (empty($oldName) || !Storage::disk('public')->exists($directory . '/' . $oldName)) {
-            $imageModel->image_alt = $newAltText;
-            $imageModel->save();
+            $model->{$altColumn} = $newAltText;
+            $model->save();
 
-            return $imageModel;
+            return $model;
         }
 
         $extension = '.' . pathinfo($oldName, PATHINFO_EXTENSION);
@@ -450,11 +450,11 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
             Storage::disk('public')->move($directory . '/thumb/' . $oldName, $directory . '/thumb/' . $newName);
         }
 
-        $imageModel->image = $newName;
-        $imageModel->image_alt = $newAltText;
-        $imageModel->save();
+        $model->{$columnName} = $newName;
+        $model->{$altColumn} = $newAltText;
+        $model->save();
 
-        return $imageModel;
+        return $model;
     }
 
     public static function uploadImages($images,$model,$directory,$isDirectoryID,$operation,$columnName,$isColumn, $imagesAlt = [],$isThumb,$deletePrevImage,$subFolderID) {
