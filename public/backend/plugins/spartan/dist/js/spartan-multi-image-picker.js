@@ -281,8 +281,14 @@
          */
         function onDropImage(setting, input, parent, evt){
             var index = $(input).data('spartanindexrow');
-            var file_p = $(parent).find('.spartan_image_input[data-spartanindexinput="'+index+'"]');
-            file_p.files = evt.originalEvent.dataTransfer.files;
+            var file_p = $(parent).find('.spartan_image_input[data-spartanindexinput="'+index+'"]')[0];
+            var dataTransfer = evt.originalEvent && evt.originalEvent.dataTransfer;
+
+            if (!file_p || !dataTransfer || !dataTransfer.files || !dataTransfer.files.length) {
+                return;
+            }
+
+            file_p.files = dataTransfer.files;
 
             // clear on hover style
             $(input).find('.file_upload').css({'border-color': '#ddd', 'background' : 'none'});

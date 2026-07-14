@@ -120,7 +120,7 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{ URL::asset('backend/js/pages/dashboard.js') }}"></script>
     <script src="{{ URL::asset('backend/plugins/ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ URL::asset('backend/plugins/spartan/dist/js/spartan-multi-image-picker-min.js') }}"></script>
+    <script src="{{ URL::asset('backend/plugins/spartan/dist/js/spartan-multi-image-picker.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js" integrity="sha512-8QFTrG0oeOiyWo/VM9Y8kgxdlCryqhIxVeRpWSezdRRAvarxVtwLnGroJgnVW9/XBRduxO/z1GblzPrMQoeuew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ URL::asset('backend/js/custom.js') }}"></script>
 
