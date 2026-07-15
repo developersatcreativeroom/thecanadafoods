@@ -129,7 +129,7 @@
             <div class="row align-items-center">
                 <div class="col-xxl-3 col-xl-3 col-md-3 col-5">
                     <a href="{{ route('home') }}" class="logo"><img src="{{ App\Helper::getLightLogo() }}"
-                            alt="logo" class="img-fluid header-logo"></a>
+                            alt="logo" class="img-fluid header-logo" fetchpriority="high" loading="eager"></a>
                 </div>
                 <div class="col-xxl-6 col-xl-6 col-md-9 col-7">
                     <div
@@ -496,9 +496,9 @@
                                 @if ($category->subcategories->isNotEmpty())
                                     <div class="dropdown-menu category-dropdown-box category-mega-panel"
                                         aria-labelledby="categoryDropdown{{ $category->id }}">
-                                        <a href="{{ route('category', $category->slug) }}" class="category-mega-viewall">
+                                        {{-- <a href="{{ route('category', $category->slug) }}" class="category-mega-viewall">
                                         <span class="category-mega-title">Shop {{ $category->name }}</span>
-                                        </a>
+                                        </a> --}}
 
                                         <ul class="category-mega-list">
                                             @foreach ($category->subcategories as $subcategory)

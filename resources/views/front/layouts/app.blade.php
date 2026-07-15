@@ -52,6 +52,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oleo+Script&display=swap">
 
+    <!-- Warm up connections to third-party origins used further down the page (analytics/tag
+    manager scripts, lazysizes CDN) so their TCP+TLS handshake overlaps with the initial HTML/CSS
+    fetch instead of starting cold when the browser first reaches those <script> tags. -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://static.hotjar.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <!-- The header logo renders on every page above the fold and is frequently the LCP element
+    on non-homepage routes (the homepage's own banner image is preloaded separately). -->
+    <link rel="preload" as="image" href="{{ App\Helper::getLightLogo() }}" fetchpriority="high">
+
     <!--build:css-->
     <link rel="stylesheet" href="{{ URL::asset('frontend/css/main.min.css') }}">
     <!-- endbuild -->
@@ -77,76 +88,80 @@
     @if (isset($facebookPixel))
         {!! $facebookPixel['script'] !!}
     @endif
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HYCT01WS4J"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'G-HYCT01WS4J');
-    </script>
-
     <meta name="google-site-verification" content="vFRQgvViAfwPh8RPTPcYhRJTfq-hOaRbnftOZa1l4vw" />
 
-    <!-- Google Tag Manager -->
-    <script>
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-                'gtm.start': new Date().getTime(),
-                event: 'gtm.js'
-            });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src =
-                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-NZDDK849');
-    </script>
-    <!-- End Google Tag Manager -->
-
-
-
-
-    <!-- Hotjar Tracking Code for https://thecanadafoods.com/ -->
-    <script>
-        (function(h, o, t, j, a, r) {
-            h.hj = h.hj || function() {
-                (h.hj.q = h.hj.q || []).push(arguments)
-            };
-            h._hjSettings = {
-                hjid: 6406480,
-                hjsv: 6
-            };
-            a = o.getElementsByTagName('head')[0];
-            r = o.createElement('script');
-            r.async = 1;
-            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
-    </script>
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17043332732"></script>
+    <!-- Analytics/tag-manager scripts don't affect what the user sees, so none of them need to
+    compete with the hero image, CSS, or app JS for bandwidth/main-thread time during the initial
+    render. Loading them after window "load" (+ a short delay) keeps them out of LCP/TBT entirely
+    while still firing well within a normal page visit. -->
     <script>
         window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
 
-        function gtag() {
-            dataLayer.push(arguments);
+        function loadDeferredAnalytics() {
+            // Google tag (gtag.js) - GA4
+            var gtagScript1 = document.createElement('script');
+            gtagScript1.async = true;
+            gtagScript1.src = 'https://www.googletagmanager.com/gtag/js?id=G-HYCT01WS4J';
+            document.head.appendChild(gtagScript1);
+            gtag('js', new Date());
+            gtag('config', 'G-HYCT01WS4J');
+
+            // Google tag (gtag.js) - Ads
+            var gtagScript2 = document.createElement('script');
+            gtagScript2.async = true;
+            gtagScript2.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17043332732';
+            document.head.appendChild(gtagScript2);
+            gtag('config', 'AW-17043332732');
+
+            // Google Tag Manager
+            (function(w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                    'gtm.start': new Date().getTime(),
+                    event: 'gtm.js'
+                });
+                var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s),
+                    dl = l != 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-NZDDK849');
+
+            // Hotjar Tracking Code for https://thecanadafoods.com/
+            (function(h, o, t, j, a, r) {
+                h.hj = h.hj || function() {
+                    (h.hj.q = h.hj.q || []).push(arguments)
+                };
+                h._hjSettings = {
+                    hjid: 6406480,
+                    hjsv: 6
+                };
+                a = o.getElementsByTagName('head')[0];
+                r = o.createElement('script');
+                r.async = 1;
+                r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+                a.appendChild(r);
+            })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+
+            // Ahrefs analytics
+            var ahrefsScript = document.createElement('script');
+            ahrefsScript.async = true;
+            ahrefsScript.src = 'https://analytics.ahrefs.com/analytics.js';
+            ahrefsScript.setAttribute('data-key', 'lhi2tz+unRZ3c2VoIMOavw');
+            document.head.appendChild(ahrefsScript);
         }
-        gtag('js', new Date());
 
-        gtag('config', 'AW-17043332732');
+        if (document.readyState === 'complete') {
+            setTimeout(loadDeferredAnalytics, 3000);
+        } else {
+            window.addEventListener('load', function() {
+                setTimeout(loadDeferredAnalytics, 3000);
+            });
+        }
     </script>
-
-
-    <script src="https://analytics.ahrefs.com/analytics.js" data-key="lhi2tz+unRZ3c2VoIMOavw" async></script>
 
 
 @if ($routeKey == 'product/{slug}' && isset($product))
@@ -319,7 +334,7 @@
                             <li
                                 class="ps-3 dropdown-submenu {{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
 
-                                <a href="{{ route('category', [$category->slug]) }}"
+                                {{-- <a href="{{ route('category', [$category->slug]) }}"
                                     class="d-flex align-items-center justify-content-between {{ $category->subcategories->isNotEmpty() ? 'dropdown-toggle' : '' }}"
                                     @if ($category->subcategories->isNotEmpty()) aria-expanded="false"
                    onclick="event.preventDefault();" @endif>
@@ -329,7 +344,7 @@
                                         <i class="fa-solid fa-chevron-right toggle-icon"></i>
                                     @endif
 
-                                </a>
+                                </a> --}}
 
                                 @if ($category->subcategories->isNotEmpty())
                                     <ul class="dropdown-menu subcategory-dropdown mobile-mega-panel">
