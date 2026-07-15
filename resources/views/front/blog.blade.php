@@ -43,7 +43,7 @@
                         {{-- <span class="fs-xs fw-medium"><i class="fa-regular fa-comments me-2"></i>Organic Vegetable</span> --}}
                     </div>
                     <span class="hr-line w-100 position-relative d-block my-4"></span>
-                    <p>{!!$blog->description!!}</p>
+                    <div class="blog-description">{!!$blog->description!!}</div>
                     
 
                     {{-- <h4 class="mt-6">Comments(02)</h4>

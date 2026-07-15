@@ -278,7 +278,15 @@
     <script>
 		CKEDITOR.replace( 'description' , {
 			filebrowserUploadUrl: "{{route('ckeditor.upload', ['_token' => csrf_token() ])}}",
-        	filebrowserUploadMethod: 'form'
+        	filebrowserUploadMethod: 'form',
+			toolbar: 'Full',
+			// Disable CKEditor's default content filtering (ACF) so pasted/typed HTML
+			// (inline styles, divs, tables, custom classes, etc.) is kept exactly as-is
+			// instead of being stripped down to a "safe" subset of tags/attributes.
+			allowedContent: true,
+			// Preserve the source HTML on paste rather than CKEditor's normal "clean up
+			// pasted content" behavior, which would otherwise strip inline style="" attrs.
+			pasteFilter: null
 		});
 	</script>
 
