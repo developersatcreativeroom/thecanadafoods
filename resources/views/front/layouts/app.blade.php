@@ -334,7 +334,7 @@
                             <li
                                 class="ps-3 dropdown-submenu {{ $category->subcategories->isNotEmpty() ? 'has-submenu' : '' }}">
 
-                                {{-- <a href="{{ route('category', [$category->slug]) }}"
+                                <a href="{{ route('category', [$category->slug]) }}"
                                     class="d-flex align-items-center justify-content-between {{ $category->subcategories->isNotEmpty() ? 'dropdown-toggle' : '' }}"
                                     @if ($category->subcategories->isNotEmpty()) aria-expanded="false"
                    onclick="event.preventDefault();" @endif>
@@ -344,7 +344,7 @@
                                         <i class="fa-solid fa-chevron-right toggle-icon"></i>
                                     @endif
 
-                                </a> --}}
+                                </a>
 
                                 @if ($category->subcategories->isNotEmpty())
                                     <ul class="dropdown-menu subcategory-dropdown mobile-mega-panel">
