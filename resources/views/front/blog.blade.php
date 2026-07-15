@@ -11,7 +11,7 @@
         <div class="row justify-content-center">
             <div class="col-8 justify-content-center">
                 <div class="breadcrumb-content">
-                    <h1 class="mb-2 text-center">{{$blog->title}}</h1>
+                    <h1 class="mb-2 text-center text-red">{{$blog->title}}</h1>
                     <nav>
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item fw-bold" aria-current="page"><a href="{{route('home')}}">Home</a></li>
@@ -32,18 +32,25 @@
 <section class="blog-details pb-100">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="blog-details-content bg-white rounded-2 py-6 px-5">
                     <div class="thumbnail rounded-2 overflow-hidden text-center">
                         <img src="{{ asset('storage/blogs/') }}/{{$blog->id}}/{{$blog->image}}" alt="blog thumb" class="img-fluid">
                     </div>
                     <div class="blog-meta d-flex align-items-center gap-3 flex-wrap mt-5">
-                        <span class="fs-xs fw-medium"><i class="fa-solid fa-tags me-2"></i>{{$blog->category_name}}</span>
-                        <span class="fs-xs fw-medium"><i class="fa-regular fa-clock me-2"></i>{{$blog->created_at?->format(App\Helper::universalDateFormat()) ?? ''}}</span>
+                        <span class="fs-xs fw-medium">By the {{config('constants.POSTED_BY')}}</span> • 
+                        <span class="fs-xs fw-medium"> UPDATED {{$blog->created_at?->format(App\Helper::universalDateFormat()) ?? ''}}</span>
+                       @if(!empty($blog->read_time))
+                        • 
+    <span class="fs-xs fw-medium">
+        <i class="fa-regular fa-clock me-2"></i>
+        {{ \Illuminate\Support\Str::contains(strtolower($blog->read_time), 'min') ? $blog->read_time : $blog->read_time . ' min' }} read
+    </span>
+@endif
                         {{-- <span class="fs-xs fw-medium"><i class="fa-regular fa-comments me-2"></i>Organic Vegetable</span> --}}
                     </div>
                     <span class="hr-line w-100 position-relative d-block my-4"></span>
-                    <div class="blog-description">{!!$blog->description!!}</div>
+                    <div class="blog-description" style="max-width: 1275px">{!!$blog->description!!}</div>
                     
 
                     {{-- <h4 class="mt-6">Comments(02)</h4>

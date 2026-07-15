@@ -3,6 +3,7 @@ return [
     'ADMIN_PAGE_RECORDS' => 20,
     'FRONT_PAGE_RECORDS' => 50,
     'RATING_PAGE_RECORDS' => 10,
+    'POSTED_BY' => 'TheCanadaFoods.com Team',
     'META_STATUSES' => [
         3 =>  'Completed',
         2 =>  'Partial',

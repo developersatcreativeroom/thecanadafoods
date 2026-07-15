@@ -865,6 +865,10 @@ small,
     background-color: hsl(var(--text-clr)/var(--bg-opacity))
 }
 
+.text-red{
+    color: #C8102E;
+}
+
 .alt-text-bg {
     --bg-opacity: 1;
     background-color: hsl(var(--alt-text-clr)/var(--bg-opacity))

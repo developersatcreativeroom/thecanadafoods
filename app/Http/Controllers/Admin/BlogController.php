@@ -73,6 +73,7 @@ class BlogController extends Controller implements HasMiddleware
         $id = trim($request->input('id'));
         $title = trim($request->input('title'));
         $slug = trim($request->input('slug'));
+        $readTime = trim($request->input('read_time'));
         $blogCategoryId = trim($request->input('blog_category_id'));
         $shortDescription = trim($request->input('short_description'));
         $image = $request->file('image');
@@ -89,6 +90,7 @@ class BlogController extends Controller implements HasMiddleware
         //if(empty($id)){
             $validationArray=array(
                 'title'=>'required',
+                'read_time' => 'required|max:20',
                 'short_description'=>'required',
                 'description'=>'required',
                 'blog_category_id'=>'required',
@@ -113,7 +115,7 @@ class BlogController extends Controller implements HasMiddleware
             //print $price; die;
 
             if(empty($id)){
-                $insertRow = ['title'=>$title, 'blog_category_id'=>$blogCategoryId, 'short_description'=>$shortDescription, 'description'=>$description, 'seo_title'=>$seoTitle, 'seo_description'=>$seoDescription, 'seo_keywords'=>$seoKeywords, 'status'=>$status];
+                $insertRow = ['title'=>$title, 'blog_category_id'=>$blogCategoryId,'read_time' => $readTime, 'short_description'=>$shortDescription, 'description'=>$description, 'seo_title'=>$seoTitle, 'seo_description'=>$seoDescription, 'seo_keywords'=>$seoKeywords, 'status'=>$status];
                 $blog = Blog::create($insertRow);
             }else{
                 $blog = Blog::find($id);
@@ -122,6 +124,7 @@ class BlogController extends Controller implements HasMiddleware
                 $blog->blog_category_id = $blogCategoryId;
                 $blog->short_description = $shortDescription;
                 $blog->description = $description;
+                 $blog->read_time = $readTime;
                 $blog->seo_title = $seoTitle;
                 $blog->seo_description = $seoDescription;
                 $blog->seo_keywords = $seoKeywords;

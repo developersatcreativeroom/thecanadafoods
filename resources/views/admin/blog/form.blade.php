@@ -53,15 +53,43 @@
                         </div>
                       @endif
 
-                      <div class="form-group">
-                        <label for="title">Title <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" id="title" placeholder="Enter Title" name="title" value="@if(old('title')!=null){{old('title')}}@elseif(!empty($row->title)){{$row->title}}@endif">
-                        @if($errors->has('title'))
-                          <span class="invalid-feedback">
-                            {{ $errors->first('title') }}
-                          </span>
-                        @endif
-                      </div>
+                     <div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="title">Title <span class="text-danger">*</span></label>
+            <input type="text"
+                class="form-control {{ $errors->has('title') ? 'is-invalid' : '' }}"
+                id="title"
+                name="title"
+                placeholder="Enter Title"
+                value="@if(old('title') != null){{ old('title') }}@elseif(!empty($row->title)){{ $row->title }}@endif">
+
+            @if($errors->has('title'))
+                <span class="invalid-feedback">
+                    {{ $errors->first('title') }}
+                </span>
+            @endif
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="read_time">Read Time <span class="text-danger">*</span></label>
+            <input type="text"
+                class="form-control {{ $errors->has('read_time') ? 'is-invalid' : '' }}"
+                id="read_time"
+                name="read_time"
+                placeholder="e.g. 1 min"
+                value="@if(old('read_time') != null){{ old('read_time') }}@elseif(!empty($row->read_time)){{ $row->read_time }}@endif">
+
+            @if($errors->has('read_time'))
+                <span class="invalid-feedback">
+                    {{ $errors->first('read_time') }}
+                </span>
+            @endif
+        </div>
+    </div>
+</div>
 
                       <div class="form-group">
                         <label for="blog_category_id">Blog Category <span class="text-danger">*</span></label>
