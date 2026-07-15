@@ -27,6 +27,7 @@ use App\Models\ShippingPrice;
 use App\Models\Coupon;
 use App\Models\Order;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 // use Gregwar\Image\Image;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -129,21 +130,36 @@ class Helper
     // } 
     public static function getCategoriesNav($nav = false)
     {
-        $rows = Category::with(['subcategories' => function ($query) {
-            $query->where('status', 1)
+        $cacheKey = 'categories_nav_' . ($nav ? '1' : '0');
+
+        return Cache::remember($cacheKey, 3600, function () use ($nav) {
+            $rows = Category::with(['subcategories' => function ($query) {
+                $query->where('status', 1)
+                    ->orderBy('priority', 'asc');
+            }])
+                ->where('status', 1)
+                ->whereNull('parent_category_id')
                 ->orderBy('priority', 'asc');
-        }])
-            ->where('status', 1)
-            ->whereNull('parent_category_id')
-            ->orderBy('priority', 'asc');
 
-        if ($nav) {
-            $rows->where('is_main_nav', 1);
-        } else {
-            $rows->where('is_main_nav', '!=', 1);
-        }
+            if ($nav) {
+                $rows->where('is_main_nav', 1);
+            } else {
+                $rows->where('is_main_nav', '!=', 1);
+            }
 
-        return $rows->get();
+            return $rows->get();
+        });
+    }
+
+    /**
+     * All settings keyed by their `key` column, cached for an hour. Invalidated
+     * immediately by the Setting model's saved/deleted events (see Setting::boot()).
+     */
+    public static function getCachedSettings()
+    {
+        return Cache::remember('website_settings', 3600, function () {
+            return Setting::all()->keyBy('key');
+        });
     }
 
 
@@ -2403,7 +2419,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
             //print 'a'; die;
             $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, env('INSTAMOJO_URL'));
+            curl_setopt($ch, CURLOPT_URL, config('services.instamojo.url'));
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -2411,8 +2427,8 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
                 $ch,
                 CURLOPT_HTTPHEADER,
                 array(
-                    "X-Api-Key:" . env('INSTAMOJO_API_KEY'),
-                    "X-Auth-Token:" . env('INSTAMOJO_API_TOKEN')
+                    "X-Api-Key:" . config('services.instamojo.api_key'),
+                    "X-Auth-Token:" . config('services.instamojo.api_token')
                 )
             );
             $payload = array(
@@ -2656,7 +2672,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
                 'quantity' => 1
             ];
 
-            Stripe::setApiKey(env('STRIPE_SECRET'));
+            Stripe::setApiKey(config('services.stripe.secret'));
 
             $checkoutSession = StripeCheckoutSession::create([
                 // 'payment_method_types' => ['card', 'link', 'upi'], // you can add wallets here
@@ -2962,12 +2978,12 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
     public static function getWebsiteConfig($method = null)
     {
-        $settingObj = new Setting();
+        $settings = Self::getCachedSettings();
         //print '<pre>'; print_r($settingObj); die;
         $config = [];
 
         if ($method == null || ($method != null && $method == 'email')) {
-            $email = $settingObj->where('key', 'email')->first();
+            $email = $settings->get('email');
             if ($email && $email->value) {
                 $config['email'] = $email->value;
             } else {
@@ -2976,7 +2992,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && ($method == 'country_code' || $method == 'phone' || $method == 'whatsapp'))) {
-            $countryCode = $settingObj->where('key', 'country_code')->first();
+            $countryCode = $settings->get('country_code');
             if ($countryCode && $countryCode->value) {
                 $config['country_code'] = $countryCode->value;
             } else {
@@ -2985,7 +3001,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'phone')) {
-            $phone = $settingObj->where('key', 'phone')->first();
+            $phone = $settings->get('phone');
             if ($phone && $phone->value) {
                 $config['phone'] = '+' . $config['country_code'] . '-' . $phone->value;
             } else {
@@ -2995,7 +3011,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'whatsapp')) {
-            $whatsapp = $settingObj->where('key', 'whatsapp')->first();
+            $whatsapp = $settings->get('whatsapp');
             if ($whatsapp && $whatsapp->value) {
                 $config['whatsapp'] = 'https://wa.me/' . $config['country_code'] . $whatsapp->value;
             } else {
@@ -3004,7 +3020,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'whatsapp_number')) {
-            $whatsapp = $settingObj->where('key', 'whatsapp')->first();
+            $whatsapp = $settings->get('whatsapp');
             if ($whatsapp && $whatsapp->value) {
                 $config['whatsapp_number'] = '+' . $config['country_code'] . $whatsapp->value;
             } else {
@@ -3013,7 +3029,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'address')) {
-            $address = $settingObj->where('key', 'address')->first();
+            $address = $settings->get('address');
             if ($address && $address->value) {
                 $config['address'] = $address->value;
             } else {
@@ -3022,7 +3038,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'map_link')) {
-            $mapLink = $settingObj->where('key', 'map_link')->first();
+            $mapLink = $settings->get('map_link');
             if ($mapLink && $mapLink->value) {
                 $config['map_link'] = $mapLink->value;
             } else {
@@ -3031,7 +3047,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'timings_weekdays')) {
-            $timingsWeekdays = $settingObj->where('key', 'hours_week')->first();
+            $timingsWeekdays = $settings->get('hours_week');
             if ($timingsWeekdays && $timingsWeekdays->value) {
                 $config['timings_weekdays'] = $timingsWeekdays->value;
             } else {
@@ -3040,7 +3056,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'timings_weekend')) {
-            $timingsWeekend = $settingObj->where('key', 'hours_week_end')->first();
+            $timingsWeekend = $settings->get('hours_week_end');
             if ($timingsWeekend && $timingsWeekend->value) {
                 $config['timings_weekend'] = $timingsWeekend->value;
             } else {
@@ -3049,7 +3065,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'coupon')) {
-            $coupon = $settingObj->where('key', 'coupon')->first();
+            $coupon = $settings->get('coupon');
             if ($coupon && $coupon->value) {
                 if ($coupon->value == 'true') {
                     $config['coupon'] = true;
@@ -3062,7 +3078,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'social')) {
-            $facebook = $settingObj->where('key', 'facebook_social')->first();
+            $facebook = $settings->get('facebook_social');
             if ($facebook && $facebook->value && $facebook->value != '#') {
                 $config['social']['facebook'] = $facebook->value;
             } else {
@@ -3071,7 +3087,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'social')) {
-            $instagram = $settingObj->where('key', 'instagram_social')->first();
+            $instagram = $settings->get('instagram_social');
             if ($instagram && $instagram->value && $instagram->value != '#') {
                 $config['social']['instagram'] = $instagram->value;
             } else {
@@ -3080,7 +3096,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'social')) {
-            $twitter = $settingObj->where('key', 'twitter_social')->first();
+            $twitter = $settings->get('twitter_social');
             if ($twitter && $twitter->value && $twitter->value != '#') {
                 $config['social']['twitter'] = $twitter->value;
             } else {
@@ -3089,7 +3105,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'social')) {
-            $pinterest = $settingObj->where('key', 'pinterest_social')->first();
+            $pinterest = $settings->get('pinterest_social');
             if ($pinterest && $pinterest->value && $pinterest->value != '#') {
                 $config['social']['pinterest'] = $pinterest->value;
             } else {
@@ -3098,7 +3114,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'social')) {
-            $youtube = $settingObj->where('key', 'youtube_social')->first();
+            $youtube = $settings->get('youtube_social');
             if ($youtube && $youtube->value && $youtube->value != '#') {
                 $config['social']['youtube'] = $youtube->value;
             } else {
@@ -3107,7 +3123,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'currency_sign')) {
-            $currencySign = $settingObj->where('key', 'currency_sign')->first();
+            $currencySign = $settings->get('currency_sign');
             if ($currencySign && $currencySign->value) {
                 $config['currency_sign'] = $currencySign->value;
             } else {
@@ -3116,7 +3132,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'product_services')) {
-            $productServices = $settingObj->where('key', 'product_services')->first();
+            $productServices = $settings->get('product_services');
             if ($productServices && $productServices->value) {
                 if ($productServices->value == 'true') {
                     $config['product_services'] = true;
@@ -3129,7 +3145,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'product_addon')) {
-            $productAddon = $settingObj->where('key', 'product_addon')->first();
+            $productAddon = $settings->get('product_addon');
             if ($productAddon && $productAddon->value) {
                 if ($productAddon->value == 'true') {
                     $config['product_addon'] = true;
@@ -3142,7 +3158,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'local_pickup')) {
-            $localPickup = $settingObj->where('key', 'local_pickup')->first();
+            $localPickup = $settings->get('local_pickup');
             if ($localPickup && $localPickup->value) {
                 if ($localPickup->value == 'true') {
                     $config['local_pickup'] = true;
@@ -3155,7 +3171,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'is_enquiry_website')) {
-            $isEnquiryWebsite = $settingObj->where('key', 'is_enquiry_website')->first();
+            $isEnquiryWebsite = $settings->get('is_enquiry_website');
             if ($isEnquiryWebsite && $isEnquiryWebsite->value) {
                 if ($isEnquiryWebsite->value == 'true') {
                     $config['is_enquiry_website'] = true;
@@ -3168,7 +3184,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'reviews')) {
-            $isReviews = $settingObj->where('key', 'reviews')->first();
+            $isReviews = $settings->get('reviews');
             if ($isReviews && $isReviews->value) {
                 if ($isReviews->value == 'true') {
                     $config['reviews'] = true;
@@ -3181,7 +3197,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'is_email_verify')) {
-            $isEnquiryWebsite = $settingObj->where('key', 'is_email_verify')->first();
+            $isEnquiryWebsite = $settings->get('is_email_verify');
             if ($isEnquiryWebsite && $isEnquiryWebsite->value) {
                 if ($isEnquiryWebsite->value == 'true') {
                     $config['is_email_verify'] = true;
@@ -3194,7 +3210,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'min_cart_amount')) {
-            $minCartAmount = $settingObj->where('key', 'min_cart_amount')->first();
+            $minCartAmount = $settings->get('min_cart_amount');
             if ($minCartAmount && $minCartAmount->value) {
                 $config['min_cart_amount'] = $minCartAmount->value;
             } else {
@@ -3207,7 +3223,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
 
 
-        // $email = $settingObj->where('key', 'email')->first();
+        // $email = $settings->get('email');
         // if($email && $email->value){
         //     $config['email'] = $email->value;
         // }else{
@@ -3230,12 +3246,12 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
     public static function getPaymentSettings($method = null)
     {
-        $settingObj = new Setting();
+        $settings = Self::getCachedSettings();
         //print '<pre>'; print_r($settingObj); die;
         $config = [];
 
         if ($method == null || ($method != null && $method == 'cash')) {
-            $cashOnDelivery = $settingObj->where('key', 'cash_on_delivery')->first();
+            $cashOnDelivery = $settings->get('cash_on_delivery');
             //print '<pre>'; print_r($cashOnDelivery); die;
             if ($cashOnDelivery) {
                 if ($cashOnDelivery->value == true) {
@@ -3249,7 +3265,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'instamojo')) {
-            $instamojo = $settingObj->where('key', 'instamojo')->first();
+            $instamojo = $settings->get('instamojo');
             if ($instamojo) {
                 if ($instamojo->value == true) {
                     $config['instamojo'] = $instamojo->value;
@@ -3263,7 +3279,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'paypal')) {
-            $paypal = $settingObj->where('key', 'paypal')->first();
+            $paypal = $settings->get('paypal');
             if ($paypal) {
                 if ($paypal->value == true) {
                     $config['paypal'] = $paypal->value;
@@ -3277,7 +3293,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'stripe_card')) {
-            $stripeCard = $settingObj->where('key', 'stripe_card')->first();
+            $stripeCard = $settings->get('stripe_card');
             if ($stripeCard) {
                 if ($stripeCard->value == true) {
                     $config['stripe_card'] = $stripeCard->value;
@@ -3291,7 +3307,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'razorpay')) {
-            $stripeCard = $settingObj->where('key', 'razorpay')->first();
+            $stripeCard = $settings->get('razorpay');
             if ($stripeCard) {
                 if ($stripeCard->value == true) {
                     $config['razorpay'] = $stripeCard->value;
@@ -3305,7 +3321,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'stripe_checkout')) {
-            $stripeCard = $settingObj->where('key', 'stripe_checkout')->first();
+            $stripeCard = $settings->get('stripe_checkout');
             if ($stripeCard) {
                 if ($stripeCard->value == true) {
                     $config['stripe_checkout'] = $stripeCard->value;
@@ -3319,7 +3335,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
         }
 
         if ($method == null || ($method != null && $method == 'stripe_express_checkout')) {
-            $stripeCard = $settingObj->where('key', 'stripe_express_checkout')->first();
+            $stripeCard = $settings->get('stripe_express_checkout');
             if ($stripeCard) {
                 if ($stripeCard->value == true) {
                     $config['stripe_express_checkout'] = $stripeCard->value;
@@ -3345,12 +3361,12 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 
     public static function getAccountingSettings($method = null)
     {
-        $settingObj = new Setting();
+        $settings = Self::getCachedSettings();
         //print '<pre>'; print_r($settingObj); die;
         $config = [];
 
         if ($method == null || ($method != null && $method == 'is_xero')) {
-            $isEnquiryWebsite = $settingObj->where('key', 'is_xero')->first();
+            $isEnquiryWebsite = $settings->get('is_xero');
             if ($isEnquiryWebsite && $isEnquiryWebsite->value) {
                 if ($isEnquiryWebsite->value == true) {
                     $config['is_xero'] = true;

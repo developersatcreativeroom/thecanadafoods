@@ -1021,7 +1021,7 @@
             {{-- @guest --}}
             @if (!(isset($paymentMethods) && count($paymentMethods) > 0))
                 <script>
-                    let stripe = Stripe("{{ env('STRIPE_KEY') }}");
+                    let stripe = Stripe("{{ config('services.stripe.key') }}");
                     let elements = stripe.elements()
                     // let style = {
                     //     base: {
@@ -1108,7 +1108,7 @@
 
             @auth('web')
                 <script>
-                    // const stripePaymentMethod = Stripe("{{ env('STRIPE_KEY') }}");
+                    // const stripePaymentMethod = Stripe("{{ config('services.stripe.key') }}");
                     // const {paymentMethod, error} = await stripePaymentMethod.createPaymentMethod({
                     //     type: 'card',
                     //     card: cardElement,
@@ -1117,7 +1117,7 @@
                     // console.log(paymentMethod);
                     // console.log(error);
 
-                    const stripe = Stripe("{{ env('STRIPE_KEY') }}");
+                    const stripe = Stripe("{{ config('services.stripe.key') }}");
                     const elements = stripe.elements();
                     const cardElement = elements.create('card');
                     cardElement.mount('#card-element');
@@ -1207,10 +1207,10 @@
         @endif
     @endif
 
-    <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     <script>
         grecaptcha.ready(function() {
-            grecaptcha.execute('{{ env('RECAPTCHA_SITE_KEY') }}', {
+            grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {
                 action: 'submit'
             }).then(function(token) {
                 document.getElementById('g-recaptcha-response').value = token;

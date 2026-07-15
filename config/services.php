@@ -51,4 +51,25 @@ return [
         'shipping_tax_type' => env('SHIPPING_XERO_TAX_TYPE'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET'),
+    ],
+
+    'instamojo' => [
+        'url' => env('INSTAMOJO_URL'),
+        'api_key' => env('INSTAMOJO_API_KEY'),
+        'api_token' => env('INSTAMOJO_API_TOKEN'),
+    ],
+
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
 ];

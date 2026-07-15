@@ -344,7 +344,7 @@
 
 @if(!(isset($paymentMethods) && count($paymentMethods) > 0))
 <script>
-    let stripe = Stripe("{{ env('STRIPE_KEY') }}");
+    let stripe = Stripe("{{ config('services.stripe.key') }}");
     let elements = stripe.elements()
     let style = {
         base: {
@@ -396,7 +396,7 @@
 
 @auth('web')
     <script>
-        // const stripePaymentMethod = Stripe("{{ env('STRIPE_KEY') }}");
+        // const stripePaymentMethod = Stripe("{{ config('services.stripe.key') }}");
         // const {paymentMethod, error} = await stripePaymentMethod.createPaymentMethod({
         //     type: 'card',
         //     card: cardElement,
@@ -405,7 +405,7 @@
         // console.log(paymentMethod);
         // console.log(error);
 
-        const stripe = Stripe("{{ env('STRIPE_KEY') }}");
+        const stripe = Stripe("{{ config('services.stripe.key') }}");
         const elements = stripe.elements();
         
         let cardElement = elements.create('card', {

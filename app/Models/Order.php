@@ -110,7 +110,7 @@ class Order extends Model
 
     public function safeCharge(int $amountInCents, string $paymentMethodId)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET')); // Your Stripe secret
+        Stripe::setApiKey(config('services.stripe.secret')); // Your Stripe secret
 
         $currency = Helper::getCurrency();
         

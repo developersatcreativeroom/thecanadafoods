@@ -32,7 +32,7 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
     var options = {
-        "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+        "key": "{{config('services.razorpay.key')}}", // Enter the Key ID generated from the Dashboard
         "amount": "{{$payment->amount * 100}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         "currency": "{{$currency}}",
         "name": "{{config('constants.BUSINESS.name')}}", //your business name

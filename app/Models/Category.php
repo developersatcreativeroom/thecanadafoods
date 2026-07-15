@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Helper;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -38,6 +39,16 @@ class Category extends Model
             $model->slug = Helper::createSlug(static::class, $model->name);
 
             $model->save();
+        });
+
+        static::saved(function () {
+            Cache::forget('categories_nav_0');
+            Cache::forget('categories_nav_1');
+        });
+
+        static::deleted(function () {
+            Cache::forget('categories_nav_0');
+            Cache::forget('categories_nav_1');
         });
     }
 

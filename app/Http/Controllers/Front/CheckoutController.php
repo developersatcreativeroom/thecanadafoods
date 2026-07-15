@@ -172,7 +172,7 @@ class CheckoutController extends Controller
                 $request->validate($validationArray);
 
                 $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret'   => env('RECAPTCHA_SECRET_KEY'),
+                    'secret'   => config('services.recaptcha.secret_key'),
                     'response' => $token,
                     'remoteip' => $request->ip(),
                 ]);
@@ -801,7 +801,7 @@ class CheckoutController extends Controller
         if(array_key_exists('stripe_checkout',$allowedPaymentMethods)){
             if($checkout['is_min_amount']){
 
-                Stripe::setApiKey(env('STRIPE_SECRET'));
+                Stripe::setApiKey(config('services.stripe.secret'));
                 $intent = SetupIntent::create([
                     // 'payment_method_types' => ['card'],
                     // 'payment_method_types' => ['card'],
@@ -1088,7 +1088,7 @@ class CheckoutController extends Controller
 
         // print $generated_signature; die;
 
-        $matchSignature = hash_hmac('sha256', $payment->razorpay_order_id.'|'.$razorpayPaymentId, env('RAZORPAY_SECRET'));
+        $matchSignature = hash_hmac('sha256', $payment->razorpay_order_id.'|'.$razorpayPaymentId, config('services.razorpay.secret'));
 
         if($payment && ($matchSignature == $razorpaySignature)){
 
@@ -1176,7 +1176,7 @@ class CheckoutController extends Controller
             abort(400, 'Error');
         }
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         $session = StripeCheckoutSession::retrieve($sessionId);
         // print '<pre>'; print_r($session); die;
 
@@ -1479,7 +1479,7 @@ class CheckoutController extends Controller
         // print '<pre>'; print_r($payment->toArray()); die;
 
         // RazorpayApi
-        $api = new RazorpayApi(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $api = new RazorpayApi(config('services.razorpay.key'), config('services.razorpay.secret'));
         $razorData  = $api->order->create([
             'receipt' => '111',
             'amount' => $payment->amount * 100,

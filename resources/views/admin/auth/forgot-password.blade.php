@@ -2,7 +2,7 @@
 <html lang="en">
 	<!--begin::Head-->
 	<head><base href="">
-		<title>Admin Panel | {{ env('APP_NAME') }}</title>
+		<title>Admin Panel | {{ config('app.name') }}</title>
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
