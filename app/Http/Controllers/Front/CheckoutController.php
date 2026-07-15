@@ -54,7 +54,7 @@ class CheckoutController extends Controller
         // dd($cart,$total_temp_sensitive);
         //print '<pre>'; print_r($cart->toArray()); die;
         if($cart->count() <= 0){
-            return to_route('cart');
+            return to_route('cart', [], 301);
         }
 
         // If the guest already picked a state (e.g. redirected back here after some

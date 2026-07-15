@@ -166,12 +166,7 @@ jQuery(function ($) {
     autoplay: {
       delay: 3000
     },
-    delay: 1000,
-    speed: 700,
-    effect: "fade",
-    fadeEffect: {
-      crossFade: true
-    },
+    speed: 500,
     pagination: {
       el: ".gshop-hero-slider-pagination",
       type: "bullets",

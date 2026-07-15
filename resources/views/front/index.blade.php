@@ -48,7 +48,7 @@
                             <div class="col-xl-6 col-lg-7">
                                 <div class="hero-right text-center position-relative z-1 mt-8 mt-xl-0">
 
-                                    <img src="{{ asset('storage/banners/') }}/{{$banner->id}}/{{$banner->image}}" alt="fruits" class="img-fluid position-absolute end-0 top-50 hero-img" fetchpriority="{{ $loop->first ? 'high' : 'low' }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                                    <img src="{{ asset('storage/banners/') }}/{{$banner->id}}/{{$banner->image}}" alt="fruits" class="img-fluid position-absolute end-0 top-50 hero-img" fetchpriority="{{ $loop->first ? 'high' : 'low' }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
 
                                     {{-- 
                                     <img src="{{ URL::asset('frontend/img/initial-image.png') }}" data-src="{{ URL::asset('frontend/img/shapes/tree.png') }}" alt="tree" class="img-fluid position-absolute tree z-1">
