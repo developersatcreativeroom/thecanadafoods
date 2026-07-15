@@ -348,7 +348,7 @@
 
                                 @if ($category->subcategories->isNotEmpty())
                                     <ul class="dropdown-menu subcategory-dropdown mobile-mega-panel">
-                                        <li class="mobile-mega-title">Shop {{ $category->name }}</li>
+                                        {{-- <li class="mobile-mega-title">Shop {{ $category->name }}</li> --}}
                                         @foreach ($category->subcategories as $subcategory)
                                             <li>
                                                 <a class="dropdown-item"
