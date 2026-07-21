@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blog', function (Blueprint $table) {
-            //
+            $table->string('read_time', 20)
+                  ->default('12')
+                  ->after('status');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('blog', function (Blueprint $table) {
-            //
+            $table->dropColumn('read_time');
         });
     }
 };
