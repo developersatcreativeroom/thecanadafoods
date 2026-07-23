@@ -737,7 +737,7 @@ $name = $altText ? Str::slug($altText) . '-' . uniqid() : md5(time() . rand(10, 
 </div>';
 
         } else {
-            $html .= '<button href="' . route('product', $product->slug) . '" class="btn btn-sm btn-secondary d-block btn-md rounded-1 mb-3 w-100">View Details</button>';
+            $html .= '<a href="' . route('product', $product->slug) . '" class="btn btn-sm btn-secondary d-block btn-md rounded-1 mb-3 w-100">View Details</a>';
         }
 
 
