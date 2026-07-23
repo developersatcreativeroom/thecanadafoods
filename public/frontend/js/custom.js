@@ -1186,19 +1186,31 @@ $('body').on('click', '.remove-wishlist', function (e) {
     }
 
 
-    var searchsource = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        // local: JSON.parse($('#autocomp').html())
-        remote: {
-            url: site_url + '/ajax-products-search?query=%QUERY',
-            wildcard: '%QUERY',
-            cache: false
-        }
-    });
+    var searchXhr = null;
+    var searchDebounceTimer = null;
 
-    searchsource.initialize();
-    
+    function smartSearchSource(query, syncResults, asyncResults) {
+        clearTimeout(searchDebounceTimer);
+        if (searchXhr && searchXhr.readyState !== 4) {
+            searchXhr.abort();
+        }
+        searchDebounceTimer = setTimeout(function() {
+            searchXhr = $.ajax({
+                type: 'GET',
+                url: site_url + '/ajax-products-search',
+                data: { query: query },
+                cache: false,
+                success: function(response) {
+                    asyncResults(response || []);
+                },
+                error: function(jqXhr) {
+                    if (jqXhr.statusText !== 'abort') {
+                        asyncResults([]);
+                    }
+                }
+            });
+        }, 200);
+    }
 
     $('[data-smart-search]').typeahead({
         hint: false,
@@ -1208,7 +1220,7 @@ $('body').on('click', '.remove-wishlist', function (e) {
         name: 'smart_search',
         limit: '5',
         display: 'name',
-        source: searchsource.ttAdapter(),
+        source: smartSearchSource,
         templates: {
             empty: [
                 '<div class="empty-message">',
