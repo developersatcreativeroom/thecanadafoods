@@ -414,7 +414,7 @@
     <!--endbuild-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" async></script>
 
-    <script src="{{ URL::asset('frontend/js/custom.min.js') }}"></script>
+    <script src="{{ URL::asset('frontend/js/custom.min.js') }}?v={{ filemtime(public_path('frontend/js/custom.min.js')) }}"></script>
 
     <script>
         var site_url = "{{ url('/') }}";

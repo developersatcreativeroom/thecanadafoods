@@ -1201,7 +1201,7 @@ $('body').on('click', '.remove-wishlist', function (e) {
                 data: { query: query },
                 cache: false,
                 success: function(response) {
-                    asyncResults(response || []);
+                    asyncResults((response || []).slice(0, 5));
                 },
                 error: function(jqXhr) {
                     if (jqXhr.statusText !== 'abort') {
@@ -1218,7 +1218,7 @@ $('body').on('click', '.remove-wishlist', function (e) {
         minLength: 1
     }, {
         name: 'smart_search',
-        limit: '5',
+        limit: 50,
         display: 'name',
         source: smartSearchSource,
         templates: {

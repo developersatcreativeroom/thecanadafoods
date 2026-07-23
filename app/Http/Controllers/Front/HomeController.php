@@ -260,6 +260,8 @@ class HomeController extends Controller
 
     public function products(Request $request)
     {
+
+   
         $page = $request->page;
         $query = Product::with(['categories' => function ($subQuery) {
             $subQuery->select('product_categories.product_id', 'product_categories.category_id', 'categories.name')->leftjoin('categories', 'categories.id', '=', 'product_categories.category_id');
