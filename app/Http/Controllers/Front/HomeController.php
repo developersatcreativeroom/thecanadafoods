@@ -796,10 +796,12 @@ class HomeController extends Controller
 
     public function ajaxProductSearch(Request $request)
     {
-        $keyword = $request->get('query');
+        $keyword = trim((string) $request->get('query'));
 
         $products = Product::where('status', 1)
             ->where('name', 'like', "%$keyword%")
+            ->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ["$keyword%"])
+            ->orderBy('name')
             ->limit(10)
             ->get();
 
@@ -814,7 +816,7 @@ class HomeController extends Controller
             ];
         }
 
-        return response()->json($result);
+        return response()->json($result)->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
     public function contact(Request $request)

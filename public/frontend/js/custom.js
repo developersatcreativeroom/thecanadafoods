@@ -1192,7 +1192,8 @@ $('body').on('click', '.remove-wishlist', function (e) {
         // local: JSON.parse($('#autocomp').html())
         remote: {
             url: site_url + '/ajax-products-search?query=%QUERY',
-            wildcard: '%QUERY'
+            wildcard: '%QUERY',
+            cache: false
         }
     });
 
