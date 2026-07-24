@@ -66,6 +66,17 @@
             height: 64px;
             background: #f8f9fa;
         }
+        .faq-item.faq-highlighted {
+            background: #fff8e1;
+            border-radius: 6px;
+            padding-left: 10px;
+            padding-right: 10px;
+            animation: faqHighlightFade 2.5s ease forwards;
+        }
+        @keyframes faqHighlightFade {
+            0% { background: #fff3cd; }
+            100% { background: transparent; }
+        }
     </style>
 
     <!-- Content Wrapper. Contains page content -->
@@ -285,6 +296,21 @@
             });
 
             refreshFaqButtons();
+
+            @if (!empty($highlightId))
+                (function() {
+                    var $target = $('#faqs-cont').find('.faq-item[data-faq-id="{{ $highlightId }}"]');
+                    if ($target.length) {
+                        $('html, body').animate({
+                            scrollTop: $target.offset().top - 100
+                        }, 400);
+                        $target.addClass('faq-highlighted');
+                        setTimeout(function() {
+                            $target.removeClass('faq-highlighted');
+                        }, 2500);
+                    }
+                })();
+            @endif
 
             function initTypeIdSelect2() {
                 if ($.fn.select2) {

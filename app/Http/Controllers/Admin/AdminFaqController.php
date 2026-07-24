@@ -88,6 +88,7 @@ class AdminFaqController extends Controller
         $type_id = $request->query('type_id');
         $data['selectedType'] = $type;
         $data['selectedTypeId'] = $type_id;
+        $data['highlightId'] = $request->query('highlight');
 
         $rows = collect();
         if(!empty($type) && !empty($type_id)){
@@ -104,7 +105,7 @@ class AdminFaqController extends Controller
             return to_route('admin.faqs');
         }
 
-        return to_route('admin.faq', ['type' => $row->type, 'type_id' => $row->type_id]);
+        return to_route('admin.faq', ['type' => $row->type, 'type_id' => $row->type_id, 'highlight' => $row->id]);
     }
 
     public function postData(Request $request){

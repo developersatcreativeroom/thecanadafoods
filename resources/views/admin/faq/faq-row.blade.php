@@ -4,7 +4,7 @@
     $faqAnswer = $faqRow->answer ?? '';
     $faqStatus = $faqRow->status ?? 1;
 @endphp
-<div class="faq-item" data-key="{{ $index }}">
+<div class="faq-item" data-key="{{ $index }}" data-faq-id="{{ $faqId }}">
     <div class="faq-row-line">
         <span class="faq-drag-handle" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></span>
 
