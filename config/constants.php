@@ -20,7 +20,8 @@ return [
     ],
     'FAQ_TYPES' => [
         'category' => 'Category',
-        'blog' => 'Blog'
+        'blog' => 'Blog',
+        'product' => 'Product'
     ],
     'ORDER_TYPE' => [
         'Distributor',

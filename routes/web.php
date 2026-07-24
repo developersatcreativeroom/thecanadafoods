@@ -336,6 +336,7 @@ Route::group( [ 'prefix' => 'admin' ], function(){
             Route::get('faq/{id}', [AdminFaqController::class, 'edit'])->name('admin.faq.edit');
             Route::post('faq-post-data', [AdminFaqController::class, 'postData'])->name('admin.faq.post');
             Route::get('faq-delete/{id}', [AdminFaqController::class, 'delete'])->name('admin.faq.delete');
+            Route::get('faq-group-delete', [AdminFaqController::class, 'deleteGroup'])->name('admin.faq.group.delete');
         });
         
         Route::group(['middleware' => 'permissions:users'], function () {

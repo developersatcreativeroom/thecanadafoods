@@ -10,7 +10,7 @@ class Faq extends Model
     use HasFactory;
 
     protected $fillable = [
-        'question', 'answer', 'type', 'type_id', 'status'
+        'question', 'answer', 'type', 'type_id', 'status', 'serial'
     ];
 
     public function category()
@@ -21,6 +21,11 @@ class Faq extends Model
     public function blog()
     {
         return $this->belongsTo(Blog::class, 'type_id', 'id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'type_id', 'id');
     }
 
     public function getTypeNameAttribute()

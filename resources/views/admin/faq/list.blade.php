@@ -35,23 +35,13 @@
               <div class="card-body">
                 <div class="row justify-content-end">
                     <form action="{{ route('admin.faqs') }}" method="get" enctype='multipart/form-data' class="col mb-3">
-                        <div class="row">  
+                        <div class="row">
                             <div class="col-md-3 mt-2">
                                 <select class="form-control select2 " id="type-filter" name="type">
                                     <option value="">--Select Type--</option>
                                     @foreach (config('constants.FAQ_TYPES') as $key => $type)
                                         <option value="{{ $key }}" {{ request('type') == $key ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-3 mt-2">
-                                <select class="form-control {{ $errors->has('status') ? ' is-invalid' : '' }}" id="status-filter" name="status">
-                                    <option value="">--Select Status--</option>
-                                    @foreach (config('constants.STATUSES') as $key => $status)
-                                        <option value="{{ $key }}" {{ (request('status') != '' && request('status') == $key) ? 'selected' : '' }} >{{ $status }}</option>
-                                    @endforeach
-
                                 </select>
                             </div>
 
@@ -71,41 +61,34 @@
                   <thead>
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Question</th>
-                      <th>Answer</th>
+                      <th>Name</th>
                       <th>Type</th>
-                      <th>Value</th>
+                      <th>Total Faqs</th>
                       <th>Status</th>
                       <th>Added on</th>
-                      <th style="width: 130px">Actions</th>
+                      <th style="width: 150px">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
 					        @foreach($rows as $row)
                     <tr>
                       <td>{{ ($rows->currentPage() - 1) * $rows->perPage() + $loop->iteration }}</td>
-                      <td>{{$row->question}}</td>
-                      <td>{{$row->answer}}</td>
-                      <td>{{$row->type_name}}</td>
+                      <td>{{ $row->entity_name }}</td>
+                      <td>{{ ucfirst($row->type) }}</td>
+                      <td>{{ $row->total_faqs }}</td>
                       <td>
-                        @if($row->type == 'category')
-                          {{$row->category->name}}
-                        @elseif($row->type == 'blog')
-                          {{$row->blog->title}}
-                        @endif
-                      </td>
-                       
-                      <td>
-                        @if($row->status)
+                        @if($row->active_count == $row->total_faqs)
                           <span class="badge bg-success">Active</span>
-                        @else
+                        @elseif($row->active_count == 0)
                           <span class="badge bg-danger">In-active</span>
+                        @else
+                          <span class="badge bg-warning">{{ $row->active_count }}/{{ $row->total_faqs }} Active</span>
                         @endif
                       </td>
-                      <td>{{$row->created_at?->format(App\Helper::universalDateTimeFormat()) ?? ''}}</td>
+                      <td>{{ $row->added_on ? \Carbon\Carbon::parse($row->added_on)->format(App\Helper::universalDateTimeFormat()) : '' }}</td>
                       <td>
-                        <a href="{{route('admin.faq.edit', $row->id)}}" class="btn btn-primary btn-sm">Edit</a>
-                        <a href="{{route('admin.faq.delete', $row->id)}}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                        <a href="{{ route('admin.faq', ['type' => $row->type, 'type_id' => $row->type_id]) }}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{{ route('admin.faq.group.delete', ['type' => $row->type, 'type_id' => $row->type_id]) }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
                       </td>
                     </tr>
                     @endforeach
