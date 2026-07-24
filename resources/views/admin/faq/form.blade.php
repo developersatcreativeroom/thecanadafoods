@@ -238,11 +238,10 @@
                 refreshFaqButtons();
             }
 
-            // Only the LAST row shows controls: the green "+" is always
-            // visible on it (to add another FAQ), and the red "-" joins it
-            // only once there is more than one row (removing the last FAQ
-            // would leave nothing to manage, so a single row never shows "-").
-            // Every row above the last one shows no buttons at all.
+            // The green "+" only ever appears on the LAST row (to add another
+            // FAQ at the end). Every row gets its own red "-" so any single
+            // FAQ can be removed directly, in any position - except when
+            // only one row remains, since at least one FAQ must stay.
             function refreshFaqButtons() {
                 var $items = $('#faqs-cont').find('.faq-item');
                 var total = $items.length;
@@ -252,7 +251,7 @@
                     var $item = $(this);
                     var isLast = idx === lastIndex;
                     $item.find('.faq-add-btn').css('display', isLast ? 'inline-flex' : 'none');
-                    $item.find('.faq-remove-btn').css('display', (isLast && total > 1) ? 'inline-flex' : 'none');
+                    $item.find('.faq-remove-btn').css('display', total > 1 ? 'inline-flex' : 'none');
                 });
             }
 
