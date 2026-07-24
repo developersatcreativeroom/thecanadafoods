@@ -78,14 +78,38 @@ class AdminFaqController extends Controller
     public function add(Request $request){
         $data=array();
         $categorys = Category::where('status', 1)->get();
-        $data['categorys'] = $categorys;
         $blogs = Blog::where('status', 1)->get();
-        $data['blogs'] = $blogs;
         $products = Product::where('status', 1)->select('id', 'name')->orderBy('name')->get();
-        $data['products'] = $products;
 
         $type = $request->query('type');
         $type_id = $request->query('type_id');
+
+        // The FAQ's linked entity may have been deactivated/deleted since the
+        // FAQ was created. Make sure it still shows up (and selected) in its
+        // dropdown even when it no longer matches the active-only filter above.
+        if (!empty($type_id)) {
+            if ($type === 'category' && !$categorys->contains('id', $type_id)) {
+                $category = Category::find($type_id);
+                if ($category) {
+                    $categorys->push($category);
+                }
+            } elseif ($type === 'blog' && !$blogs->contains('id', $type_id)) {
+                $blog = Blog::find($type_id);
+                if ($blog) {
+                    $blogs->push($blog);
+                }
+            } elseif ($type === 'product' && !$products->contains('id', $type_id)) {
+                $product = Product::select('id', 'name')->find($type_id);
+                if ($product) {
+                    $products->push($product);
+                }
+            }
+        }
+
+        $data['categorys'] = $categorys;
+        $data['blogs'] = $blogs;
+        $data['products'] = $products;
+
         $data['selectedType'] = $type;
         $data['selectedTypeId'] = $type_id;
         $data['highlightId'] = $request->query('highlight');
